@@ -4,9 +4,9 @@ from torch.utils.ffi import create_extension
 
 abs_path = osp.join(osp.dirname(osp.realpath(__file__)), 'torch_scatter')
 
-headers = ['torch_scatter/include/scatter.h']
-sources = ['torch_scatter/src/scatter.c']
-includes = [osp.join(abs_path, 'include'), osp.join(abs_path, 'src')]
+headers = ['torch_scatter/src/cpu.h']
+sources = ['torch_scatter/src/cpu.c']
+includes = ['torch_scatter/src']
 defines = []
 extra_objects = []
 with_cuda = False
@@ -17,7 +17,7 @@ ffi = create_extension(
     verbose=True,
     headers=headers,
     sources=sources,
-    includes=includes,
+    include_dirs=includes,
     define_macros=defines,
     extra_objects=extra_objects,
     with_cuda=with_cuda,

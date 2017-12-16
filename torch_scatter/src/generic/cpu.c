@@ -1,5 +1,5 @@
 #ifndef TH_GENERIC_FILE
-#define TH_GENERIC_FILE "generic/scatter.c"
+#define TH_GENERIC_FILE "generic/cpu.c"
 #else
 
 inline void check_(asserts)(THTensor *output, THLongTensor *index, THTensor *input, int dim) {
