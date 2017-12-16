@@ -4,11 +4,10 @@ from torch.autograd import Function
 from .._ext import ffi
 
 
-def _scatter(name, output, index, input, dim):
-    typename = type(input).__name__.replace('Tensor', '')
+def _scatter(name, dim, *data):
+    typename = type(data[0]).__name__.replace('Tensor', '')
     func = getattr(ffi, 'scatter_{}_{}'.format(name, typename))
-    func(output, index, input, dim)
-    return output
+    func(dim, *data)
 
 
 class _Scatter(Function):
@@ -17,13 +16,14 @@ class _Scatter(Function):
         self.dim = dim
         self.name = name
 
-    def forward(self, output, index, input):
+    def forward(self, *data):
         assert not self.needs_input_grad[1], 'Can\'t differentiate the index'
 
-        self.mark_dirty(output)
-        self.save_for_backward(index)
+        self.mark_dirty(data[0])
+        self.save_for_backward(data[1])
 
-        return _scatter(self.name, output, index, input, self.dim)
+        _scatter(self.name, self.dim, *data)
+        return data[0]
 
     def backward(self, grad):
         index, = self.saved_variables
@@ -37,8 +37,8 @@ class _Scatter(Function):
         return grad_output, None, grad_input
 
 
-def scatter(name, output, index, input, dim):
-    if torch.is_tensor(input):
-        return _scatter(name, output, index, input, dim)
+def scatter(name, dim, *data):
+    if torch.is_tensor(data[0]):
+        return _scatter(name, dim, *data)
     else:
-        return _Scatter(name, dim)(output, index, input)
+        return _Scatter(name, dim)(*data)

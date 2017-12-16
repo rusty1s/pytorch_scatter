@@ -44,10 +44,10 @@
     THDescBuff T3buff = _THSizeDesc(TENSOR3->size, TENSOR3->nDimension); \
     THDescBuff T4buff = _THSizeDesc(TENSOR4->size, TENSOR3->nDimension); \
     THError("inconsistent tensor size, expected %s %s, %s %s, %s %s and %s %s to have the same " \
-            "number of dimensions", #TENSOR1, T1buff.str, #TENSOR2, T2buff.str, #TENSOR3, T3buff.str, #TENSOR4, T4.buff.str); \
+            "number of dimensions", #TENSOR1, T1buff.str, #TENSOR2, T2buff.str, #TENSOR3, T3buff.str, #TENSOR4, T4buff.str); \
   } \
 \
-  SIZE_CHECK(TENSOR1, TENSOR2, TENSOR3, DIMENSION) \
+  SIZE_CHECK(TENSOR1, TENSOR2, TENSOR3, TENSOR4, DIMENSION) \
 \
   TH_TENSOR_DIM_APPLY_counter = (int64_t*)THAlloc(sizeof(int64_t)*(TENSOR1->nDimension)); \
   for (TH_TENSOR_DIM_APPLY_i = 0; TH_TENSOR_DIM_APPLY_i < TENSOR1->nDimension; TH_TENSOR_DIM_APPLY_i++) \
