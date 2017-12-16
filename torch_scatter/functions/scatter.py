@@ -36,8 +36,7 @@ class _Scatter(Function):
 
         if len(grad) == 3:
             return grad_output, None, grad_input
-        else:
-            return grad_output, None, grad_input, None
+        return grad_output, None, grad_input, None
 
 
 def scatter(name, dim, *data):
