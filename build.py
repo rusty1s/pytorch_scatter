@@ -12,7 +12,7 @@ extra_objects = []
 with_cuda = False
 
 ffi = create_extension(
-    name='torch_scatter._ext.scatter',
+    name='torch_scatter._ext.ffi',
     package=True,
     verbose=True,
     headers=headers,

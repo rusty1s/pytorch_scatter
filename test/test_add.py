@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 
 import torch
-from torch_scatter._ext import scatter
+from torch_scatter._ext import ffi
 
 
 def test_scatter_add():
@@ -12,15 +12,5 @@ def test_scatter_add():
     output = input.new(2, 6).fill_(0)
     expected_output = [[0, 0, 4, 3, 3, 0], [2, 4, 4, 0, 0, 0]]
 
-    scatter.scatter_add_Float(output, index, input, 1)
+    ffi.scatter_add_Float(output, index, input, 1)
     assert_equal(output.tolist(), expected_output)
-
-    n = 10000
-    input = torch.rand(torch.Size([n]))
-    index = (torch.rand(torch.Size([n])) * n).long()
-    output = input.new(n).fill_(0)
-    expected_output = input.new(n).fill_(0)
-    scatter.scatter_add_Float(output, index, input, 0)
-    expected_output.scatter_add_(0, index, input)
-
-    assert_equal(output.tolist(), expected_output.tolist())
