@@ -8,5 +8,3 @@ inline void assertIndexInBoundaries(int idx, int size, int64_t *free) {
 
 #include "generic/cpu.c"
 #include "THGenerateAllTypes.h"
-#include "generic/cpu.c"
-#include "THGenerateHalfType.h"
