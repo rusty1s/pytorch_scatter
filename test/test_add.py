@@ -19,7 +19,7 @@ def test_scatter_add(str):
     assert output.tolist() == expected_output
 
     output = scatter_add(index, input, dim=1)
-    assert output.tolist(), expected_output
+    assert output.tolist() == expected_output
 
     output = Variable(output).fill_(0)
     index = Variable(index)
