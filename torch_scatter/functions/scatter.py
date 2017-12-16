@@ -5,7 +5,7 @@ from .._ext import ffi
 
 
 def _scatter(name, output, index, input, dim):
-    typename = type.__name__.replace('Tensor', '')
+    typename = type(input).__name__.replace('Tensor', '')
     func = getattr(ffi, 'scatter_{}_{}'.format(name, typename))
     func(output, index, input, dim)
     return output

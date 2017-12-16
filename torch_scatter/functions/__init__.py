@@ -36,9 +36,3 @@ def scatter_div_(output, index, input, dim=0):
 def scatter_div(index, input, dim=0, max_index=None, fill_value=1):
     output = gen_output(index, input, dim, max_index, fill_value)
     return scatter_div_(output, index, input, dim)
-
-
-__all__ = [
-    'scatter_add_', 'scatter_add', 'scatter_sub_', 'scatter_sub',
-    'scatter_mul_', 'scatter_mul', 'scatter_div_', 'scatter_div'
-]
