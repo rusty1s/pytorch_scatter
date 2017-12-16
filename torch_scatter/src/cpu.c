@@ -1,6 +1,6 @@
 #include <TH/TH.h>
 
-#include "THTensorDimApply.h"
+#include "THTensorDimApply4.h"
 
 #define scatter_(NAME) TH_CONCAT_4(scatter_, NAME, _, Real)
 
