@@ -31,7 +31,7 @@
   int TH_TENSOR_DIM_APPLY_i; \
 \
   if ((DIMENSION < 0) || (DIMENSION >= TENSOR1->nDimension)) \
-    THError("invalid dimension %d (expected to be 0 <= dim < %d)", DIMENSION, TENSOR1->nDimension); \
+    THError("Invalid dimension %d (expected to be 0 <= dim < %d)", DIMENSION, TENSOR1->nDimension); \
 \
   int same_dims = 1; \
   if (TENSOR1->nDimension != TENSOR2->nDimension ) same_dims = 0; \
@@ -43,7 +43,7 @@
     THDescBuff T2buff = _THSizeDesc(TENSOR2->size, TENSOR2->nDimension); \
     THDescBuff T3buff = _THSizeDesc(TENSOR3->size, TENSOR3->nDimension); \
     THDescBuff T4buff = _THSizeDesc(TENSOR4->size, TENSOR3->nDimension); \
-    THError("inconsistent tensor size, expected %s %s, %s %s, %s %s and %s %s to have the same " \
+    THError("Inconsistent tensor size, expected %s %s, %s %s, %s %s and %s %s to have the same " \
             "number of dimensions", #TENSOR1, T1buff.str, #TENSOR2, T2buff.str, #TENSOR3, T3buff.str, #TENSOR4, T4buff.str); \
   } \
 \
