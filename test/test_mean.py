@@ -6,30 +6,28 @@ from torch_scatter import scatter_mean_, scatter_mean
 from .utils import tensor_strs, Tensor
 
 
-# @pytest.mark.parametrize('str', tensor_strs)
-# def test_scatter_add(str):
-def test_scatter_mean():
-    input = [[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]]
+@pytest.mark.parametrize('str', tensor_strs)
+def test_scatter_mean(str):
+    input = [[2, 0, 8, 4, 3], [0, 2, 1, 3, 4]]
     index = [[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]]
-    input = torch.FloatTensor(input)
+    input = Tensor(str, input)
     index = torch.LongTensor(index)
     output = input.new(2, 6).fill_(0)
-    # expected_output = [[0, 0, 4, 3, 3, 0], [2, 4, 4, 0, 0, 0]]
+    expected_output = [[0, 0, 4, 3, 5, 0], [1, 4, 2, 0, 0, 0]]
 
     scatter_mean_(output, index, input, dim=1)
-    print(output)
-    # assert output.tolist() == expected_output
+    assert output.tolist() == expected_output
 
-    # output = scatter_add(index, input, dim=1)
-    # assert output.tolist(), expected_output
+    output = scatter_mean(index, input, dim=1)
+    assert output.tolist(), expected_output
 
-    # output = Variable(output).fill_(0)
-    # index = Variable(index)
-    # input = Variable(input, requires_grad=True)
-    # scatter_add_(output, index, input, dim=1)
+    output = Variable(output).fill_(0)
+    index = Variable(index)
+    input = Variable(input, requires_grad=True)
+    scatter_mean_(output, index, input, dim=1)
 
-    # grad_output = [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]]
-    # grad_output = Tensor(str, grad_output)
+    grad_output = [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]]
+    grad_output = Tensor(str, grad_output)
 
-    # output.backward(grad_output)
-    # assert index.data.tolist() == input.grad.data.tolist()
+    output.backward(grad_output)
+    assert index.data.tolist() == input.grad.data.tolist()

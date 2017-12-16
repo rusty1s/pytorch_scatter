@@ -1,3 +1,6 @@
+import torch
+from torch.autograd import Variable
+
 from .scatter import scatter
 from .utils import gen_output
 
@@ -43,10 +46,13 @@ def scatter_div(index, input, dim=0, max_index=None, fill_value=1):
 
 
 def scatter_mean_(output, index, input, dim=0):
-    output_count = output.new(output.size()).fill_(0)
+    if torch.is_tensor(input):
+        output_count = output.new(output.size()).fill_(0)
+    else:
+        output_count = Variable(output.data.new(output.size()).fill_(0))
     scatter('mean', dim, output, index, input, output_count)
+    output_count[output_count == 0] = 1
     output /= output_count
-    output[output != output] = 0
     return output
 
 

@@ -34,7 +34,10 @@ class _Scatter(Function):
         if self.needs_input_grad[2]:
             grad_input = grad.gather(self.dim, index.data)
 
-        return grad_output, None, grad_input
+        if len(grad) == 3:
+            return grad_output, None, grad_input
+        else:
+            return grad_output, None, grad_input, None
 
 
 def scatter(name, dim, *data):
