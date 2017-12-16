@@ -24,18 +24,8 @@ def test_scatter_add():
     input = Variable(input, requires_grad=True)
     scatter_add_(output, index, input, dim=1)
 
-    c = output.sum()
-    c.backward()
+    grad_output = [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]]
+    grad_output = torch.FloatTensor(grad_output)
 
-    # # a = input * 2
-    # # b = output * 2
-    # a = input * 2
-    # b = output * 2
-    # ScatterAdd(1)(b, index, a)
-    # # b.scatter_add_(1, index, a)
-
-    # c = b.sum()
-    # c.backward()
-
-    # print(input.grad)
-    # print(output.grad)
+    output.backward(grad_output)
+    assert_equal(index.data.tolist(), input.grad.data.tolist())
