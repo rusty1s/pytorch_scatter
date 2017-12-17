@@ -13,30 +13,29 @@ def _scatter(name, dim, *data):
 class _Scatter(Function):
     def __init__(self, name, dim):
         super(_Scatter, self).__init__()
-        self.dim = dim
         self.name = name
+        self.dim = dim
 
     def forward(self, *data):
         assert not self.needs_input_grad[1], 'Can\'t differentiate the index'
 
-        self.mark_dirty(data[0])
-        self.save_for_backward(data[1])
+        self.mark_dirty(data[0])  # Mark output as dirty.
+        self.len = len(data)  # Save number of arguments for backward step
+        self.save_for_backward(data[1])  # Save index for backward step.
 
         _scatter(self.name, self.dim, *data)
         return data[0]
 
-    def backward(self, grad):
+    def backward(self, *data):
         index, = self.saved_variables
         grad_output = grad_input = None
 
         if self.needs_input_grad[0]:
-            grad_output = grad
+            grad_output = data[0]
         if self.needs_input_grad[2]:
-            grad_input = grad.gather(self.dim, index.data)
+            grad_input = data[0].gather(self.dim, index.data)
 
-        if len(grad) == 3:
-            return grad_output, None, grad_input
-        return grad_output, None, grad_input, None
+        return (grad_output, None, grad_input) + (None, ) * (self.len - 3)
 
 
 def scatter(name, dim, *data):
