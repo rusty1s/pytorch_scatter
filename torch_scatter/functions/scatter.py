@@ -9,8 +9,10 @@ from .._ext import ffi
 def _scatter(name, dim, *data):
     a, b, c = data[:3]
 
-    # Assert same dimensionality across all inputs.
+    # Assert index dimension is valid.
     assert dim >= 0 and dim < a.dim(), 'Index dimension is out of bounds'
+
+    # Assert same dimensionality across all inputs.
     assert b.dim() == c.dim(), ('Index tensor must have same dimensions as '
                                 'input tensor')
     assert a.dim() == c.dim(), ('Input tensor must have same dimensions as '
