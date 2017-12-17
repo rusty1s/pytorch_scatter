@@ -44,7 +44,7 @@ void scatter_(div)(int dim, THTensor *output, THLongTensor *index, THTensor *inp
 
 void scatter_(mean)(int dim, THTensor *output, THLongTensor *index, THTensor *input, THTensor *output_count) {
   int64_t idx;
-  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, real, output_count, dim, TH_TENSOR_DIM_APPLY4_SIZE_EQ_EXCEPT_DIM,
+  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, real, output_count, dim,
     for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
       idx = *(index_data + i * index_stride);
       assertIndexInBoundaries(idx, output_size, TH_TENSOR_DIM_APPLY_counter);
@@ -55,7 +55,7 @@ void scatter_(mean)(int dim, THTensor *output, THLongTensor *index, THTensor *in
 
 void scatter_(max)(int dim, THTensor *output, THLongTensor *index, THTensor *input, THLongTensor *output_index) {
   int64_t idx; real old, new;
-  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, int64_t, output_index, dim, TH_TENSOR_DIM_APPLY4_SIZE_EQ_EXCEPT_DIM,
+  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, int64_t, output_index, dim,
     for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
       idx = *(index_data + i * index_stride);
       assertIndexInBoundaries(idx, output_size, TH_TENSOR_DIM_APPLY_counter);
@@ -66,7 +66,7 @@ void scatter_(max)(int dim, THTensor *output, THLongTensor *index, THTensor *inp
 
 void scatter_(min)(int dim, THTensor *output, THLongTensor *index, THTensor *input, THLongTensor *output_index) {
   int64_t idx; real old, new;
-  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, int64_t, output_index, dim, TH_TENSOR_DIM_APPLY4_SIZE_EQ_EXCEPT_DIM,
+  TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, int64_t, output_index, dim,
     for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
       idx = *(index_data + i * index_stride);
       assertIndexInBoundaries(idx, output_size, TH_TENSOR_DIM_APPLY_counter);
