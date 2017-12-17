@@ -11,4 +11,4 @@ def gen_output(index, input, dim, max_index, fill_value):
         return input.new(torch.Size(size)).fill_(fill_value)
     else:
         size[dim] = max_index.data[0]
-        return Variable(input.new(torch.Size(size)).fill_(fill_value))
+        return Variable(input.data.new(torch.Size(size)).fill_(fill_value))

@@ -6,8 +6,7 @@ from .utils import gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    scatter('add', dim, output, index, input)
-    return output
+    return scatter('add', dim, output, index, input)
 
 
 def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
@@ -16,8 +15,7 @@ def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_sub_(output, index, input, dim=0):
-    scatter('sub', dim, output, index, input)
-    return output
+    return scatter('sub', dim, output, index, input)
 
 
 def scatter_sub(index, input, dim=0, max_index=None, fill_value=0):
@@ -26,8 +24,7 @@ def scatter_sub(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_mul_(output, index, input, dim=0):
-    scatter('mul', dim, output, index, input)
-    return output
+    return scatter('mul', dim, output, index, input)
 
 
 def scatter_mul(index, input, dim=0, max_index=None, fill_value=1):
@@ -36,8 +33,7 @@ def scatter_mul(index, input, dim=0, max_index=None, fill_value=1):
 
 
 def scatter_div_(output, index, input, dim=0):
-    scatter('div', dim, output, index, input)
-    return output
+    return scatter('div', dim, output, index, input)
 
 
 def scatter_div(index, input, dim=0, max_index=None, fill_value=1):
@@ -66,8 +62,7 @@ def scatter_max_(output, index, input, dim=0):
         output_index = index.new(output.size()).fill_(-1)
     else:
         output_index = Variable(index.data.new(output.size()).fill_(-1))
-    scatter('max', dim, output, index, input, output_index)
-    return output, output_index
+    return scatter('max', dim, output, index, input, output_index)
 
 
 def scatter_max(index, input, dim=0, max_index=None, fill_value=0):
@@ -80,8 +75,7 @@ def scatter_min_(output, index, input, dim=0):
         output_index = index.new(output.size()).fill_(-1)
     else:
         output_index = Variable(index.data.new(output.size()).fill_(-1))
-    scatter('min', dim, output, index, input, output_index)
-    return output, output_index
+    return scatter('min', dim, output, index, input, output_index)
 
 
 def scatter_min(index, input, dim=0, max_index=None, fill_value=0):

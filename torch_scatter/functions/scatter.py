@@ -6,6 +6,10 @@ from torch.autograd import Function
 from .._ext import ffi
 
 
+def _has_output_index(name):
+    return name in ['max', 'min']
+
+
 def _scatter(name, dim, *data):
     a, b, c = data[:3]
 
@@ -31,6 +35,15 @@ def _scatter(name, dim, *data):
     typename = type(data[0]).__name__.replace('Tensor', '')
     func = getattr(ffi, 'scatter_{}_{}'.format(name, typename))
     func(dim, *data)
+    return (data[0], data[3]) if _has_output_index(name) else data[0]
+
+
+def _index_backward(dim, index, grad, grad_index):
+    typename = type(grad).__name__.replace('Tensor', '')
+    func = getattr(ffi, 'index_backward_{}'.format(typename))
+    output = grad.new(index.size()).fill_(0)
+    func(dim, output, index, grad, grad_index)
+    return output
 
 
 class _Scatter(Function):
@@ -44,20 +57,30 @@ class _Scatter(Function):
 
         self.mark_dirty(data[0])  # Mark output as dirty.
         self.len = len(data)  # Save number of arguments for backward step
-        self.save_for_backward(data[1])  # Save index for backward step.
 
         _scatter(self.name, self.dim, *data)
-        return data[0]
+
+        if _has_output_index(self.name):
+            self.save_for_backward(data[1], data[3])
+            return data[0], data[3]
+        else:
+            self.save_for_backward(data[1])
+            return data[0]
 
     def backward(self, *data):
-        index, = self.saved_variables
         grad_output = grad_input = None
 
         if self.needs_input_grad[0]:
             grad_output = data[0]
-        if self.needs_input_grad[2]:
-            # TODO: max and min
+
+        if self.needs_input_grad[2] and not _has_output_index(self.name):
+            index, = self.saved_variables
             grad_input = data[0].gather(self.dim, index.data)
+
+        if self.needs_input_grad[2] and _has_output_index(self.name):
+            index, grad_index = self.saved_variables
+            data = (index.data, data[0], grad_index.data)
+            grad_input = _index_backward(self.dim, *data)
 
         return (grad_output, None, grad_input) + (None, ) * (self.len - 3)
 

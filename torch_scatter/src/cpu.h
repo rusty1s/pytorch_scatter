@@ -53,3 +53,11 @@ void scatter_min_Char  (int dim, THCharTensor   *output, THLongTensor *index, TH
 void scatter_min_Short (int dim, THShortTensor  *output, THLongTensor *index, THShortTensor  *input, THLongTensor *output_index);
 void scatter_min_Int   (int dim, THIntTensor    *output, THLongTensor *index, THIntTensor    *input, THLongTensor *output_index);
 void scatter_min_Long  (int dim, THLongTensor   *output, THLongTensor *index, THLongTensor   *input, THLongTensor *output_index);
+
+void index_backward_Float (int dim, THFloatTensor  *output, THLongTensor *index, THFloatTensor  *grad, THLongTensor *grad_index);
+void index_backward_Double(int dim, THDoubleTensor *output, THLongTensor *index, THDoubleTensor *grad, THLongTensor *grad_index);
+void index_backward_Byte  (int dim, THByteTensor   *output, THLongTensor *index, THByteTensor   *grad, THLongTensor *grad_index);
+void index_backward_Char  (int dim, THCharTensor   *output, THLongTensor *index, THCharTensor   *grad, THLongTensor *grad_index);
+void index_backward_Short (int dim, THShortTensor  *output, THLongTensor *index, THShortTensor  *grad, THLongTensor *grad_index);
+void index_backward_Int   (int dim, THIntTensor    *output, THLongTensor *index, THIntTensor    *grad, THLongTensor *grad_index);
+void index_backward_Long  (int dim, THLongTensor   *output, THLongTensor *index, THLongTensor   *grad, THLongTensor *grad_index);

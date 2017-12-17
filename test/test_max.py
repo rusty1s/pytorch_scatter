@@ -27,10 +27,19 @@ def test_scatter_mean(str):
     output = Variable(output).fill_(0)
     index = Variable(index)
     input = Variable(input, requires_grad=True)
-    _, output_index = scatter_max_(output, index, input, dim=1)
+    scatter_max_(output, index, input, dim=1)
 
-    grad_output = [[0, 1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5]]
+    grad_output = [[10, 20, 30, 40, 50, 60], [15, 25, 35, 45, 55, 65]]
     grad_output = Tensor(str, grad_output)
 
     output.backward(grad_output)
-    assert index.data.tolist() == input.grad.data.tolist()
+    # assert index.data.tolist() == input.grad.data.tolist()
+
+    # output = Variable(torch.FloatTensor([0, 0, 0, 0, 0]))
+    index = Variable(torch.LongTensor([3, 4, 4, 2, 1]))
+    input = Variable(torch.FloatTensor([1, 2, 3, 4, 5]), requires_grad=True)
+    output, output_index = scatter_max(index, input)
+    # print(output_index)
+
+    output.backward(torch.FloatTensor([10, 20, 30, 40]))
+    print(input.grad)
