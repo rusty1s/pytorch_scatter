@@ -62,7 +62,10 @@ def scatter_mean(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_max_(output, index, input, dim=0):
-    output_index = index.new(output.size()).fill_(-1)
+    if torch.is_tensor(input):
+        output_index = index.new(output.size()).fill_(-1)
+    else:
+        output_index = Variable(index.data.new(output.size()).fill_(-1))
     scatter('max', dim, output, index, input, output_index)
     return output, output_index
 
@@ -73,7 +76,10 @@ def scatter_max(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_min_(output, index, input, dim=0):
-    output_index = index.new(output.size()).fill_(-1)
+    if torch.is_tensor(input):
+        output_index = index.new(output.size()).fill_(-1)
+    else:
+        output_index = Variable(index.data.new(output.size()).fill_(-1))
     scatter('min', dim, output, index, input, output_index)
     return output, output_index
 

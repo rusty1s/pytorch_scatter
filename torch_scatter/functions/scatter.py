@@ -33,6 +33,7 @@ class _Scatter(Function):
         if self.needs_input_grad[0]:
             grad_output = data[0]
         if self.needs_input_grad[2]:
+            # TODO: max and min
             grad_input = data[0].gather(self.dim, index.data)
 
         return (grad_output, None, grad_input) + (None, ) * (self.len - 3)
