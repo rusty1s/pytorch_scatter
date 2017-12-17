@@ -37,3 +37,19 @@ void scatter_mean_Char  (int dim, THCharTensor   *output, THLongTensor *index, T
 void scatter_mean_Short (int dim, THShortTensor  *output, THLongTensor *index, THShortTensor  *input, THShortTensor  *output_count);
 void scatter_mean_Int   (int dim, THIntTensor    *output, THLongTensor *index, THIntTensor    *input, THIntTensor    *output_count);
 void scatter_mean_Long  (int dim, THLongTensor   *output, THLongTensor *index, THLongTensor   *input, THLongTensor   *output_count);
+
+void scatter_max_Float (int dim, THFloatTensor  *output, THLongTensor *index, THFloatTensor  *input, THLongTensor *output_index);
+void scatter_max_Double(int dim, THDoubleTensor *output, THLongTensor *index, THDoubleTensor *input, THLongTensor *output_index);
+void scatter_max_Byte  (int dim, THByteTensor   *output, THLongTensor *index, THByteTensor   *input, THLongTensor *output_index);
+void scatter_max_Char  (int dim, THCharTensor   *output, THLongTensor *index, THCharTensor   *input, THLongTensor *output_index);
+void scatter_max_Short (int dim, THShortTensor  *output, THLongTensor *index, THShortTensor  *input, THLongTensor *output_index);
+void scatter_max_Int   (int dim, THIntTensor    *output, THLongTensor *index, THIntTensor    *input, THLongTensor *output_index);
+void scatter_max_Long  (int dim, THLongTensor   *output, THLongTensor *index, THLongTensor   *input, THLongTensor *output_index);
+
+void scatter_min_Float (int dim, THFloatTensor  *output, THLongTensor *index, THFloatTensor  *input, THLongTensor *output_index);
+void scatter_min_Double(int dim, THDoubleTensor *output, THLongTensor *index, THDoubleTensor *input, THLongTensor *output_index);
+void scatter_min_Byte  (int dim, THByteTensor   *output, THLongTensor *index, THByteTensor   *input, THLongTensor *output_index);
+void scatter_min_Char  (int dim, THCharTensor   *output, THLongTensor *index, THCharTensor   *input, THLongTensor *output_index);
+void scatter_min_Short (int dim, THShortTensor  *output, THLongTensor *index, THShortTensor  *input, THLongTensor *output_index);
+void scatter_min_Int   (int dim, THIntTensor    *output, THLongTensor *index, THIntTensor    *input, THLongTensor *output_index);
+void scatter_min_Long  (int dim, THLongTensor   *output, THLongTensor *index, THLongTensor   *input, THLongTensor *output_index);
