@@ -6,7 +6,8 @@ from torch_scatter import scatter_max_, scatter_max
 from .utils import tensor_strs, Tensor
 
 
-@pytest.mark.parametrize('str', tensor_strs)
+# @pytest.mark.parametrize('str', tensor_strs)
+@pytest.mark.parametrize('str', ['DoubleTensor'])
 def test_scatter_mean(str):
     input = [[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]]
     index = [[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]]
