@@ -1,8 +1,5 @@
-import torch
-from torch.autograd import Variable
-
 from .scatter import scatter
-from .utils import gen_output
+from .utils import gen_filled_tensor, gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
@@ -42,10 +39,7 @@ def scatter_div(index, input, dim=0, max_index=None, fill_value=1):
 
 
 def scatter_mean_(output, index, input, dim=0):
-    if torch.is_tensor(input):
-        output_count = output.new(output.size()).fill_(0)
-    else:
-        output_count = Variable(output.data.new(output.size()).fill_(0))
+    output_count = gen_filled_tensor(output, output.size(), fill_value=0)
     scatter('mean', dim, output, index, input, output_count)
     output_count[output_count == 0] = 1
     output /= output_count
@@ -58,10 +52,7 @@ def scatter_mean(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_max_(output, index, input, dim=0):
-    if torch.is_tensor(input):
-        output_index = index.new(output.size()).fill_(-1)
-    else:
-        output_index = Variable(index.data.new(output.size()).fill_(-1))
+    output_index = gen_filled_tensor(index, output.size(), fill_value=-1)
     return scatter('max', dim, output, index, input, output_index)
 
 
@@ -71,10 +62,7 @@ def scatter_max(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_min_(output, index, input, dim=0):
-    if torch.is_tensor(input):
-        output_index = index.new(output.size()).fill_(-1)
-    else:
-        output_index = Variable(index.data.new(output.size()).fill_(-1))
+    output_index = gen_filled_tensor(index, output.size(), fill_value=-1)
     return scatter('min', dim, output, index, input, output_index)
 
 
