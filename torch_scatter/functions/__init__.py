@@ -3,6 +3,8 @@ from .utils import gen_filled_tensor, gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
+    """If multiple indices reference the same location, their contributions
+    add."""
     return scatter('add', dim, output, index, input)
 
 
@@ -12,6 +14,8 @@ def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_sub_(output, index, input, dim=0):
+    """If multiple indices reference the same location, their negated
+    contributions add."""
     return scatter('sub', dim, output, index, input)
 
 
@@ -21,6 +25,8 @@ def scatter_sub(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_mul_(output, index, input, dim=0):
+    """If multiple indices reference the same location, their
+    contributions multiply."""
     return scatter('mul', dim, output, index, input)
 
 
@@ -30,6 +36,8 @@ def scatter_mul(index, input, dim=0, max_index=None, fill_value=1):
 
 
 def scatter_div_(output, index, input, dim=0):
+    """If multiple indices reference the same location, their
+    contributions divide."""
     return scatter('div', dim, output, index, input)
 
 
