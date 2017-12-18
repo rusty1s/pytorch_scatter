@@ -4,6 +4,6 @@ build/
 dist/
 .cache/
 .eggs/
-ipynb_checkpoints/
+.ipynb_checkpoints/
 *.egg-info/
 *.so
