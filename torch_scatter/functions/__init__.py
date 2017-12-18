@@ -52,8 +52,8 @@ def scatter_mean(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_max_(output, index, input, dim=0):
-    output_index = gen_filled_tensor(index, output.size(), fill_value=-1)
-    return scatter('max', dim, output, index, input, output_index)
+    output_arg = gen_filled_tensor(index, output.size(), fill_value=-1)
+    return scatter('max', dim, output, index, input, output_arg)
 
 
 def scatter_max(index, input, dim=0, max_index=None, fill_value=0):
@@ -62,8 +62,8 @@ def scatter_max(index, input, dim=0, max_index=None, fill_value=0):
 
 
 def scatter_min_(output, index, input, dim=0):
-    output_index = gen_filled_tensor(index, output.size(), fill_value=-1)
-    return scatter('min', dim, output, index, input, output_index)
+    output_arg = gen_filled_tensor(index, output.size(), fill_value=-1)
+    return scatter('min', dim, output, index, input, output_arg)
 
 
 def scatter_min(index, input, dim=0, max_index=None, fill_value=0):
