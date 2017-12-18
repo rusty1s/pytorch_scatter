@@ -66,14 +66,9 @@ void scatter_(min)(int dim, THTensor *output, THLongTensor *index, THTensor *inp
 }
 
 void index_backward(int dim, THTensor *output, THLongTensor *index, THTensor *grad, THLongTensor *grad_index) {
-  int64_t idx;
   TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, grad, int64_t, grad_index, dim,
     for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
-      idx = *(index_data + i * index_stride);
-      /* if (grad_index_data[index_data[i]] == i) { */
-      printf("i: %lli, idx: %lli grad_index: %i grad: %i \n", i, idx, *(grad_index_data + idx * grad_index_stride), *(grad_data + idx * grad_stride));
-      /* output_data[i] = grad_data[idx]; */
-      /* } */
+      if (grad_index_data[index_data[i]] == i) output_data[i] = grad_data[index_data[i]];
     })
 }
 
