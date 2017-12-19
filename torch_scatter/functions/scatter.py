@@ -33,7 +33,8 @@ def _scatter(name, dim, *data):
             'specified dimension')
 
     typename = type(data[0]).__name__.replace('Tensor', '')
-    func = getattr(ffi, 'scatter_{}_{}'.format(name, typename))
+    cuda = 'cuda_' if data[0].is_cuda else ''
+    func = getattr(ffi, 'scatter_{}_{}{}'.format(name, cuda, typename))
     func(dim, *data)
     return (data[0], data[3]) if has_arg_output(name) else data[0]
 
