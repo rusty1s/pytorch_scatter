@@ -1,3 +1,5 @@
+import torch
+
 from .scatter import scatter
 from .utils import gen_filled_tensor, gen_output
 
@@ -5,7 +7,7 @@ from .utils import gen_filled_tensor, gen_output
 def scatter_add_(output, index, input, dim=0):
     """If multiple indices reference the same location, their contributions
     add."""
-    return scatter('add', dim, output, index, input)
+    return output.scatter_add_(dim, index, input)
 
 
 def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
@@ -16,7 +18,7 @@ def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
 def scatter_sub_(output, index, input, dim=0):
     """If multiple indices reference the same location, their negated
     contributions add."""
-    return scatter('sub', dim, output, index, input)
+    return output.scatter_add_(dim, index, -input)
 
 
 def scatter_sub(index, input, dim=0, max_index=None, fill_value=0):

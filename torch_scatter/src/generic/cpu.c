@@ -2,22 +2,6 @@
 #define TH_GENERIC_FILE "generic/cpu.c"
 #else
 
-void scatter_(add)(int dim, THTensor *output, THLongTensor *index, THTensor *input) {
-  TH_TENSOR_DIM_APPLY3(real, output, int64_t, index, real, input, dim, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM,
-    for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
-      assertIndexInBoundaries(index_data[i], output_size, TH_TENSOR_DIM_APPLY_counter);
-      output_data[index_data[i]] += input_data[i];
-    })
-}
-
-void scatter_(sub)(int dim, THTensor *output, THLongTensor *index, THTensor *input) {
-  TH_TENSOR_DIM_APPLY3(real, output, int64_t, index, real, input, dim, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM,
-    for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
-      assertIndexInBoundaries(index_data[i], output_size, TH_TENSOR_DIM_APPLY_counter);
-      output_data[index_data[i]] -= input_data[i];
-    })
-}
-
 void scatter_(mul)(int dim, THTensor *output, THLongTensor *index, THTensor *input) {
   TH_TENSOR_DIM_APPLY3(real, output, int64_t, index, real, input, dim, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM,
     for (int64_t i = 0; i < THLongTensor_size(index, dim); i++) {
