@@ -7,6 +7,7 @@
 #define check TH_CONCAT_2(check_kernel_, Real)
 
 #define MAX_DIMS 25
+#define NUM_THREADS 32 * 16
 
 #include "generic/kernel.cu"
 #include "THCGenerateAllTypes.h"

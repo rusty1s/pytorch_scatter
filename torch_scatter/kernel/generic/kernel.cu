@@ -10,6 +10,9 @@ void check(THCState *state, THCTensor *output, THCudaLongTensor *index, THCTenso
 
 void scatter_(mul)(THCState *state, int dim, THCTensor *output, THCudaLongTensor *index, THCTensor *input) {
   check(state, output, index, input);
+
+  const ptrdiff_t n = THCudaLongTensor_nElement(state, index);
+  const dim3 block = dim3(NUM_THREADS);
   printf("mul");
 }
 
