@@ -3,6 +3,10 @@
 #else
 
 void scatter_(mul)(THCState *state, int dim, THCTensor *output, THCudaLongTensor *index, THCTensor *input) {
+  THCAssertSameGPU(THCTensor_(checkGPU)(state, 1, output, input));
+  THCAssertSameGPU(THCudaLongTensor_checkGPU(state, 2, index));
+  THArgCheck(THCTensor_(nDimension)(state, output) <= MAX_DIMS, 1, "Tensor too large or too many dimensions");
+
   printf("mul");
 }
 
