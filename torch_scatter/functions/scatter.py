@@ -38,11 +38,11 @@ def _scatter(name, dim, *data):
     return (data[0], data[3]) if has_arg_output(name) else data[0]
 
 
-def index_backward(dim, index, grad, grad_arg):
+def index_backward(dim, index, grad, arg_grad):
     typename = type(grad).__name__.replace('Tensor', '')
     func = getattr(ffi, 'index_backward_{}'.format(typename))
     output = grad.new(index.size()).fill_(0)
-    func(dim, output, index, grad, grad_arg)
+    func(dim, output, index, grad, arg_grad)
     return output
 
 
@@ -83,8 +83,8 @@ class _Scatter(Function):
             grad_input = data[0].gather(self.dim, index.data)
 
         if self.needs_input_grad[2] and has_arg_output(self.name):
-            index, grad_arg = self.saved_variables
-            data = (index.data, data[0], grad_arg.data)
+            index, arg_grad = self.saved_variables
+            data = (index.data, data[0], arg_grad.data)
             grad_input = index_backward(self.dim, *data)
 
         # Return and fill with empty grads for none-differentiable passed

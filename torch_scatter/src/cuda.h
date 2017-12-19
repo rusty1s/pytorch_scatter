@@ -14,13 +14,13 @@ void scatter_div_cuda_Short (int dim, THCudaShortTensor  *output, THCudaLongTens
 void scatter_div_cuda_Int   (int dim, THCudaIntTensor    *output, THCudaLongTensor *index, THCudaIntTensor    *input);
 void scatter_div_cuda_Long  (int dim, THCudaLongTensor   *output, THCudaLongTensor *index, THCudaLongTensor   *input);
 
-void scatter_mean_cuda_Float (int dim, THCudaTensor       *output, THCudaLongTensor *index, THCudaTensor       *input, THCudaTensor       *output_count);
-void scatter_mean_cuda_Double(int dim, THCudaDoubleTensor *output, THCudaLongTensor *index, THCudaDoubleTensor *input, THCudaDoubleTensor *output_count);
-void scatter_mean_cuda_Byte  (int dim, THCudaByteTensor   *output, THCudaLongTensor *index, THCudaByteTensor   *input, THCudaByteTensor   *output_count);
-void scatter_mean_cuda_Char  (int dim, THCudaCharTensor   *output, THCudaLongTensor *index, THCudaCharTensor   *input, THCudaCharTensor   *output_count);
-void scatter_mean_cuda_Short (int dim, THCudaShortTensor  *output, THCudaLongTensor *index, THCudaShortTensor  *input, THCudaShortTensor  *output_count);
-void scatter_mean_cuda_Int   (int dim, THCudaIntTensor    *output, THCudaLongTensor *index, THCudaIntTensor    *input, THCudaIntTensor    *output_count);
-void scatter_mean_cuda_Long  (int dim, THCudaLongTensor   *output, THCudaLongTensor *index, THCudaLongTensor   *input, THCudaLongTensor   *output_count);
+void scatter_mean_cuda_Float (int dim, THCudaTensor       *output, THCudaLongTensor *index, THCudaTensor       *input, THCudaTensor       *num_output);
+void scatter_mean_cuda_Double(int dim, THCudaDoubleTensor *output, THCudaLongTensor *index, THCudaDoubleTensor *input, THCudaDoubleTensor *num_output);
+void scatter_mean_cuda_Byte  (int dim, THCudaByteTensor   *output, THCudaLongTensor *index, THCudaByteTensor   *input, THCudaByteTensor   *num_output);
+void scatter_mean_cuda_Char  (int dim, THCudaCharTensor   *output, THCudaLongTensor *index, THCudaCharTensor   *input, THCudaCharTensor   *num_output);
+void scatter_mean_cuda_Short (int dim, THCudaShortTensor  *output, THCudaLongTensor *index, THCudaShortTensor  *input, THCudaShortTensor  *num_output);
+void scatter_mean_cuda_Int   (int dim, THCudaIntTensor    *output, THCudaLongTensor *index, THCudaIntTensor    *input, THCudaIntTensor    *num_output);
+void scatter_mean_cuda_Long  (int dim, THCudaLongTensor   *output, THCudaLongTensor *index, THCudaLongTensor   *input, THCudaLongTensor   *num_output);
 
 void scatter_max_cuda_Float (int dim, THCudaTensor       *output, THCudaLongTensor *index, THCudaTensor       *input, THCudaLongTensor *arg_output);
 void scatter_max_cuda_Double(int dim, THCudaDoubleTensor *output, THCudaLongTensor *index, THCudaDoubleTensor *input, THCudaLongTensor *arg_output);
