@@ -8,25 +8,25 @@ abs_path = 'torch_scatter'
 
 headers = ['torch_scatter/src/cpu.h']
 sources = ['torch_scatter/src/cpu.c']
-includes = ['torch_scatter/src']
-defines = []
+include_dirs = ['torch_scatter/src', 'torch_scatter/kernel']
+define_macros = []
 extra_objects = []
 with_cuda = False
 
 if torch.cuda.is_available():
     headers += ['torch_scatter/src/cuda.h']
     sources += ['torch_scatter/src/cuda.c']
-    defines += [('WITH_CUDA', None)]
+    define_macros += [('WITH_CUDA', None)]
+    extra_objects += ['torch_scatter/build/kernel.so']
     with_cuda = True
 
 ffi = create_extension(
     name='torch_scatter._ext.ffi',
     package=True,
-    verbose=True,
     headers=headers,
     sources=sources,
-    include_dirs=includes,
-    define_macros=defines,
+    include_dirs=include_dirs,
+    define_macros=define_macros,
     extra_objects=extra_objects,
     with_cuda=with_cuda,
     relative_to=__file__)
