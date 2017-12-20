@@ -58,29 +58,32 @@ struct AtomicMaxIntegerImpl<T, 4> {
 template<typename T>
 struct AtomicMaxIntegerImpl<T, 8> {
   inline __device__ void operator()(T *address, T val) {
-    unsigned long long * address_as_ui = (unsigned long long *) (address);
-    unsigned long long old = *address_as_ui;
-    unsigned long long newval;
-    unsigned long long assumed;
+    int *address_as_ull = (int*) (address);
+    int newval = *address_as_ull;
+    atomicMax(address_as_ull, newval);
+    /* unsigned long long newval; */
+    /* unsigned long long assumed; */
 
-    do {
-      assumed = old;
-      newval = val +  (T)old;
-      old = atomicCAS(address_as_ui, assumed, newval);
-    } while (assumed != old);
+    /* do { */
+    /*   assumed = old; */
+    /*   newval = val +  (T)old; */
+    /*   old = atomicCAS(address_as_ui, assumed, newval); */
+    /* } while (assumed != old); */
   }
 };
 
 static inline __device__ void atomicMax(uint8_t *address, uint8_t val) {}
 
-static inline  __device__ void atomicMax(int8_t *address, int8_t val) {}
+static inline __device__ void atomicMax(int8_t *address, int8_t val) {}
 
-static inline  __device__ void atomicMax(int16_t *address, int16_t val) {}
+static inline __device__ void atomicMax(int16_t *address, int16_t val) {}
 
-static inline __device__ void atomicMax(int64_t *address, int64_t val) {}
+static inline __device__ void atomicMax(int64_t *address, int64_t val) {
+  AtomicMaxIntegerImpl<int64_t, sizeof(int64_t)>()(address, val);
+}
 
 #ifdef CUDA_HALF_TENSOR
-static inline  __device__ void atomicMax(half *address, half val) {}
+static inline __device__ void atomicMax(half *address, half val) {}
 #endif
 
 static inline __device__ void atomicMax(float *address, float val) {
@@ -94,7 +97,7 @@ static inline __device__ void atomicMax(float *address, float val) {
   } while (assumed != old);
 }
 
-static inline  __device__  void atomicMax(double *address, double val) {
+static inline __device__  void atomicMax(double *address, double val) {
   unsigned long long int *address_as_ull = (unsigned long long int *) address;
   unsigned long long int old = *address_as_ull;
   unsigned long long int assumed;
