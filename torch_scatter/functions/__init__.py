@@ -16,8 +16,8 @@ def scatter_add_(output, index, input, dim=0):
     size :math:`(x_0, ..., x_{i-1}, y, x_{i+1}, ..., x_{n-1})`. Moreover, the
     values of :attr:`index` must be between `0` and `output.size(dim) - 1`.
 
-    For one-dimensional tensors, the formula is given by
-    :math:`output_i = output_i + \sum_j input_j` where sum is over
+    For one-dimensional tensors, the operation computes
+    :math:`output_i = output_i + \sum_j input_j`, where sum is over
     :math:`j` such that :math:`index_j = i`.
 
     Args:
