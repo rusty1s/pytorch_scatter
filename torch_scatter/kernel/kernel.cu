@@ -14,6 +14,34 @@
 #include "THCGenerateAllTypes.h"
 
 template<typename Real, int Dims>
+__global__ void mulKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, const int dim, const int n) {
+  KERNEL_LOOP(i, n) {
+    int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;;
+    IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
+    atomicMul(&output.data[outputOffset], input.data[inputOffset]);
+  }
+}
+
+template<typename Real, int Dims>
+__global__ void divKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, const int dim, const int n) {
+  KERNEL_LOOP(i, n) {
+    int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;;
+    IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
+    atomicDiv(&output.data[outputOffset], input.data[inputOffset]);
+  }
+}
+
+template<typename Real, int Dims>
+__global__ void meanKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, TensorInfo<Real> count, const int dim, const int n) {
+  KERNEL_LOOP(i, n) {
+    int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int countOffset = 0;
+    IndexToScatterOffsets4<Real, Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset, count, &countOffset);
+    atomicAdd(&output.data[outputOffset], input.data[inputOffset]);
+    atomicAdd(&count.data[countOffset], 1);
+  }
+}
+
+template<typename Real, int Dims>
 __global__ void maxKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, const int dim, const int n) {
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;;
