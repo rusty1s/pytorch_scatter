@@ -39,6 +39,23 @@ def scatter_add_(output, index, input, dim=0):
 
 
 def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
+    """Sums ap all values from the tensor :attr:`input` at the indices
+    specified in the :attr:`index` tensor along an given axis :attr:`dim`.
+    The output size is given by :attr:`max_index` and must be at least size
+    `index.max(dim) - 1`. If `max_index` is not given, a minimal sized output
+    tensor is returned. The output tensor is filled with :attr:`fill_value`
+    before scatter.
+
+    A more detailed explanation of the operation is described in
+    :meth:`~scatter_add_`.
+
+    Args:
+        index (LongTensor): The indices of elements to scatter
+        input (Tensor): The source tensor
+        dim (int): The axis along which to index
+        max_index (int): Output size at dimension :attr:`dim`
+        fill_value (int): Fill value of output before scatter
+    """
     output = gen_output(index, input, dim, max_index, fill_value)
     return scatter_add_(output, index, input, dim)
 
