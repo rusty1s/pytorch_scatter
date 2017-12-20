@@ -25,13 +25,23 @@ struct TensorInfo {
   for (int I = blockIdx.x * blockDim.x + threadIdx.x; I < N; i += blockDim.x * gridDim.x)
 
 /* #define KERNEL_RUN(NAME, DIMS, N, PARAMS) \ */
-#define KERNEL_RUN(NAME, DIMS, N, ...) \
-int grid = GET_BLOCKS(N); \
-cudaStream_t stream = THCState_getCurrentStream(state); \
-switch (DIMS) { \
-  case  1: NAME<real,  1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
-  case  2: NAME<real,  2><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
-  case  3: NAME<real,  3><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
-  default: NAME<real, -1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
-} \
-THCudaCheck(cudaGetLastError());
+#define KERNEL_RUN(NAME, DIMS, N, ...) { \
+  int grid = GET_BLOCKS(N); \
+  cudaStream_t stream = THCState_getCurrentStream(state); \
+  switch (DIMS) { \
+    case  1: NAME<real,  1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+    case  2: NAME<real,  2><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+    case  3: NAME<real,  3><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+    default: NAME<real, -1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+  } \
+  THCudaCheck(cudaGetLastError()); \
+}
+
+static inline __device__ bool eq(uint8_t a, uint8_t b) { return a == b; }
+static inline __device__ bool eq( int8_t a,  int8_t b) { return a == b; }
+static inline __device__ bool eq(int16_t a, int16_t b) { return a == b; }
+static inline __device__ bool eq(int32_t a, int32_t b) { return a == b; }
+static inline __device__ bool eq(int64_t a, int64_t b) { return a == b; }
+static inline __device__ bool eq(  float a,   float b) { return a == b; }
+static inline __device__ bool eq( double a,  double b) { return a == b; }
+static inline __device__ bool eq(half a, half b) { return __half2float(a) == __half2float(b); }

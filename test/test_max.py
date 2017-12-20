@@ -51,3 +51,4 @@ def test_scatter_cuda_max(str):
 
     _, arg_output = scatter_max_(output, index, input, dim=1)
     print(output)
+    print(arg_output)

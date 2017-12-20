@@ -14,12 +14,29 @@
 #include "THCGenerateAllTypes.h"
 
 template<typename Real, int Dims>
-__global__ void maxKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, TensorInfo<int64_t> arg, const int dim, const int n) {
+__global__ void maxKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, const int dim, const int n) {
+  KERNEL_LOOP(i, n) {
+    int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;;
+    IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
+    atomicMax(&output.data[outputOffset], input.data[inputOffset]);
+  }
+}
+
+template<typename Real, int Dims>
+__global__ void minKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, const int dim, const int n) {
+  KERNEL_LOOP(i, n) {
+    int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;;
+    IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
+    atomicMin(&output.data[outputOffset], input.data[inputOffset]);
+  }
+}
+
+template<typename Real, int Dims>
+__global__ void argKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, TensorInfo<int64_t> arg, const int dim, const int n) {
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int argOffset = 0;
     IndexToScatterOffsets4<Real, Real, int64_t, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset, arg, &argOffset);
-    atomicMax(&output.data[outputOffset], input.data[inputOffset]);
-    // TODO: Do something with arg.
+    if (eq(input.data[inputOffset], output.data[outputOffset])) arg.data[argOffset] = inputOffset % input.size[dim];
   }
 }
 
