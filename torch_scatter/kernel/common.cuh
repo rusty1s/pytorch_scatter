@@ -5,7 +5,7 @@ inline int GET_BLOCKS(const int n) {
   return (n + NUM_THREADS - 1) / NUM_THREADS;
 }
 
-template <typename T>
+template<typename T>
 struct TensorInfo {
   TensorInfo(T *t, int d, int sz[MAX_DIMS], int st[MAX_DIMS]) {
     data = t; dims = d;

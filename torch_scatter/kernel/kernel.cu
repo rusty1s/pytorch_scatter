@@ -13,7 +13,7 @@
 #include "generic/common.cu"
 #include "THCGenerateAllTypes.h"
 
-template <typename Real, int Dims>
+template<typename Real, int Dims>
 __global__ void maxKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, TensorInfo<Real> input, TensorInfo<int64_t> arg, const int dim, const int n) {
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int argOffset = 0;
