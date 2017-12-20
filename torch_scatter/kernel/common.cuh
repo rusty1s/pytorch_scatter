@@ -1,6 +1,3 @@
-#define KERNEL_LOOP(i, n) \
-  for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += blockDim.x * gridDim.x)
-
 const int MAX_DIMS = 25;
 const int NUM_THREADS = 1024;
 
@@ -23,3 +20,18 @@ struct TensorInfo {
   int size[MAX_DIMS];
   int stride[MAX_DIMS];
 };
+
+#define KERNEL_LOOP(I, N) \
+  for (int I = blockIdx.x * blockDim.x + threadIdx.x; I < N; i += blockDim.x * gridDim.x)
+
+/* #define KERNEL_RUN(NAME, DIMS, N, PARAMS) \ */
+#define KERNEL_RUN(NAME, DIMS, N, ...) \
+int grid = GET_BLOCKS(N); \
+cudaStream_t stream = THCState_getCurrentStream(state); \
+switch (DIMS) { \
+  case  1: NAME<real,  1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+  case  2: NAME<real,  2><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+  case  3: NAME<real,  3><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+  default: NAME<real, -1><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); break; \
+} \
+THCudaCheck(cudaGetLastError());
