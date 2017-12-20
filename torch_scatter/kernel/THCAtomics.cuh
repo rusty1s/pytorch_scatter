@@ -5,7 +5,7 @@ struct TH_CONCAT_3(Atomic, NAME, IntegerImpl); \
 template<typename T> \
 struct TH_CONCAT_3(Atomic, NAME, IntegerImpl)<T, 1> { \
   inline __device__ void operator()(T *address, T val) { \
-    uint32_t * address_as_ui = (uint32_t *) (address - ((size_t) address & 3)); \
+    uint32_t *address_as_ui = (uint32_t *) (address - ((size_t) address & 3)); \
     uint32_t old = *address_as_ui; \
     uint32_t shift = ((size_t) address & 3) * 8; \
     uint32_t res; \
@@ -23,7 +23,7 @@ struct TH_CONCAT_3(Atomic, NAME, IntegerImpl)<T, 1> { \
 template<typename T> \
 struct TH_CONCAT_3(Atomic, NAME, IntegerImpl)<T, 2> { \
   inline __device__ void operator()(T *address, T val) { \
-    uint32_t * address_as_ui = (uint32_t *) ((char *) address - ((size_t) address & 2)); \
+    uint32_t *address_as_ui = (uint32_t *) ((char *) address - ((size_t) address & 2)); \
     uint32_t old = *address_as_ui; \
     uint32_t res; \
     uint32_t newval; \
