@@ -98,6 +98,41 @@ struct AtomicDecimalImpl<T, 8> {
   }
 };
 
+static inline __device__ void atomicAdd(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomicAdd( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomicAdd(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomicAdd(int64_t *address, int64_t val) { AtomicIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 600 || CUDA_VERSION < 8000)
+static inline __device__ void atomicAdd( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
+#elif !defined(__CUDA_ARCH__) && (CUDA_VERSION < 8000)
+static inline __device__ void atomicAdd( double *address,  double val) {}
+#endif
+#ifdef CUDA_HALF_TENSOR
+static inline __device__ void atomicAdd(   half *address,    half val) {}
+#endif
+
+static inline __device__ void atomicMul(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomicMul( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomicMul(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomicMul(int32_t *address, int32_t val) { AtomicIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
+static inline __device__ void atomicMul(int64_t *address, int64_t val) { AtomicIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomicMul(  float *address,   float val) { AtomicDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomicMul( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
+#ifdef CUDA_HALF_TENSOR
+static inline __device__ void atomicMul(   half *address,    half val) {}
+#endif
+
+static inline __device__ void atomicDiv(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomicDiv( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomicDiv(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomicDiv(int32_t *address, int32_t val) { AtomicIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
+static inline __device__ void atomicDiv(int64_t *address, int64_t val) { AtomicIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomicDiv(  float *address,   float val) { AtomicDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomicDiv( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
+#ifdef CUDA_HALF_TENSOR
+static inline __device__ void atomicDiv(   half *address,    half val) {}
+#endif
+
 static inline __device__ void atomicMax(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
 static inline __device__ void atomicMax( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
 static inline __device__ void atomicMax(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
@@ -106,4 +141,14 @@ static inline __device__ void atomicMax(  float *address,   float val) { AtomicD
 static inline __device__ void atomicMax( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
 #ifdef CUDA_HALF_TENSOR
 static inline __device__ void atomicMax(   half *address,    half val) {}
+#endif
+
+static inline __device__ void atomicMin(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomicMin( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomicMin(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomicMin(int64_t *address, int64_t val) { AtomicIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomicMin(  float *address,   float val) { AtomicDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomicMin( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
+#ifdef CUDA_HALF_TENSOR
+static inline __device__ void atomicMin(   half *address,    half val) {}
 #endif
