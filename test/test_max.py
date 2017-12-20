@@ -37,7 +37,8 @@ def test_scatter_max(str):
     assert input.grad.data.tolist() == expected_grad_input
 
 
-@pytest.mark.parametrize('str', tensor_strs)
+# @pytest.mark.parametrize('str', tensor_strs)
+@pytest.mark.parametrize('str', ['FloatTensor'])
 def test_scatter_cuda_max(str):
     input = [[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]]
     index = [[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]]
