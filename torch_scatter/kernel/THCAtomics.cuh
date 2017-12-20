@@ -70,9 +70,9 @@ struct AtomicIntegerImpl<T, 8> {
 template <typename T, size_t n>
 struct AtomicDecimalImpl;
 
-template <>
-struct AtomicDecimalImpl<float, 4> {
-  inline __device__ void operator()(float *address, float val) {
+template <typename T>
+struct AtomicDecimalImpl<T, 4> {
+  inline __device__ void operator()(T *address, T val) {
     int *address_as_i = (int *) address;
     int old = *address_as_i;
     int assumed;
@@ -84,9 +84,9 @@ struct AtomicDecimalImpl<float, 4> {
   }
 };
 
-template <>
-struct AtomicDecimalImpl<double, 8> {
-  inline __device__ void operator()(double *address, double val) {
+template <typename T>
+struct AtomicDecimalImpl<T, 8> {
+  inline __device__ void operator()(T *address, T val) {
     unsigned long long int *address_as_ull = (unsigned long long int *) address;
     unsigned long long int old = *address_as_ull;
     unsigned long long int assumed;
@@ -99,11 +99,11 @@ struct AtomicDecimalImpl<double, 8> {
 };
 
 static inline __device__ void atomicMax(uint8_t *address, uint8_t val) { AtomicIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicMax(int8_t  *address, int8_t  val) { AtomicIntegerImpl<int8_t,  sizeof(int8_t) >()(address, val); }
+static inline __device__ void atomicMax( int8_t *address,  int8_t val) { AtomicIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
 static inline __device__ void atomicMax(int16_t *address, int16_t val) { AtomicIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
 static inline __device__ void atomicMax(int64_t *address, int64_t val) { AtomicIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
-static inline __device__ void atomicMax(float   *address, float   val) { AtomicDecimalImpl<float,   sizeof(float)  >()(address, val); }
-static inline __device__ void atomicMax(double  *address, double  val) { AtomicDecimalImpl<double,  sizeof(double) >()(address, val); }
+static inline __device__ void atomicMax(  float *address,   float val) { AtomicDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomicMax( double *address,  double val) { AtomicDecimalImpl< double, sizeof( double)>()(address, val); }
 #ifdef CUDA_HALF_TENSOR
-static inline __device__ void atomicMax(half    *address, half    val) {}
+static inline __device__ void atomicMax(   half *address,    half val) {}
 #endif
