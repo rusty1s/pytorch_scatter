@@ -1,1 +1,19 @@
 # PyTorch Scatter
+
+```sh
+pip install torch_scatter
+```
+
+```py
+from torch_scatter import scatter_max
+
+input = torch.Tensor([[2, 0, 1, 4, 3], [0,2, 1, 3, 4]])
+torch.LongTensor([[4, 5, 2, 3], [0, 0, 2, 2, 1]])
+
+max, arg = scatter_max_(index, input, dim=1)
+```
+
+## Features
+
+* CPU and Cuda implementation
+* Backward implementation
