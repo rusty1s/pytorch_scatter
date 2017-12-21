@@ -3,8 +3,8 @@ from .utils import gen_filled_tensor, gen_output
 
 
 def scatter_max_(output, index, input, dim=0):
-    """If multiple indices reference the same location, the maximal
-    contribution gets taken.
+    """If multiple indices reference the same location, their **contribution
+    maximize**.
 
     :rtype: (:class:`Tensor`, :class:`LongTensor`)
     """

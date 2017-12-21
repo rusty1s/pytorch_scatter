@@ -4,7 +4,7 @@ from .utils import gen_output
 
 def scatter_mul_(output, index, input, dim=0):
     """If multiple indices reference the same location, their
-    contributions multiply."""
+    **contributions multiply**."""
     return scatter('mul', dim, output, index, input)
 
 

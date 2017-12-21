@@ -4,7 +4,7 @@ from .utils import gen_filled_tensor, gen_output
 
 def scatter_mean_(output, index, input, dim=0):
     """If multiple indices reference the same location, their
-    contributions average."""
+    **contributions average**."""
     num_output = gen_filled_tensor(output, output.size(), fill_value=0)
     scatter('mean', dim, output, index, input, num_output)
     num_output[num_output == 0] = 1

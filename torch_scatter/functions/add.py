@@ -2,8 +2,8 @@ from .utils import gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    """Sums up all values from the tensor :attr:`input` into :attr:`output` at
-    the indices specified in the :attr:`index` tensor along an given axis
+    """Sums all values from the tensor :attr:`input` into :attr:`output` at the
+    indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimensions outside of :attr:`dim` and by
     the corresponding value in :attr:`index` for dimension :attr:`dim`. If
@@ -53,12 +53,12 @@ def scatter_add_(output, index, input, dim=0):
 
 
 def scatter_add(index, input, dim=0, size=None, fill_value=0):
-    """Sums ap all values from the tensor :attr:`input` at the indices
-    specified in the :attr:`index` tensor along an given axis :attr:`dim`.
-    The output size at dimension :attr:`dim` is given by :attr:`size` and must
-    be at least size `index.max(dim) - 1`. If :attr:`size` is not given, a
-    minimal sized output tensor is returned. The output tensor is prefilled
-    with the specified value from :attr:`fill_value`.
+    """Sums all values from the tensor :attr:`input` at the indices specified
+    in the :attr:`index` tensor along an given axis :attr:`dim`. The output
+    size at dimension :attr:`dim` is given by :attr:`size` and must be at least
+    size `index.max(dim) - 1`. If :attr:`size` is not given, a minimal sized
+    output tensor is returned. The output tensor is prefilled with the
+    specified value from :attr:`fill_value`.
 
     For one-dimensional tensors, the operation computes
 
