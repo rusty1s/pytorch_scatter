@@ -30,18 +30,32 @@ def scatter_add_(output, index, input, dim=0):
         input (Tensor): The source tensor
         dim (int, optional): The axis along which to index
 
-    Example::
+    .. testsetup::
 
-        >> input = torch.Tensor([[2, 0, 1, 4, 3], [0,2, 1, 3, 4]])
-        >> index = torch.LongTensor([[4, 5, 2, 3], [0, 0, 2, 2, 1]])
-        >> output = torch.zeros(2, 6)
-        >> scatter_add_(output, index, input, dim=1)
+        import torch
+        from torch_scatter import scatter_add_
+
+    .. testcode::
+
+        input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
+        output = torch.zeros(2, 6)
+        scatter_add_(output, index, input, dim=1)
+        print(output)
+
+    .. testoutput::
 
         0  0  4  3  3  0
         2  4  4  0  0  0
-        [torch.FloatTensor of size 2x6]
+       [torch.FloatTensor of size 2x6]
+
     """
     return output.scatter_add_(dim, index, input)
+    # .. testoutput::
+
+    #      0  0  4  3  3  0
+    #      2  4  4  0  0  0
+    #     [torch.FloatTensor of size 2x6]
 
 
 def scatter_add(index, input, dim=0, size=None, fill_value=0):

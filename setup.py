@@ -1,8 +1,9 @@
 from os import path as osp
 from setuptools import setup, find_packages
 
-import build  # noqa
 from torch_scatter import __version__
+
+import build  # noqa
 
 install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
