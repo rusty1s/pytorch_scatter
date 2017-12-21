@@ -54,7 +54,10 @@ def scatter_mean(index, input, dim=0, max_index=None, fill_value=0):
 
 def scatter_max_(output, index, input, dim=0):
     """If multiple indices reference the same location, the maximal
-    contribution gets taken."""
+    contribution gets taken.
+
+    :rtype: (:class:`Tensor`, :class:`LongTensor`)
+    """
     arg_output = gen_filled_tensor(index, output.size(), fill_value=-1)
     return scatter('max', dim, output, index, input, arg_output)
 

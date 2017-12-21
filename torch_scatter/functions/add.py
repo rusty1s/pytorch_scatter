@@ -2,9 +2,7 @@ from .utils import gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    """ -> Tensor
-
-    Sums up all values from the tensor :attr:`input` into :attr:`output` at
+    """Sums up all values from the tensor :attr:`input` into :attr:`output` at
     the indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimensions outside of :attr:`dim` and by
@@ -30,6 +28,8 @@ def scatter_add_(output, index, input, dim=0):
         input (Tensor): The source tensor
         dim (int, optional): The axis along which to index
 
+    :rtype: :class:`Tensor`
+
     .. testsetup::
 
         import torch
@@ -53,9 +53,7 @@ def scatter_add_(output, index, input, dim=0):
 
 
 def scatter_add(index, input, dim=0, size=None, fill_value=0):
-    """ -> Tensor
-
-    Sums ap all values from the tensor :attr:`input` at the indices
+    """Sums ap all values from the tensor :attr:`input` at the indices
     specified in the :attr:`index` tensor along an given axis :attr:`dim`.
     The output size at dimension :attr:`dim` is given by :attr:`size` and must
     be at least size `index.max(dim) - 1`. If :attr:`size` is not given, a
@@ -78,6 +76,8 @@ def scatter_add(index, input, dim=0, size=None, fill_value=0):
         dim (int, optional): The axis along which to index
         size (int, optional): Output size at dimension :attr:`dim`
         fill_value (int, optional): Initial filling of output tensor
+
+    :rtype: :class:`Tensor`
 
     .. testsetup::
 
