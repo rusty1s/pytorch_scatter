@@ -49,6 +49,12 @@ def test_scatter_cuda_max(str):
 
     output, index, input = output.cuda(), index.cuda(), input.cuda()
     _, arg_output = scatter_max_(output, index, input, dim=1)
+    assert output.cpu().tolist() == expected_output
+    assert arg_output.cpu().tolist() == expected_arg_output
+
+    output, arg_output = scatter_max(index, input, dim=1)
+    assert output.cpu().tolist() == expected_output
+    assert arg_output.cpu().tolist() == expected_arg_output
 
     output = Variable(output).fill_(0)
     index = Variable(index)
@@ -60,7 +66,4 @@ def test_scatter_cuda_max(str):
     expected_grad_input = [[50, 60, 0, 30, 40], [0, 15, 0, 35, 25]]
 
     output.backward(grad_output)
-    print(input.grad.data)
-    # print(input)
-
-    # assert input.grad.data.tolist() == expected_grad_input
+    assert input.grad.data.cpu().tolist() == expected_grad_input
