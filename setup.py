@@ -18,8 +18,6 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    docs_require=docs_require,
     packages=find_packages(exclude=['build']),
     ext_package='',
-    cffi_modules=[osp.join(osp.dirname(__file__), 'build.py:ffi')],
-)
+    cffi_modules=[osp.join(osp.dirname(__file__), 'build.py:ffi')], )
