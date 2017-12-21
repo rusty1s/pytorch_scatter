@@ -2,6 +2,7 @@ from os import path as osp
 from setuptools import setup, find_packages
 
 import build  # noqa
+from torch_scatter import __version__
 
 install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
@@ -10,7 +11,7 @@ docs_require = ['Sphinx', 'sphinx_rtd_theme']
 
 setup(
     name='torch_scatter',
-    version='0.1',
+    version=__version__,
     description='PyTorch extension for various scatter methods',
     url='https://github.com/rusty1s/pytorch_scatter',
     author='Matthias Fey',

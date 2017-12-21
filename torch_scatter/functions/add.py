@@ -9,7 +9,7 @@ def scatter_add_(output, index, input, dim=0):
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimensions outside of :attr:`dim` and by
     the corresponding value in :attr:`index` for dimension :attr:`dim`. If
-    multiple indices reference the same location, their contributions add.
+    multiple indices reference the same location, their **contributions add**.
 
     If :attr:`input` and :attr:`index` are n-dimensional tensors with size
     :math:`(x_0, ..., x_{i-1}, x_i, x_{i+1}, ..., x_{n-1})` and
