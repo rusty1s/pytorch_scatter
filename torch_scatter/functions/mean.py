@@ -12,6 +12,6 @@ def scatter_mean_(output, index, input, dim=0):
     return output
 
 
-def scatter_mean(index, input, dim=0, max_index=None, fill_value=0):
-    output = gen_output(index, input, dim, max_index, fill_value)
+def scatter_mean(index, input, dim=0, size=None, fill_value=0):
+    output = gen_output(index, input, dim, size, fill_value)
     return scatter_mean_(output, index, input, dim)

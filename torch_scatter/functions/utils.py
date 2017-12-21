@@ -9,8 +9,11 @@ def gen_filled_tensor(input, size, fill_value):
         return Variable(input.data.new(size).fill_(fill_value))
 
 
-def gen_output(index, input, dim, max_index, fill_value):
-    max_index = index.max() + 1 if max_index is None else max_index
+def gen_output(index, input, dim, dim_size, fill_value):
+    if dim_size is None:
+        dim_size = index.max() + 1
+        dim_size = dim.size if torch.is_tensor(input) else dim_size.data[0]
+
     size = list(index.size())
-    size[dim] = max_index if torch.is_tensor(input) else max_index.data[0]
+    size[dim] = dim_size
     return gen_filled_tensor(input, torch.Size(size), fill_value)

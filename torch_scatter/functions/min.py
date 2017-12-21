@@ -9,6 +9,6 @@ def scatter_min_(output, index, input, dim=0):
     return scatter('min', dim, output, index, input, arg_output)
 
 
-def scatter_min(index, input, dim=0, max_index=None, fill_value=0):
-    output = gen_output(index, input, dim, max_index, fill_value)
+def scatter_min(index, input, dim=0, size=None, fill_value=0):
+    output = gen_output(index, input, dim, size, fill_value)
     return scatter_min_(output, index, input, dim)

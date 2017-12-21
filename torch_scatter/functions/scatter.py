@@ -39,12 +39,12 @@ def _scatter(name, dim, *data):
     return (data[0], data[3]) if has_arg_output(name) else data[0]
 
 
-def index_backward(dim, index, grad, arg_grad):
+def index_backward(dim, index, grad, arg):
     typename = type(grad).__name__.replace('Tensor', '')
     cuda = 'cuda_' if grad.is_cuda else ''
     func = getattr(ffi, 'index_backward_{}{}'.format(cuda, typename))
     output = grad.new(index.size()).fill_(0)
-    func(dim, output, index, grad, arg_grad)
+    func(dim, output, index, grad, arg)
     return output
 
 

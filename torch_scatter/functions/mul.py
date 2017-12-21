@@ -8,6 +8,6 @@ def scatter_mul_(output, index, input, dim=0):
     return scatter('mul', dim, output, index, input)
 
 
-def scatter_mul(index, input, dim=0, max_index=None, fill_value=1):
-    output = gen_output(index, input, dim, max_index, fill_value)
+def scatter_mul(index, input, dim=0, size=None, fill_value=1):
+    output = gen_output(index, input, dim, size, fill_value)
     return scatter_mul_(output, index, input, dim)
