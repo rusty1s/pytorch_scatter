@@ -6,7 +6,9 @@ PyTorch Scatter documentation
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: PackageReference
+   :caption: Package reference
+
+   functions/*
 
 Indices and tables
 ==================
