@@ -3,7 +3,9 @@ from .utils import gen_filled_tensor, gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    """Sums up all values from the tensor :attr:`input` into :attr:`output` at
+    """ -> Tensor
+
+    Sums up all values from the tensor :attr:`input` into :attr:`output` at
     the indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimension != :attr:`dim` and by the
@@ -24,7 +26,7 @@ def scatter_add_(output, index, input, dim=0):
         output (Tensor): The destination tensor
         index (LongTensor): The indices of elements to scatter
         input (Tensor): The source tensor
-        dim (int): The axis along which to index
+        dim (int, optional): The axis along which to index
 
     Example::
         >> input = torch.Tensor([[2, 0, 1, 4, 3], [0,2, 1, 3, 4]])
@@ -38,25 +40,30 @@ def scatter_add_(output, index, input, dim=0):
     return output.scatter_add_(dim, index, input)
 
 
-def scatter_add(index, input, dim=0, max_index=None, fill_value=0):
-    """Sums ap all values from the tensor :attr:`input` at the indices
-    specified in the :attr:`index` tensor along an given axis :attr:`dim`.
-    The output size is given by :attr:`max_index` and must be at least size
-    `index.max(dim) - 1`. If `max_index` is not given, a minimal sized output
-    tensor is returned. The output tensor is filled with :attr:`fill_value`
-    before scatter.
+def scatter_add(index, input, dim=0, size=None, fill_value=0):
+    """ -> Tensor
 
-    A more detailed explanation of the operation is described in
-    :meth:`~scatter_add_`.
+    Sums ap all values from the tensor :attr:`input` at the indices
+    specified in the :attr:`index` tensor along an given axis :attr:`dim`.
+    The output size at dimension :attr:`dim` is given by :attr:`size` and must
+    be at least size `index.max(dim) - 1`. If :attr:`size` is not given, a
+    minimal sized output tensor is returned. The output tensor is initially
+    filled with the specified value at :attr:`fill_value`.
+
+    For one-dimensional tensors, the operation computes
+    :math:`output_i = fill_value + \sum_j input_j`, where sum is over
+    :math:`j` such that :math:`index_j = i`.
+
+    A more detailed explanation is described in :meth:`~scatter_add_`.
 
     Args:
         index (LongTensor): The indices of elements to scatter
         input (Tensor): The source tensor
-        dim (int): The axis along which to index
-        max_index (int): Output size at dimension :attr:`dim`
-        fill_value (int): Fill value of output before scatter
+        dim (int, optional): The axis along which to index
+        size (int, optional): Output size at dimension :attr:`dim`
+        fill_value (int, optional): Initial filling of output tensor
     """
-    output = gen_output(index, input, dim, max_index, fill_value)
+    output = gen_output(index, input, dim, size, fill_value)
     return scatter_add_(output, index, input, dim)
 
 
