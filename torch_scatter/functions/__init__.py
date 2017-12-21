@@ -12,8 +12,8 @@ def scatter_add_(output, index, input, dim=0):
     corresponding value in :attr:`index` for dimension = :attr:`dim`. If
     multiple indices reference the same location, their contributions add.
 
-    If :attr:`input` and :attr:`index` are n-dimensional tensors with equal
-    size :math:`(x_0, ..., x_{i-1}, x_i, x_{i+1}, ..., x_{n-1})` and
+    If :attr:`input` and :attr:`index` are n-dimensional tensors with size
+    :math:`(x_0, ..., x_{i-1}, x_i, x_{i+1}, ..., x_{n-1})` and
     :attr:`dim` = i, then :attr:`output` must be an n-dimensional tensor with
     size :math:`(x_0, ..., x_{i-1}, y, x_{i+1}, ..., x_{n-1})`. Moreover, the
     values of :attr:`index` must be between `0` and `output.size(dim) - 1`.
