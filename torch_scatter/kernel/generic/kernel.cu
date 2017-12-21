@@ -64,7 +64,14 @@ void scatter_(min)(THCState *state, int dim, THCTensor *output, THCudaLongTensor
 
 void index_backward(THCState *state, int dim, THCTensor *output, THCudaLongTensor *index, THCTensor *grad, THCudaLongTensor *arg) {
   thc_(check)(state, output, index, grad);
-  printf("index_backward");
+
+  const int n = THCudaLongTensor_nElement(state, index);
+  TensorInfo<real> outputInfo = thc_(getTensorInfo)(state, output);
+  TensorInfo<int64_t> indexInfo = thc_getTensorInfo_Long(state, index);
+  TensorInfo<real> gradInfo = thc_(getTensorInfo)(state, grad);
+  TensorInfo<int64_t> argInfo = thc_getTensorInfo_Long(state, arg);
+
+  KERNEL_RUN(indexBackwardKernel, indexInfo.dims, n, outputInfo, indexInfo, gradInfo, argInfo, dim)
 }
 
 #endif
