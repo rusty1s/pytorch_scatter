@@ -12,7 +12,7 @@ def gen_filled_tensor(input, size, fill_value):
 def gen_output(index, input, dim, dim_size, fill_value):
     if dim_size is None:
         dim_size = index.max() + 1
-        dim_size = dim.size if torch.is_tensor(input) else dim_size.data[0]
+        dim_size = dim_size if torch.is_tensor(input) else dim_size.data[0]
 
     size = list(index.size())
     size[dim] = dim_size
