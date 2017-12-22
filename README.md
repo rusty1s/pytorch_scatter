@@ -6,9 +6,21 @@
 
 --------------------------------------------------------------------------------
 
+* `scatter_add`
+* `scatter_sub`
+* `scatter_mul`
+* `scatter_div`
+* `scatter_mean`
+* `scatter_min`
+* `scatter_max`
+
+## Installation
+
 ```sh
-pip install torch_scatter
+python setup.py install
 ```
+
+## Usage
 
 ```py
 from torch_scatter import scatter_max
@@ -29,4 +41,10 @@ print(argmax)
 -1 -1  3  4  0  1
  1  4  3 -1 -1 -1
 [torch.LongTensor of size 2x6]
+```
+
+## Running tests
+
+```sh
+python setup.py test
 ```
