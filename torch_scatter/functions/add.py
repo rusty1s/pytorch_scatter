@@ -2,7 +2,13 @@ from .utils import gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    r"""Sums all values from the :attr:`input` tensor into :attr:`output` at the
+    r"""
+    .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
+            master/docs/source/_figures/add.svg?sanitize=true
+        :align: center
+        :width: 400px
+
+    Sums all values from the :attr:`input` tensor into :attr:`output` at the
     indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimensions outside of :attr:`dim` and by
