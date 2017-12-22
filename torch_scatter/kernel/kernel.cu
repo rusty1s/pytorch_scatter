@@ -1,4 +1,4 @@
-#include <THC/THC.h>
+#include <THC.h>
 
 #include "kernel.h"
 
