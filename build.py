@@ -1,4 +1,4 @@
-# import subprocess
+import subprocess
 
 import torch
 from torch.utils.ffi import create_extension
@@ -11,7 +11,7 @@ extra_objects = []
 with_cuda = False
 
 if torch.cuda.is_available():
-    # subprocess.call('./build.sh')  # Compile kernel.
+    subprocess.call('./build.sh')  # Compile kernel.
 
     headers += ['torch_scatter/src/cuda.h']
     sources += ['torch_scatter/src/cuda.c']
