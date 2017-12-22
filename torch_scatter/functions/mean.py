@@ -44,10 +44,10 @@ def scatter_mean_(output, index, input, dim=0):
         1.0000  4.0000  2.0000  0.0000  0.0000  0.0000
        [torch.FloatTensor of size 2x6]
     """
-    num_output = gen_filled_tensor(output, output.size(), fill_value=0)
-    scatter('mean', dim, output, index, input, num_output)
-    num_output[num_output == 0] = 1
-    output /= num_output
+    count = gen_filled_tensor(output, output.size(), fill_value=0)
+    scatter('mean', dim, output, index, input, count)
+    count[count == 0] = 1
+    output /= count
     return output
 
 

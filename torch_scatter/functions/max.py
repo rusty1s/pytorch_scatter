@@ -50,8 +50,8 @@ def scatter_max_(output, index, input, dim=0):
        [torch.LongTensor of size 2x6]
        )
     """
-    arg_output = gen_filled_tensor(index, output.size(), fill_value=-1)
-    return scatter('max', dim, output, index, input, arg_output)
+    arg = gen_filled_tensor(index, output.size(), fill_value=-1)
+    return scatter('max', dim, output, index, input, arg)
 
 
 def scatter_max(index, input, dim=0, size=None, fill_value=0):
