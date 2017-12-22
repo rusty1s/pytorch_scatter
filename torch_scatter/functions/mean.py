@@ -11,11 +11,11 @@ def scatter_mean_(output, index, input, dim=0):
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{output}_i = \mathrm{output}_i + \frac{1}{N_j} \cdot
+        \mathrm{output}_i = \mathrm{output}_i + \frac{1}{N_i} \cdot
         \sum_j \mathrm{input}_j
 
     where sum is over :math:`j` such that :math:`\mathrm{index}_j = i` and
-    :math:`N_j` indicates the number of indices referecing :math:`j`.
+    :math:`N_i` indicates the number of indices referencing :math:`i`.
 
     Args:
         output (Tensor): The destination tensor
@@ -60,11 +60,11 @@ def scatter_mean(index, input, dim=0, size=None, fill_value=0):
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{output}_i = \mathrm{fill\_value} + \frac{1}{N_j} \cdot
+        \mathrm{output}_i = \mathrm{fill\_value} + \frac{1}{N_i} \cdot
         \sum_j \mathrm{input}_j
 
     where sum is over :math:`j` such that :math:`\mathrm{index}_j = i` and
-    :math:`N_j` indicates the number of indices referecing :math:`j`.
+    :math:`N_i` indicates the number of indices referencing :math:`i`.
 
     Args:
         index (LongTensor): The indices of elements to scatter
