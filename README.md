@@ -1,5 +1,11 @@
 # PyTorch Scatter
 
+<p align="center">
+  <img width="80%" src="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/add.svg?sanitize=true" />
+</p>
+
+--------------------------------------------------------------------------------
+
 ```sh
 pip install torch_scatter
 ```
