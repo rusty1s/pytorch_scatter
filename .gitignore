@@ -7,3 +7,6 @@ dist/
 .ipynb_checkpoints/
 *.egg-info/
 *.so
+*.aux
+*.log
+*.pdf
