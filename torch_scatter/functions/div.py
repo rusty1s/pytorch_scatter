@@ -14,7 +14,7 @@ def scatter_div_(output, index, input, dim=0):
         \mathrm{output}_i = \mathrm{output}_i \cdot \prod_j
         \frac{1}{\mathrm{input}_j}
 
-    where sum is over :math:`j` such that :math:`\mathrm{index}_j = i`.
+    where prod is over :math:`j` such that :math:`\mathrm{index}_j = i`.
 
     Args:
         output (Tensor): The destination tensor

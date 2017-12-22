@@ -56,7 +56,7 @@ def scatter_mul(index, input, dim=0, size=None, fill_value=1):
     .. math::
         \mathrm{output}_i = \mathrm{fill\_value} \cdot \prod_j \mathrm{input}_j
 
-    where sum is over :math:`j` such that :math:`\mathrm{index}_j = i`.
+    where prod is over :math:`j` such that :math:`\mathrm{index}_j = i`.
 
     Args:
         index (LongTensor): The indices of elements to scatter
