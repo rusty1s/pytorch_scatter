@@ -1,80 +1,20 @@
-\documentclass[class=minimal, border=5pt]{standalone}
+\documentclass[class=minimal]{standalone}
 
-\usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
+
+\def\index{{0, 0, 1, 0, 2, 2, 3, 3}}
+\def\input{{5, 1, 7, 2, 3, 2, 1, 3}}
+\def\output{{8, 7, 5, 4}}
+\def\color{{"cyan", "orange", "olive", "magenta"}}
+\def\numberInputs{7}
+\def\numberOutputs{3}
+\def\operation{+}
 
 \newcommand{\tiny}[1]{\scalebox{0.45}{#1}}
 
 \begin{document}
 
-\begin{tikzpicture}
-
-\tikzstyle{title}=[text width=1.1cm, inner sep=0pt]
-\tikzstyle{square}=[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, inner sep=0pt, fill opacity=0.5, text opacity=1]
-\tikzstyle{color1}=[fill=cyan]
-\tikzstyle{color2}=[fill=orange]
-\tikzstyle{color3}=[fill=olive]
-\tikzstyle{color4}=[fill=magenta]
-\tikzstyle{op}=[ellipse, draw, inner sep=-1pt, minimum height=8pt, minimum width=8pt]
-\tikzstyle{edge1}=[->]
-\tikzstyle{edge2}=[out=-90, in=90, looseness=0.85]
-
-\node[title] at (-0.8, 2.2) {index};
-\node[title] at (-0.8, 1.5) {input};
-\node[title] at (-0.8, 0.0) {output};
-
-\node[square] (index1) at (0.0, 2.2) {$0$};
-\node[square] (index2) at (0.5, 2.2) {$0$};
-\node[square] (index3) at (1.0, 2.2) {$1$};
-\node[square] (index4) at (1.5, 2.2) {$0$};
-\node[square] (index5) at (2.0, 2.2) {$2$};
-\node[square] (index6) at (2.5, 2.2) {$2$};
-\node[square] (index7) at (3.0, 2.2) {$3$};
-\node[square] (index8) at (3.5, 2.2) {$3$};
-
-\node[square, color1] (input1) at (0.0, 1.5) {$5$};
-\node[square, color1] (input2) at (0.5, 1.5) {$1$};
-\node[square, color2] (input3) at (1.0, 1.5) {$7$};
-\node[square, color1] (input4) at (1.5, 1.5) {$2$};
-\node[square, color3] (input5) at (2.0, 1.5) {$3$};
-\node[square, color3] (input6) at (2.5, 1.5) {$2$};
-\node[square, color4] (input7) at (3.0, 1.5) {$1$};
-\node[square, color4] (input8) at (3.5, 1.5) {$3$};
-
-\node[op] (op1) at (1.0, 0.6) {\tiny{+}};
-\node[op] (op2) at (1.5, 0.6) {\tiny{+}};
-\node[op] (op3) at (2.0, 0.6) {\tiny{+}};
-\node[op] (op4) at (2.5, 0.6) {\tiny{+}};
-
-\node[square, color1] (output1) at (1.0, 0.0) {$8$};
-\node[square, color2] (output2) at (1.5, 0.0) {$7$};
-\node[square, color3] (output3) at (2.0, 0.0) {$5$};
-\node[square, color4] (output4) at (2.5, 0.0) {$4$};
-
-\draw[edge1] (index1) -- (input1);
-\draw[edge1] (index2) -- (input2);
-\draw[edge1] (index3) -- (input3);
-\draw[edge1] (index4) -- (input4);
-\draw[edge1] (index5) -- (input5);
-\draw[edge1] (index6) -- (input6);
-\draw[edge1] (index7) -- (input7);
-\draw[edge1] (index8) -- (input8);
-
-\draw[edge1] (input1) to[edge2] (op1);
-\draw[edge1] (input2) to[edge2] (op1);
-\draw[edge1] (input3) to[edge2] (op2);
-\draw[edge1] (input4) to[edge2] (op1);
-\draw[edge1] (input5) to[edge2] (op3);
-\draw[edge1] (input6) to[edge2] (op3);
-\draw[edge1] (input7) to[edge2] (op4);
-\draw[edge1] (input8) to[edge2] (op4);
-
-\draw[edge1] (op1) -- (output1);
-\draw[edge1] (op2) -- (output2);
-\draw[edge1] (op3) -- (output3);
-\draw[edge1] (op4) -- (output4);
-
-\end{tikzpicture}
+\input{template}
 
 \end{document}

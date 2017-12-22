@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+
+\tikzstyle{title}=[text width=1.1cm, inner sep=0pt]
+\tikzstyle{square}=[rectangle, draw, minimum width=0.5cm, minimum height=0.5cm, inner sep=0pt, fill opacity=0.5, text opacity=1]
+\tikzstyle{op}=[ellipse, draw, inner sep=-1pt, minimum height=8pt, minimum width=8pt]
+\tikzstyle{edge1}=[->]
+\tikzstyle{edge2}=[out=-90, in=90, looseness=0.85]
+
+\node[title] at (-0.8, 2.2) {index};
+\node[title] at (-0.8, 1.5) {input};
+\foreach \i in {0,...,\numberInputs} {
+  \pgfmathparse{\index[\i]}\let\idx\pgfmathresult
+  \pgfmathparse{\input[\i]}\let\in\pgfmathresult
+  \pgfmathparse{\color[\idx]}\let\co\pgfmathresult
+  \node[square] (index\i) at (\i * 0.5, 2.2) {\idx};
+  \node[square, fill=\co] (input\i) at (\i * 0.5, 1.5) {\in};
+  \draw[edge1] (index\i) -- (input\i);
+}
+
+\node[title] at (-0.8, 0.0) {output};
+\foreach \i in {0,...,\numberOutputs} {
+  \pgfmathparse{\output[\i]}\let\out\pgfmathresult
+  \pgfmathparse{\color[\i]}\let\co\pgfmathresult
+  \def \x{(\numberInputs - \numberOutputs) * 0.25 + \i * 0.5}
+  \node[op] (op\i) at ({\x}, 0.6) {\tiny{\operation}};
+  \node[square, fill=\co] (output\i) at ({\x}, 0.0) {\out};
+  \draw[edge1] (op\i) -- (output\i);
+}
+
+\foreach \i in {0,...,\numberInputs} {
+  \pgfmathparse{\index[\i]}\let\idx\pgfmathresult
+  \draw[edge1] (input\i) to[edge2] (op\idx);
+}
+
+\end{tikzpicture}
