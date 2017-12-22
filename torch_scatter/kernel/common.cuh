@@ -24,7 +24,6 @@ struct TensorInfo {
 #define KERNEL_LOOP(I, N) \
   for (int I = blockIdx.x * blockDim.x + threadIdx.x; I < N; i += blockDim.x * gridDim.x)
 
-/* #define KERNEL_RUN(NAME, DIMS, N, PARAMS) \ */
 #define KERNEL_RUN(NAME, DIMS, N, ...) { \
   int grid = GET_BLOCKS(N); \
   cudaStream_t stream = THCState_getCurrentStream(state); \
@@ -44,4 +43,6 @@ static inline __device__ bool eq(int32_t a, int32_t b) { return a == b; }
 static inline __device__ bool eq(int64_t a, int64_t b) { return a == b; }
 static inline __device__ bool eq(  float a,   float b) { return a == b; }
 static inline __device__ bool eq( double a,  double b) { return a == b; }
+#ifdef CUDA_HALF_TENSOR
 static inline __device__ bool eq(half a, half b) { return __half2float(a) == __half2float(b); }
+#endif
