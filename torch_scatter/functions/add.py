@@ -2,7 +2,7 @@ from .utils import gen_output
 
 
 def scatter_add_(output, index, input, dim=0):
-    """Sums all values from the :attr:`input` tensor into :attr:`output` at the
+    r"""Sums all values from the :attr:`input` tensor into :attr:`output` at the
     indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. For each value in :attr:`input`, its output index is specified
     by its index in :attr:`input` for dimensions outside of :attr:`dim` and by
@@ -37,7 +37,7 @@ def scatter_add_(output, index, input, dim=0):
     .. testcode::
 
         from torch_scatter import scatter_add_
-        input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        input =     torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         output = torch.zeros(2, 6)
         scatter_add_(output, index, input, dim=1)
@@ -53,7 +53,7 @@ def scatter_add_(output, index, input, dim=0):
 
 
 def scatter_add(index, input, dim=0, size=None, fill_value=0):
-    """Sums all values from the :attr:`input` tensor at the indices specified
+    r"""Sums all values from the :attr:`input` tensor at the indices specified
     in the :attr:`index` tensor along an given axis :attr:`dim` (`cf.`
     :meth:`~torch_scatter.scatter_add_`).
 
@@ -85,7 +85,7 @@ def scatter_add(index, input, dim=0, size=None, fill_value=0):
     .. testcode::
 
         from torch_scatter import scatter_add
-        input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        input =     torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         output = scatter_add(index, input, dim=1)
         print(output)

@@ -2,7 +2,7 @@ from .utils import gen_output
 
 
 def scatter_sub_(output, index, input, dim=0):
-    """Subtracts all values from the :attr:`input` tensor into :attr:`output`
+    r"""Subtracts all values from the :attr:`input` tensor into :attr:`output`
     at the indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. If multiple indices reference the same location, their
     **negated contributions add** (`cf.` :meth:`~torch_scatter.scatter_add_`).
@@ -29,7 +29,7 @@ def scatter_sub_(output, index, input, dim=0):
     .. testcode::
 
         from torch_scatter import scatter_sub_
-        input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        input =     torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         output = torch.zeros(2, 6)
         scatter_sub_(output, index, input, dim=1)
@@ -38,14 +38,14 @@ def scatter_sub_(output, index, input, dim=0):
     .. testoutput::
 
         0  0 -4 -3 -3  0
-       -2 -4 -4 -0  0  0
+       -2 -4 -4  0  0  0
        [torch.FloatTensor of size 2x6]
     """
     return output.scatter_add_(dim, index, -input)
 
 
 def scatter_sub(index, input, dim=0, size=None, fill_value=0):
-    """Subtracts all values from the :attr:`input` tensor at the indices
+    r"""Subtracts all values from the :attr:`input` tensor at the indices
     specified in the :attr:`index` tensor along an given axis :attr:`dim`
     (`cf.` :meth:`~torch_scatter.scatter_sub_` and
     :meth:`~torch_scatter.scatter_add`).
@@ -73,7 +73,7 @@ def scatter_sub(index, input, dim=0, size=None, fill_value=0):
     .. testcode::
 
         from torch_scatter import scatter_sub
-        input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        input =     torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         output = scatter_sub(index, input, dim=1)
         print(output)
