@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
-pdflatex add.tex
-pdf2svg add.pdf add.svg
+files=(add sub mul div mean max min)
+
+for name in "${files[@]}"; do
+  pdflatex "$name"
+  pdf2svg "$name.pdf" "$name.svg"
+done
