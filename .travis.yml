@@ -16,6 +16,7 @@ install:
 script:
   - pycodestyle .
   - flake8 .
+  - python build.py
   - python setup.py install
   - python setup.py test
 notifications:
