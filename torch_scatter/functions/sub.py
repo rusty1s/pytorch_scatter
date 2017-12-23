@@ -2,8 +2,18 @@ from .utils import gen_output
 
 
 def scatter_sub_(output, index, input, dim=0):
-    r"""Subtracts all values from the :attr:`input` tensor into :attr:`output`
-    at the indices specified in the :attr:`index` tensor along an given axis
+    r"""
+    |
+
+    .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
+            master/docs/source/_figures/sub.svg?sanitize=true
+        :align: center
+        :width: 400px
+
+    |
+
+    Subtracts all values from the :attr:`input` tensor into :attr:`output` at
+    the indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. If multiple indices reference the same location, their
     **negated contributions add** (`cf.` :meth:`~torch_scatter.scatter_add_`).
 

@@ -3,8 +3,18 @@ from .utils import gen_filled_tensor, gen_output
 
 
 def scatter_max_(output, index, input, dim=0):
-    r"""Maximizes all values from the :attr:`input` tensor into :attr:`output`
-    at the indices specified in the :attr:`index` tensor along an given axis
+    r"""
+    |
+
+    .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
+            master/docs/source/_figures/max.svg?sanitize=true
+        :align: center
+        :width: 400px
+
+    |
+
+    Maximizes all values from the :attr:`input` tensor into :attr:`output` at
+    the indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`. If multiple indices reference the same location, their
     **contributions maximize** (`cf.` :meth:`~torch_scatter.scatter_add_`).
     The second return value is the index location in :attr:`input` of each
