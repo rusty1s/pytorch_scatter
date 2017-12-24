@@ -6,6 +6,11 @@
 
 --------------------------------------------------------------------------------
 
+[![Build Status][build-image]][build-url]
+
+[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
+[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+
 * `scatter_add`
 * `scatter_sub`
 * `scatter_mul`
