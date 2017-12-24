@@ -1,15 +1,13 @@
-# PyTorch Scatter
+[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
+[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+
+# PyTorch Scatter [![Build Status][build-image]][build-url]
 
 <p align="center">
   <img width="50%" src="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/add.svg?sanitize=true" />
 </p>
 
 --------------------------------------------------------------------------------
-
-[![Build Status][build-image]][build-url]
-
-[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
-[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
 
 * `scatter_add`
 * `scatter_sub`
