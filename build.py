@@ -5,7 +5,7 @@ from torch.utils.ffi import create_extension
 
 headers = ['torch_scatter/src/cpu.h']
 sources = ['torch_scatter/src/cpu.c']
-include_dirs = ['torch_scatter/src', 'torch_scatter/kernel']
+include_dirs = ['torch_scatter/src']
 define_macros = []
 extra_objects = []
 with_cuda = False
@@ -15,6 +15,7 @@ if torch.cuda.is_available():
 
     headers += ['torch_scatter/src/cuda.h']
     sources += ['torch_scatter/src/cuda.c']
+    include_dirs += ['torch_scatter/kernel']
     define_macros += [('WITH_CUDA', None)]
     extra_objects += ['torch_scatter/build/kernel.so']
     with_cuda = True
