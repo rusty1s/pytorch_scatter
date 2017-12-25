@@ -1,3 +1,5 @@
+from __future__ import division
+
 from .scatter import scatter
 from .utils import gen_filled_tensor, gen_output
 
