@@ -31,7 +31,7 @@ from torch_scatter import scatter_max
 input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
 index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
 
-max, argmax = scatter_max_(index, input, dim=1)
+max, argmax = scatter_max(index, input, dim=1)
 ```
 
 ```
