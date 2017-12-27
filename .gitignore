@@ -5,6 +5,7 @@ dist/
 .cache/
 .eggs/
 .ipynb_checkpoints/
+.coverage
 *.egg-info/
 *.so
 *.aux

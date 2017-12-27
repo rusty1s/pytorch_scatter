@@ -5,7 +5,7 @@ import build  # noqa
 
 install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
-tests_require = ['pytest']
+tests_require = ['pytest', 'pytest-cov']
 docs_require = ['Sphinx', 'sphinx_rtd_theme']
 
 setup(
