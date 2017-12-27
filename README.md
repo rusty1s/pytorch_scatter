@@ -29,7 +29,7 @@ All included operations work on varying data types, are implemented both for CPU
 
 ## Installation
 
-```sh
+```
 python setup.py install
 ```
 
@@ -58,6 +58,6 @@ print(argmax)
 
 ## Running tests
 
-```sh
+```
 python setup.py test
 ```
