@@ -17,13 +17,13 @@ This package consists of a small extension library of highly optimised sparse up
 Scatter-operations can be roughly described as reduce-operations based on a given "group-index" tensor.
 The package consists of the following operations:
 
-* `scatter_add`
-* `scatter_sub`
-* `scatter_mul`
-* `scatter_div`
-* `scatter_mean`
-* `scatter_min`
-* `scatter_max`
+* `scatter_add` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/add.html)
+* `scatter_sub` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/sub.html)
+* `scatter_mul` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/mul.html)
+* `scatter_div` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/div.html)
+* `scatter_mean` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/mean.html)
+* `scatter_min` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/min.html)
+* `scatter_max` [🔗](https://rusty1s.github.io/pytorch_scatter/functions/max.html)
 
 All included operations work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
 
