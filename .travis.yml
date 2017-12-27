@@ -18,7 +18,7 @@ script:
   - pycodestyle .
   - flake8 .
   - python setup.py install
-  - python setup.py test
+  - pytest --cov
 after_success:
   - codecov
 notifications:
