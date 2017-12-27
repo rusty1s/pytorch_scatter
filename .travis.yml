@@ -13,10 +13,13 @@ install:
   - pip install pycodestyle
   - pip install flake8
   - pip install cffi
+  - pip install codecov
 script:
   - pycodestyle .
   - flake8 .
   - python setup.py install
   - python setup.py test
+after_success:
+  - codecov
 notifications:
   email: false

@@ -1,7 +1,9 @@
 [build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
 [build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
+[coverage-url]: https://codecov.io/github/rusty1s/pytorch_scatter?branch=master
 
-# PyTorch Scatter [![Build Status][build-image]][build-url]
+# PyTorch Scatter [![Build Status][build-image]][build-url] [![Code Coverage][coverage-image]][coverage-url]
 
 <p align="center">
   <img width="50%" src="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/add.svg?sanitize=true" />
