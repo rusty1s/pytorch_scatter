@@ -1,7 +1,8 @@
 from os import path as osp
+
 from setuptools import setup, find_packages
 
-filename = osp.join(osp.dirname(osp.abspath('__file__')), 'VERSION')
+filename = osp.join(osp.dirname(__file__), 'VERSION')
 with open(filename, 'r') as f:
     version = f.read().strip()
 

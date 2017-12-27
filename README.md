@@ -11,8 +11,9 @@
 
 --------------------------------------------------------------------------------
 
-This package consists of a small extension library of highly optimised sparse update operations for the use in [PyTorch](http://pytorch.org/).
-It consists of the following operations:
+This package consists of a small extension library of highly optimised sparse update (scatter) operations for the use in [PyTorch](http://pytorch.org/), which are missing in the main package.
+Scatter-operations can be roughly described as reduce-operations based on a given "group-index" tensor.
+The package consists of the following operations:
 
 * `scatter_add`
 * `scatter_sub`
@@ -22,7 +23,7 @@ It consists of the following operations:
 * `scatter_min`
 * `scatter_max`
 
-All included `scatter` ops work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
+All included operations work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
 
 ## Installation
 
