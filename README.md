@@ -17,7 +17,7 @@ This package consists of a small extension library of highly optimised sparse up
 Scatter-operations can be roughly described as reduce-operations based on a given "group-index" tensor.
 The package consists of the following operations:
 
-* [**Scatter Add**](https://rusty2s.github.io/pytorch_scatter/functions/add.html)
+* [**Scatter Add**](https://rusty1s.github.io/pytorch_scatter/functions/add.html)
 * [**Scatter Sub**](https://rusty1s.github.io/pytorch_scatter/functions/sub.html)
 * [**Scatter Mul**](https://rusty1s.github.io/pytorch_scatter/functions/mul.html)
 * [**Scatter Div**](https://rusty1s.github.io/pytorch_scatter/functions/div.html)
