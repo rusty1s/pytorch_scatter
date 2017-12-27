@@ -1,6 +1,10 @@
 from os import path as osp
 from setuptools import setup, find_packages
 
+filename = osp.join(osp.dirname(osp.abspath('__file__')), 'VERSION')
+with open(filename, 'r') as f:
+    version = f.read().strip()
+
 import build  # noqa
 
 install_requires = ['cffi']
@@ -10,7 +14,7 @@ docs_require = ['Sphinx', 'sphinx_rtd_theme']
 
 setup(
     name='torch_scatter',
-    version='0.1.0',
+    version=version,
     description='PyTorch extension for various scatter methods',
     url='https://github.com/rusty1s/pytorch_scatter',
     author='Matthias Fey',
