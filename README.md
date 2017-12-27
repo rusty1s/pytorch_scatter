@@ -11,6 +11,9 @@
 
 --------------------------------------------------------------------------------
 
+This package consists of a small extension library of highly optimised sparse update operations for the use in [PyTorch](http://pytorch.org/).
+It consists of the following operations:
+
 * `scatter_add`
 * `scatter_sub`
 * `scatter_mul`
@@ -19,13 +22,15 @@
 * `scatter_min`
 * `scatter_max`
 
+All included `scatter` ops work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
+
 ## Installation
 
 ```sh
 python setup.py install
 ```
 
-## Usage
+## Example
 
 ```py
 from torch_scatter import scatter_max
