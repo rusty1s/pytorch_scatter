@@ -8,7 +8,7 @@ from .functions.mean import scatter_mean_, scatter_mean
 from .functions.max import scatter_max_, scatter_max
 from .functions.min import scatter_min_, scatter_min
 
-filename = osp.join(osp.dirname(osp.abspath('__file__')), 'VERSION')
+filename = osp.join(osp.dirname(__file__), '..', 'VERSION')
 with open(filename, 'r') as f:
     __version__ = f.read().strip()
 
