@@ -14,12 +14,11 @@ install:
   - pip install flake8
   - pip install cffi
   - pip install codecov
-  - pip install pytest pytest-cov
 script:
   - pycodestyle .
   - flake8 .
   - python setup.py install
-  - pytest --cov
+  - python setup.py test
 after_success:
   - codecov
 notifications:
