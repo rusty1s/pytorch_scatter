@@ -89,7 +89,7 @@ class _Scatter(Function):
             data = (index.data, data[0], arg.data)
             grad_input = index_backward(self.dim, *data)
 
-        # Return and fill with empty grads for none-differentiable passed
+        # Return and fill with empty grads for non-differentiable passed
         # arguments in forward pass.
         return (grad_output, None, grad_input) + (None, ) * (self.len - 3)
 
