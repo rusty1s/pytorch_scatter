@@ -39,7 +39,7 @@ def _scatter(name, dim, *data):
     return (data[0], data[3]) if has_arg(name) else data[0]
 
 
-def index_backward(dim, index, grad, arg):
+def index_backward(dim, index, grad, arg):  # pragma: no cover
     typename = type(grad).__name__.replace('Tensor', '')
     cuda = 'cuda_' if grad.is_cuda else ''
     func = getattr(ffi, 'index_backward_{}{}'.format(cuda, typename))
@@ -72,7 +72,7 @@ class _Scatter(Function):
             self.save_for_backward(data[1])
             return data[0]
 
-    def backward(self, *data):
+    def backward(self, *data):  # pragma: no cover
         grad_output = grad_input = None
 
         if self.needs_input_grad[0]:
