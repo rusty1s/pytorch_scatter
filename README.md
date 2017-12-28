@@ -30,8 +30,7 @@ All included operations work on varying data types, are implemented both for CPU
 ## Installation
 
 ```
-pip install cffi
-python setup.py install
+pip install cffi torch-scatter
 ```
 
 ## Example
