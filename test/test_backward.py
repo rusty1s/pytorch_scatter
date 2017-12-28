@@ -33,7 +33,7 @@ def test_backward_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
-def test_backward_gpu(tensor, i):
+def test_backward_gpu(tensor, i):  # pragma: no cover
     name = data[i]['name']
     index = V(torch.LongTensor(data[i]['index'])).cuda()
     input = V(Tensor(tensor, data[i]['input']), requires_grad=True).cuda()
