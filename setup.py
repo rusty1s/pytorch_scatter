@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 import build  # noqa
 
 __version__ = '0.1.0'
+url = 'https://github.com/rusty1s/pytorch_scatter'
 
 install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
@@ -15,9 +16,10 @@ setup(
     name='torch_scatter',
     version=__version__,
     description='PyTorch Extension Library of Optimised Scatter-Operations',
-    url='https://github.com/rusty1s/pytorch_scatter',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
+    url=url,
+    download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require + docs_require,
