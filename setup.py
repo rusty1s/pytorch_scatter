@@ -14,7 +14,7 @@ docs_require = ['Sphinx', 'sphinx_rtd_theme']
 setup(
     name='torch_scatter',
     version=__version__,
-    description='PyTorch extension for various scatter-operations',
+    description='PyTorch Extension Library of Optimised Scatter-Operations',
     url='https://github.com/rusty1s/pytorch_scatter',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
