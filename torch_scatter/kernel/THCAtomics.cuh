@@ -97,7 +97,7 @@ struct TH_CONCAT_3(Atomic, NAME, DecimalImpl)<T, 8> { \
   } \
 };
 
-#define OP(X, Y) X + Y
+#define OP(X, Y) Y + X
 ATOMIC_(Add)
 #undef OP
 static inline __device__ void atomicAdd(uint8_t *address, uint8_t val) { AtomicAddIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
@@ -113,7 +113,7 @@ static inline __device__ void atomicAdd( double *address,  double val) {}
 static inline __device__ void atomicAdd(   half *address,    half val) {}
 #endif
 
-#define OP(X, Y) X * Y
+#define OP(X, Y) Y * X
 ATOMIC_(Mul)
 #undef OP
 static inline __device__ void atomicMul(uint8_t *address, uint8_t val) { AtomicMulIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
@@ -127,7 +127,7 @@ static inline __device__ void atomicMul( double *address,  double val) { AtomicM
 static inline __device__ void atomicMul(   half *address,    half val) {}
 #endif
 
-#define OP(X, Y) X / Y
+#define OP(X, Y) Y / X
 ATOMIC_(Div)
 #undef OP
 static inline __device__ void atomicDiv(uint8_t *address, uint8_t val) { AtomicDivIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
@@ -141,7 +141,7 @@ static inline __device__ void atomicDiv( double *address,  double val) { AtomicD
 static inline __device__ void atomicDiv(   half *address,    half val) {}
 #endif
 
-#define OP(X, Y) max(X, Y)
+#define OP(X, Y) max(Y, X)
 ATOMIC_(Max)
 #undef OP
 static inline __device__ void atomicMax(uint8_t *address, uint8_t val) { AtomicMaxIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
@@ -154,7 +154,7 @@ static inline __device__ void atomicMax( double *address,  double val) { AtomicM
 static inline __device__ void atomicMax(   half *address,    half val) {}
 #endif
 
-#define OP(X, Y) min(X, Y)
+#define OP(X, Y) min(Y, X)
 ATOMIC_(Min)
 #undef OP
 static inline __device__ void atomicMin(uint8_t *address, uint8_t val) { AtomicMinIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
