@@ -17,11 +17,12 @@ f.close()
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
 def test_backward_cpu(tensor, i):
     name = data[i]['name']
-    output = V(Tensor(tensor, data[i]['output']))
     index = V(torch.LongTensor(data[i]['index']))
     input = V(Tensor(tensor, data[i]['input']), requires_grad=True)
     dim = data[i]['dim']
+    fill_value = data[i]['fill_value']
     grad = Tensor(tensor, data[i]['grad'])
+    output = V(grad.new(grad.size()).fill_(fill_value))
     expected = Tensor(tensor, data[i]['expected'])
 
     func = getattr(torch_scatter, 'scatter_{}_'.format(name))
@@ -34,11 +35,12 @@ def test_backward_cpu(tensor, i):
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
 def test_backward_gpu(tensor, i):
     name = data[i]['name']
-    output = V(Tensor(tensor, data[i]['output'])).cuda()
     index = V(torch.LongTensor(data[i]['index'])).cuda()
-    input = V(Tensor(tensor, data[i]['input']), requires_grad=True).cuad()
+    input = V(Tensor(tensor, data[i]['input']), requires_grad=True).cuda()
     dim = data[i]['dim']
+    fill_value = data[i]['fill_value']
     grad = Tensor(tensor, data[i]['grad']).cuda()
+    output = V(grad.new(grad.size()).fill_(fill_value)).cuda()
     expected = Tensor(tensor, data[i]['expected'])
 
     func = getattr(torch_scatter, 'scatter_{}_'.format(name))
