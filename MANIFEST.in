@@ -1,3 +1,8 @@
 include LICENSE
 include build.py
 include build.sh
+
+recursive-include torch_scatter/src *
+recursive-include torch_scatter/kernel *
+
+recursive-exclude torch_scatter/_ext *
