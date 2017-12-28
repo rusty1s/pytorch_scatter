@@ -20,6 +20,7 @@ setup(
     author_email='matthias.fey@tu-dortmund.de',
     url=url,
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
+    keywords=['pytorch', 'scatter', 'deep-learning'],
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require + docs_require,
