@@ -64,7 +64,7 @@ __global__ void argKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int argOffset = 0;
     IndexToScatterOffsets4<Real, Real, int64_t, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset, arg, &argOffset);
-    if (eq(input.data[inputOffset], output.data[outputOffset])) arg.data[argOffset] = inputOffset % input.size[dim];
+    if (input.data[inputOffset] == output.data[outputOffset]) arg.data[argOffset] = inputOffset % input.size[dim];
   }
 }
 
@@ -78,4 +78,16 @@ __global__ void indexBackwardKernel(TensorInfo<Real> output, TensorInfo<int64_t>
 }
 
 #include "generic/kernel.cu"
-#include "THCGenerateAllTypes.h"
+#include "THCGenerateFloatType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateDoubleType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateByteType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateCharType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateShortType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateIntType.h"
+#include "generic/kernel.cu"
+#include "THCGenerateLongType.h"
