@@ -35,14 +35,3 @@ struct TensorInfo {
   } \
   THCudaCheck(cudaGetLastError()); \
 }
-
-static inline __device__ bool eq(uint8_t a, uint8_t b) { return a == b; }
-static inline __device__ bool eq( int8_t a,  int8_t b) { return a == b; }
-static inline __device__ bool eq(int16_t a, int16_t b) { return a == b; }
-static inline __device__ bool eq(int32_t a, int32_t b) { return a == b; }
-static inline __device__ bool eq(int64_t a, int64_t b) { return a == b; }
-static inline __device__ bool eq(  float a,   float b) { return a == b; }
-static inline __device__ bool eq( double a,  double b) { return a == b; }
-#ifdef CUDA_HALF_TENSOR
-static inline __device__ bool eq(half a, half b) { return __half2float(a) == __half2float(b); }
-#endif
