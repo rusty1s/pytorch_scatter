@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 import build  # noqa
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 url = 'https://github.com/rusty1s/pytorch_scatter'
 
 install_requires = ['cffi']
