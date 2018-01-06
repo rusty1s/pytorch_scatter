@@ -100,54 +100,58 @@ struct TH_CONCAT_3(Atomic, NAME, DecimalImpl)<T, 8> { \
 #define OP(X, Y) Y + X
 ATOMIC_(Add)
 #undef OP
-static inline __device__ void atomicAdd(uint8_t *address, uint8_t val) { AtomicAddIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicAdd( int8_t *address,  int8_t val) { AtomicAddIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
-static inline __device__ void atomicAdd(int16_t *address, int16_t val) { AtomicAddIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
-static inline __device__ void atomicAdd(int64_t *address, int64_t val) { AtomicAddIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomAdd(uint8_t *address, uint8_t val) { AtomicAddIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomAdd( int8_t *address,  int8_t val) { AtomicAddIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomAdd(int16_t *address, int16_t val) { AtomicAddIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomAdd(int32_t *address, int32_t val) { atomicAdd(address, val); }
+static inline __device__ void atomAdd(int64_t *address, int64_t val) { AtomicAddIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomAdd(  float *address,   float val) { atomicAdd(address, val); }
 #if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 600 || CUDA_VERSION < 8000)
-static inline __device__ void atomicAdd( double *address,  double val) { AtomicAddDecimalImpl< double, sizeof( double)>()(address, val); }
-#elif !defined(__CUDA_ARCH__) && (CUDA_VERSION < 8000)
-static inline __device__ void atomicAdd( double *address,  double val) {}
+static inline __device__ void atomAdd( double *address,  double val) { AtomicAddDecimalImpl< double, sizeof( double)>()(address, val); }
+#else
+static inline __device__ void atomAdd( double *address,  double val) { atomicAdd(address, val); }
 #endif
 
 #define OP(X, Y) Y * X
 ATOMIC_(Mul)
 #undef OP
-static inline __device__ void atomicMul(uint8_t *address, uint8_t val) { AtomicMulIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicMul( int8_t *address,  int8_t val) { AtomicMulIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
-static inline __device__ void atomicMul(int16_t *address, int16_t val) { AtomicMulIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
-static inline __device__ void atomicMul(int32_t *address, int32_t val) { AtomicMulIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
-static inline __device__ void atomicMul(int64_t *address, int64_t val) { AtomicMulIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
-static inline __device__ void atomicMul(  float *address,   float val) { AtomicMulDecimalImpl<  float, sizeof(  float)>()(address, val); }
-static inline __device__ void atomicMul( double *address,  double val) { AtomicMulDecimalImpl< double, sizeof( double)>()(address, val); }
+static inline __device__ void atomMul(uint8_t *address, uint8_t val) { AtomicMulIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomMul( int8_t *address,  int8_t val) { AtomicMulIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomMul(int16_t *address, int16_t val) { AtomicMulIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomMul(int32_t *address, int32_t val) { AtomicMulIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
+static inline __device__ void atomMul(int64_t *address, int64_t val) { AtomicMulIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomMul(  float *address,   float val) { AtomicMulDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomMul( double *address,  double val) { AtomicMulDecimalImpl< double, sizeof( double)>()(address, val); }
 
 #define OP(X, Y) Y / X
 ATOMIC_(Div)
 #undef OP
-static inline __device__ void atomicDiv(uint8_t *address, uint8_t val) { AtomicDivIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicDiv( int8_t *address,  int8_t val) { AtomicDivIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
-static inline __device__ void atomicDiv(int16_t *address, int16_t val) { AtomicDivIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
-static inline __device__ void atomicDiv(int32_t *address, int32_t val) { AtomicDivIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
-static inline __device__ void atomicDiv(int64_t *address, int64_t val) { AtomicDivIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
-static inline __device__ void atomicDiv(  float *address,   float val) { AtomicDivDecimalImpl<  float, sizeof(  float)>()(address, val); }
-static inline __device__ void atomicDiv( double *address,  double val) { AtomicDivDecimalImpl< double, sizeof( double)>()(address, val); }
+static inline __device__ void atomDiv(uint8_t *address, uint8_t val) { AtomicDivIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomDiv( int8_t *address,  int8_t val) { AtomicDivIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomDiv(int16_t *address, int16_t val) { AtomicDivIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomDiv(int32_t *address, int32_t val) { AtomicDivIntegerImpl<int32_t, sizeof(int32_t)>()(address, val); }
+static inline __device__ void atomDiv(int64_t *address, int64_t val) { AtomicDivIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomDiv(  float *address,   float val) { AtomicDivDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomDiv( double *address,  double val) { AtomicDivDecimalImpl< double, sizeof( double)>()(address, val); }
 
 #define OP(X, Y) max(Y, X)
 ATOMIC_(Max)
 #undef OP
-static inline __device__ void atomicMax(uint8_t *address, uint8_t val) { AtomicMaxIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicMax( int8_t *address,  int8_t val) { AtomicMaxIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
-static inline __device__ void atomicMax(int16_t *address, int16_t val) { AtomicMaxIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
-static inline __device__ void atomicMax(int64_t *address, int64_t val) { AtomicMaxIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
-static inline __device__ void atomicMax(  float *address,   float val) { AtomicMaxDecimalImpl<  float, sizeof(  float)>()(address, val); }
-static inline __device__ void atomicMax( double *address,  double val) { AtomicMaxDecimalImpl< double, sizeof( double)>()(address, val); }
+static inline __device__ void atomMax(uint8_t *address, uint8_t val) { AtomicMaxIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomMax( int8_t *address,  int8_t val) { AtomicMaxIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomMax(int16_t *address, int16_t val) { AtomicMaxIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomMax(int32_t *address, int32_t val) { atomicMax(address, val); }
+static inline __device__ void atomMax(int64_t *address, int64_t val) { AtomicMaxIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomMax(  float *address,   float val) { AtomicMaxDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomMax( double *address,  double val) { AtomicMaxDecimalImpl< double, sizeof( double)>()(address, val); }
 
 #define OP(X, Y) min(Y, X)
 ATOMIC_(Min)
 #undef OP
-static inline __device__ void atomicMin(uint8_t *address, uint8_t val) { AtomicMinIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
-static inline __device__ void atomicMin( int8_t *address,  int8_t val) { AtomicMinIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
-static inline __device__ void atomicMin(int16_t *address, int16_t val) { AtomicMinIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
-static inline __device__ void atomicMin(int64_t *address, int64_t val) { AtomicMinIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
-static inline __device__ void atomicMin(  float *address,   float val) { AtomicMinDecimalImpl<  float, sizeof(  float)>()(address, val); }
-static inline __device__ void atomicMin( double *address,  double val) { AtomicMinDecimalImpl< double, sizeof( double)>()(address, val); }
+static inline __device__ void atomMin(uint8_t *address, uint8_t val) { AtomicMinIntegerImpl<uint8_t, sizeof(uint8_t)>()(address, val); }
+static inline __device__ void atomMin( int8_t *address,  int8_t val) { AtomicMinIntegerImpl< int8_t, sizeof( int8_t)>()(address, val); }
+static inline __device__ void atomMin(int16_t *address, int16_t val) { AtomicMinIntegerImpl<int16_t, sizeof(int16_t)>()(address, val); }
+static inline __device__ void atomMin(int32_t *address, int32_t val) { atomicMin(address, val); }
+static inline __device__ void atomMin(int64_t *address, int64_t val) { AtomicMinIntegerImpl<int64_t, sizeof(int64_t)>()(address, val); }
+static inline __device__ void atomMin(  float *address,   float val) { AtomicMinDecimalImpl<  float, sizeof(  float)>()(address, val); }
+static inline __device__ void atomMin( double *address,  double val) { AtomicMinDecimalImpl< double, sizeof( double)>()(address, val); }

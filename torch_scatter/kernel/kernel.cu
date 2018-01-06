@@ -18,7 +18,7 @@ __global__ void mulKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;
     IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
-    atomicMul(&output.data[outputOffset], input.data[inputOffset]);
+    atomMul(&output.data[outputOffset], input.data[inputOffset]);
   }
 }
 
@@ -27,7 +27,7 @@ __global__ void divKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;
     IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
-    atomicDiv(&output.data[outputOffset], input.data[inputOffset]);
+    atomDiv(&output.data[outputOffset], input.data[inputOffset]);
   }
 }
 
@@ -36,8 +36,8 @@ __global__ void meanKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, T
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int countOffset = 0;
     IndexToScatterOffsets4<Real, Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset, count, &countOffset);
-    atomicAdd(&output.data[outputOffset], input.data[inputOffset]);
-    atomicAdd(&count.data[countOffset], 1);
+    atomAdd(&output.data[outputOffset], input.data[inputOffset]);
+    atomAdd(&count.data[countOffset], 1);
   }
 }
 
@@ -46,7 +46,7 @@ __global__ void maxKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;
     IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
-    atomicMax(&output.data[outputOffset], input.data[inputOffset]);
+    atomMax(&output.data[outputOffset], input.data[inputOffset]);
   }
 }
 
@@ -55,7 +55,7 @@ __global__ void minKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0;
     IndexToScatterOffsets3<Real, Real, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset);
-    atomicMin(&output.data[outputOffset], input.data[inputOffset]);
+    atomMin(&output.data[outputOffset], input.data[inputOffset]);
   }
 }
 
