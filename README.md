@@ -35,6 +35,10 @@ All included operations work on varying data types, are implemented both for CPU
 
 ## Installation
 
+Check that `nvcc` is accessible from terminal, e.g. `nvcc --version`.
+If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
+Then run:
+
 ```
 pip install cffi torch-scatter
 ```
