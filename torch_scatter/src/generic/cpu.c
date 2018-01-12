@@ -26,9 +26,10 @@ void scatter_(mean)(int dim, THTensor *output, THLongTensor *index, THTensor *in
   int64_t i, idx;
   TH_TENSOR_DIM_APPLY4(real, output, int64_t, index, real, input, real, count, dim,
     for (i = 0; i < THLongTensor_size(index, dim); i++) {
-      assertIndexInBoundaries(index_data[i], output_size, TH_TENSOR_DIM_APPLY_counter);
+      idx = *(index_data + i * index_stride);
+      assertIndexInBoundaries(idx, output_size, TH_TENSOR_DIM_APPLY_counter);
       output_data[idx * output_stride] += *(input_data + i * input_stride);
-      output_data[idx * count_stride]++;
+      count_data[idx * count_stride]++;
     })
 }
 
