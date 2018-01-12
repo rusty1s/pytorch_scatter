@@ -46,6 +46,7 @@ pip install cffi torch-scatter
 ## Example
 
 ```py
+import torch
 from torch_scatter import scatter_max
 
 input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
