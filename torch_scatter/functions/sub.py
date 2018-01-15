@@ -51,7 +51,7 @@ def scatter_sub_(output, index, input, dim=0):
        -2 -4 -4  0  0  0
        [torch.FloatTensor of size 2x6]
     """
-    return output.scatter_add_(dim, index, -1 * input)
+    return output.scatter_add_(dim, index, -input)
 
 
 def scatter_sub(index, input, dim=0, size=None, fill_value=0):
