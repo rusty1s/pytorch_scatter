@@ -35,7 +35,7 @@ def test_backward_cpu(tensor, i):
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
 def test_backward_gpu(tensor, i):  # pragma: no cover
     name = data[i]['name']
-    index = V(torch.LongTensor(data[i]['index']).cuda())
+    index = V(torch.cuda.LongTensor(data[i]['index']))
     input = V(Tensor(tensor, data[i]['input']).cuda(), requires_grad=True)
     dim = data[i]['dim']
     fill_value = data[i]['fill_value']

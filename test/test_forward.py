@@ -44,7 +44,7 @@ def test_forward_cpu(tensor, i):
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
 def test_forward_gpu(tensor, i):  # pragma: no cover
     name = data[i]['name']
-    index = torch.LongTensor(data[i]['index']).cuda()
+    index = torch.cuda.LongTensor(data[i]['index'])
     input = Tensor(tensor, data[i]['input']).cuda()
     dim = data[i]['dim']
     fill_value = data[i]['fill_value']
@@ -57,7 +57,6 @@ def test_forward_gpu(tensor, i):  # pragma: no cover
     if 'expected_arg' in data[i]:
         expected_arg = torch.LongTensor(data[i]['expected_arg'])
         assert result[1].cpu().tolist() == expected_arg.tolist()
-
     func = getattr(torch_scatter, 'scatter_{}'.format(name))
     result = func(index, input, dim, fill_value=fill_value)
     if 'expected_arg' not in data[i]:

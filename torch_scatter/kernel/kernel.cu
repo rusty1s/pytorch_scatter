@@ -64,7 +64,9 @@ __global__ void argKernel(TensorInfo<Real> output, TensorInfo<int64_t> index, Te
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int inputOffset = 0; int argOffset = 0;
     IndexToScatterOffsets4<Real, Real, int64_t, Dims>::compute(i, dim, index, &indexOffset, input, &inputOffset, output, &outputOffset, arg, &argOffset);
-    if (input.data[inputOffset] == output.data[outputOffset]) arg.data[argOffset] = inputOffset % input.size[dim];
+    if (input.data[inputOffset] == output.data[outputOffset]) {
+      arg.data[argOffset] = (inputOffset / input.stride[dim]) % input.size[dim];
+    }
   }
 }
 
@@ -73,7 +75,7 @@ __global__ void indexBackwardKernel(TensorInfo<Real> output, TensorInfo<int64_t>
   KERNEL_LOOP(i, n) {
     int outputOffset = 0; int indexOffset = 0; int gradOffset = 0; int argOffset = 0;
     IndexToScatterOffsets4<Real, Real, int64_t, Dims>::compute(i, dim, index, &indexOffset, output, &outputOffset, grad, &gradOffset, arg, &argOffset);
-    if (arg.data[argOffset] == outputOffset % output.size[dim]) output.data[outputOffset] = grad.data[gradOffset];
+    if (arg.data[argOffset] == (outputOffset / output.stride[dim]) % output.size[dim]) output.data[outputOffset] = grad.data[gradOffset];
   }
 }
 
