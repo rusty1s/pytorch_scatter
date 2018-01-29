@@ -69,6 +69,6 @@ print(argmax)
 
 ## Running tests
 
-```
+```sh
 python setup.py test
 ```
