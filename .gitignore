@@ -4,10 +4,8 @@ build/
 dist/
 .cache/
 .eggs/
-.ipynb_checkpoints/
-.coverage
 *.egg-info/
-*.so
+.coverage
 *.aux
 *.log
 *.pdf
