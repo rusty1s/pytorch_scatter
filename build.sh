@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "Compiling kernel..."
+
 TORCH=$(python -c "import os; import torch; print(os.path.dirname(torch.__file__))")
 SRC_DIR=torch_scatter/kernel
 BUILD_DIR=torch_scatter/build

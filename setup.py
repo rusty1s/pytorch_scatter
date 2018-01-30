@@ -2,14 +2,12 @@ from os import path as osp
 
 from setuptools import setup, find_packages
 
-import build  # noqa
-
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 url = 'https://github.com/rusty1s/pytorch_scatter'
 
 install_requires = ['cffi']
-setup_requires = ['pytest-runner', 'cffi']
-tests_require = ['pytest', 'pytest-cov']
+setup_requires = ['cffi']
+tests_require = ['pytest', 'pytest-runner', 'pytest-cov']
 docs_require = ['Sphinx', 'sphinx_rtd_theme']
 
 setup(
