@@ -1,7 +1,20 @@
 from __future__ import division
 
-from .scatter import scatter
+from .scatter import Scatter, scatter
 from .utils import gen_filled_tensor, gen_output
+
+
+class ScatterMean(Scatter):
+    def __init__(self, dim):
+        super(ScatterMean, self).__init__('mean', dim)
+
+    def save_for_backward_step(self, *data):
+        output, index, input, count = data
+        self.save_for_backward(index)
+
+    def backward_step(self, *data):
+        grad, index = data
+        return grad.gather(self.dim, index.data)
 
 
 def scatter_mean_(output, index, input, dim=0):
@@ -56,10 +69,12 @@ def scatter_mean_(output, index, input, dim=0):
         1.0000  4.0000  2.0000  0.0000  0.0000  0.0000
        [torch.FloatTensor of size 2x6]
     """
+    init = gen_filled_tensor(output, output.size(), fill_value=0)
     count = gen_filled_tensor(output, output.size(), fill_value=0)
-    scatter('mean', dim, output, index, input, count)
+    scatter(ScatterMean, 'mean', dim, init, index, input, count)
     count[count == 0] = 1
-    output /= count
+    init /= count
+    output += init
     return output
 
 

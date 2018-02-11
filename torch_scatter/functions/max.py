@@ -1,5 +1,19 @@
-from .scatter import scatter
+from .scatter import Scatter, scatter
+from .ffi import index_backward
 from .utils import gen_filled_tensor, gen_output
+
+
+class ScatterMax(Scatter):
+    def __init__(self, dim):
+        super(ScatterMax, self).__init__('max', dim)
+
+    def save_for_backward_step(self, *data):
+        output, index, input, arg = data
+        self.save_for_backward(index, arg)
+
+    def backward_step(self, *data):
+        grad, index, arg = data
+        return index_backward(self.dim, index.data, grad, arg.data)
 
 
 def scatter_max_(output, index, input, dim=0):
@@ -61,7 +75,7 @@ def scatter_max_(output, index, input, dim=0):
        )
     """
     arg = gen_filled_tensor(index, output.size(), fill_value=-1)
-    return scatter('max', dim, output, index, input, arg)
+    return scatter(ScatterMax, 'max', dim, output, index, input, arg)
 
 
 def scatter_max(index, input, dim=0, size=None, fill_value=0):
