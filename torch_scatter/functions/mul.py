@@ -1,5 +1,18 @@
-from .scatter import scatter
+from .scatter import Scatter, scatter
 from .utils import gen_output
+
+
+class ScatterMul(Scatter):
+    def __init__(self, dim):
+        super(ScatterMul, self).__init__('mul', dim)
+
+    def save_for_backward_step(self, *data):
+        output, index, input = data
+        self.save_for_backward(output, index, input)
+
+    def backward_step(self, *data):
+        grad, output, index, input = data
+        return (grad * output.data).gather(self.dim, index.data) / input.data
 
 
 def scatter_mul_(output, index, input, dim=0):
@@ -52,7 +65,7 @@ def scatter_mul_(output, index, input, dim=0):
         6  4  8  1  1  1
        [torch.FloatTensor of size 2x6]
     """
-    return scatter('mul', dim, output, index, input)
+    return scatter(ScatterMul, 'mul', dim, output, index, input)
 
 
 def scatter_mul(index, input, dim=0, size=None, fill_value=1):

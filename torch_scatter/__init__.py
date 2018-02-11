@@ -6,7 +6,7 @@ from .functions.mean import scatter_mean_, scatter_mean
 from .functions.max import scatter_max_, scatter_max
 from .functions.min import scatter_min_, scatter_min
 
-__version__ = '0.2.3'
+__version__ = '0.3.0'
 
 __all__ = [
     'scatter_add_', 'scatter_add', 'scatter_sub_', 'scatter_sub',

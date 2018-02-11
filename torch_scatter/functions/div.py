@@ -1,5 +1,18 @@
-from .scatter import scatter
+from .scatter import Scatter, scatter
 from .utils import gen_output
+
+
+class ScatterDiv(Scatter):
+    def __init__(self, dim):
+        super(ScatterDiv, self).__init__('div', dim)
+
+    def save_for_backward_step(self, *data):
+        output, index, input = data
+        self.save_for_backward(output, index, input)
+
+    def backward_step(self, *data):
+        grad, output, index, input = data
+        return (grad / output.data).gather(self.dim, index.data) * input.data
 
 
 def scatter_div_(output, index, input, dim=0):
@@ -53,7 +66,7 @@ def scatter_div_(output, index, input, dim=0):
         0.5000  0.2500  0.1667  1.0000  1.0000  1.0000
        [torch.FloatTensor of size 2x6]
     """
-    return scatter('div', dim, output, index, input)
+    return scatter(ScatterDiv, 'div', dim, output, index, input)
 
 
 def scatter_div(index, input, dim=0, size=None, fill_value=1):
