@@ -10,7 +10,7 @@ class ScatterMul(Scatter):
         output, index, input = data
         self.save_for_backward(output, index, input)
 
-    def backward_step(self, *data):
+    def backward_step(self, *data):  # pragma: no cover
         grad, output, index, input = data
         return (grad * output.data).gather(self.dim, index.data) / input.data
 

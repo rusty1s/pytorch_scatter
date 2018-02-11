@@ -2,7 +2,7 @@ from .scatter import Scatter, scatter
 from .utils import gen_output
 
 
-class ScatterDiv(Scatter):
+class ScatterDiv(Scatter):  # pragma: no cover
     def __init__(self, dim):
         super(ScatterDiv, self).__init__('div', dim)
 

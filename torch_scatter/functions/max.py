@@ -11,7 +11,7 @@ class ScatterMax(Scatter):
         output, index, input, arg = data
         self.save_for_backward(index, arg)
 
-    def backward_step(self, *data):
+    def backward_step(self, *data):  # pragma: no cover
         grad, index, arg = data
         return index_backward(self.dim, index.data, grad, arg.data)
 

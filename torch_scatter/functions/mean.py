@@ -12,7 +12,7 @@ class ScatterMean(Scatter):
         output, index, input, count = data
         self.save_for_backward(index)
 
-    def backward_step(self, *data):
+    def backward_step(self, *data):  # pragma: no cover
         grad, index = data
         return grad.gather(self.dim, index.data)
 
