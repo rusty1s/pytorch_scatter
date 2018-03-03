@@ -12,7 +12,7 @@ class ScatterDiv(Scatter):  # pragma: no cover
 
     def backward_step(self, *data):
         grad, output, index, input = data
-        return (grad / output.data).gather(self.dim, index.data) * input.data
+        return (output.data / grad).gather(self.dim, index.data) * input.data
 
 
 def scatter_div_(output, index, input, dim=0):
