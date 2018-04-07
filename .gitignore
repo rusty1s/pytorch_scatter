@@ -9,3 +9,5 @@ dist/
 *.aux
 *.log
 *.pdf
+
+!docs/build
