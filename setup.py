@@ -8,7 +8,6 @@ url = 'https://github.com/rusty1s/pytorch_scatter'
 install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
 tests_require = ['pytest', 'pytest-cov']
-docs_require = ['Sphinx', 'sphinx_rtd_theme']
 
 setup(
     name='torch_scatter',
@@ -21,7 +20,7 @@ setup(
     keywords=['pytorch', 'scatter', 'deep-learning'],
     install_requires=install_requires,
     setup_requires=setup_requires,
-    tests_require=tests_require + docs_require,
+    tests_require=tests_require,
     packages=find_packages(exclude=['build']),
     ext_package='',
     cffi_modules=[osp.join(osp.dirname(__file__), 'build.py:ffi')],
