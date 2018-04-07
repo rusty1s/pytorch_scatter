@@ -4,3 +4,4 @@ build/html/_modules
 build/html/_sources
 build/html/.buildinfo
 build/html/objects.inv
+build/html/.nojekyll
