@@ -1,6 +1,7 @@
 [pypi-image]: https://badge.fury.io/py/torch-scatter.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-scatter
-[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master [build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
+[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_scatter?branch=master
 
@@ -18,7 +19,7 @@
 
 **[Documentation](http://rusty1s.github.io/pytorch_scatter)**
 
-This package consists of a small extension library of highly optimised sparse update (scatter) operations for the use in [PyTorch](http://pytorch.org/), which are missing in the main package.
+This package consists of a small extension library of highly optimized sparse update (scatter) operations for the use in [PyTorch](http://pytorch.org/), which are missing in the main package.
 Scatter operations can be roughly described as reduce operations based on a given "group-index" tensor.
 The package consists of the following operations:
 

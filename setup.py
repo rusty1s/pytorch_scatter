@@ -12,7 +12,7 @@ tests_require = ['pytest', 'pytest-cov']
 setup(
     name='torch_scatter',
     version=__version__,
-    description='PyTorch Extension Library of Optimised Scatter Operations',
+    description='PyTorch Extension Library of Optimized Scatter Operations',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url=url,
