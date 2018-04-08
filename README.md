@@ -1,7 +1,6 @@
 [pypi-image]: https://badge.fury.io/py/torch-scatter.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-scatter
-[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
-[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master [build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_scatter?branch=master
 
@@ -23,13 +22,13 @@ This package consists of a small extension library of highly optimised sparse up
 Scatter operations can be roughly described as reduce operations based on a given "group-index" tensor.
 The package consists of the following operations:
 
-* [**Scatter Add**](https://rusty1s.github.io/pytorch_scatter/functions/add.html)
-* [**Scatter Sub**](https://rusty1s.github.io/pytorch_scatter/functions/sub.html)
-* [**Scatter Mul**](https://rusty1s.github.io/pytorch_scatter/functions/mul.html)
-* [**Scatter Div**](https://rusty1s.github.io/pytorch_scatter/functions/div.html)
-* [**Scatter Mean**](https://rusty1s.github.io/pytorch_scatter/functions/mean.html)
-* [**Scatter Min**](https://rusty1s.github.io/pytorch_scatter/functions/min.html)
-* [**Scatter Max**](https://rusty1s.github.io/pytorch_scatter/functions/max.html)
+* [**Scatter Add**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/add.html)
+* [**Scatter Sub**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/sub.html)
+* [**Scatter Mul**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mul.html)
+* [**Scatter Div**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/div.html)
+* [**Scatter Mean**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mean.html)
+* [**Scatter Min**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/min.html)
+* [**Scatter Max**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/max.html)
 
 All included operations work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
 
