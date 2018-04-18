@@ -1,7 +1,12 @@
+import os
+import sys
 import datetime
 import sphinx_rtd_theme
 import doctest
-from torch_scatter import __version__
+
+sys.path.insert(0, os.path.abspath('../..'))
+
+from torch_scatter import __version__  # noqa
 
 extensions = [
     'sphinx.ext.autodoc',
