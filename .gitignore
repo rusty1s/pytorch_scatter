@@ -10,4 +10,4 @@ dist/
 *.log
 *.pdf
 
-!docs/build
+!docs/build/
