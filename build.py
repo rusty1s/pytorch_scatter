@@ -13,6 +13,7 @@ sources = ['torch_scatter/src/cpu.c']
 include_dirs = ['torch_scatter/src']
 define_macros = []
 extra_objects = []
+extra_compile_args = ['-std=c99']
 with_cuda = False
 
 if torch.cuda.is_available():
@@ -33,6 +34,7 @@ ffi = create_extension(
     include_dirs=include_dirs,
     define_macros=define_macros,
     extra_objects=extra_objects,
+    extra_compile_args=extra_compile_args,
     with_cuda=with_cuda,
     relative_to=__file__)
 
