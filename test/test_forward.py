@@ -34,6 +34,20 @@ tests = [{
     'dim': 0,
     'fill_value': 9,
     'expected': [[3, 4], [3, 5]]
+}, {
+    'name': 'mean',
+    'src': [[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]],
+    'index': [[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]],
+    'dim': 1,
+    'fill_value': 0,
+    'expected': [[0, 0, 4, 3, 1.5, 0], [1, 4, 2, 0, 0, 0]]
+}, {
+    'name': 'mean',
+    'src': [[5, 2], [2, 5], [4, 3], [1, 3]],
+    'index': [[0, 0], [1, 1], [1, 1], [0, 0]],
+    'dim': 0,
+    'fill_value': 0,
+    'expected': [[3, 2.5], [3, 4]]
 }]
 
 
@@ -41,8 +55,9 @@ tests = [{
 def test_forward(test, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
+    expected = tensor(test['expected'], dtype, device)
 
     op = getattr(torch_scatter, 'scatter_{}'.format(test['name']))
     output = op(src, index, test['dim'], fill_value=test['fill_value'])
 
-    assert output.tolist() == test['expected']
+    assert output.tolist() == expected.tolist()
