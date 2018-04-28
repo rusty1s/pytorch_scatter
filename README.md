@@ -39,7 +39,7 @@ Check that `nvcc` is accessible from terminal, e.g. `nvcc --version`.
 If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
 Then run:
 
-```sh
+```
 pip install cffi torch-scatter
 ```
 
@@ -69,6 +69,6 @@ print(argmax)
 
 ## Running tests
 
-```sh
+```
 python setup.py test
 ```
