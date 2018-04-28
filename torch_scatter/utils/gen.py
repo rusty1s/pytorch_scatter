@@ -2,6 +2,8 @@ from itertools import repeat
 
 
 def gen(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
+    dim = range(src.dim())[dim]  # Get real dim value.
+
     # Automatically expand index tensor to the right dimensions.
     if index.dim() == 1:
         index_size = [*repeat(1, src.dim())]
@@ -15,4 +17,4 @@ def gen(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
         out_size[dim] = dim_size
         out = src.new_full(out_size, fill_value)
 
-    return out, index
+    return src, out, index, dim
