@@ -4,55 +4,51 @@ from .utils.ffi import get_func
 from .utils.gen import gen
 
 
-class ScatterMean(Function):
+class ScatterMul(Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
-        count = src.new_zeros(out.size())
-        func = get_func('scatter_mean', src)
-        func(dim, out, index, src, count)
-        count[count == 0] = 1
-        out /= count
+        func = get_func('scatter_mul', src)
+        func(dim, out, index, src)
 
+        ctx.dim = dim
         ctx.mark_dirty(out)
-        ctx.save_for_backward(index, count)
+        ctx.save_for_backward(out, src, index)
 
         return out
 
     @staticmethod
     def backward(ctx, grad_out):
-        index, count = ctx.saved_variables
+        out, src, index = ctx.saved_variables
 
         grad_src = None
         if ctx.needs_input_grad[1]:
-            grad_src = grad_out[index] / count[index]
+            grad_src = (grad_out * out)[index] / src
 
         return None, grad_src, None, None
 
 
-def scatter_mean(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
+def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
     r"""
     |
 
     .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
-            master/docs/source/_figures/mean.svg?sanitize=true
+            master/docs/source/_figures/mul.svg?sanitize=true
         :align: center
         :width: 400px
 
     |
 
-    Averages all values from the :attr:`src` tensor into :attr:`out` at the
+    Multiplies all values from the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`.If multiple indices reference the same location, their
-    **contributions average** (`cf.` :meth:`~torch_scatter.scatter_add`).
+    **contributions multiply** (`cf.` :meth:`~torch_scatter.scatter_add`).
 
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{out}_i = \mathrm{out}_i + \frac{1}{N_i} \cdot
-        \sum_j \mathrm{src}_j
+        \mathrm{out}_i = \mathrm{out}_i \cdot \prod_j \mathrm{src}_j
 
-    where sum is over :math:`j` such that :math:`\mathrm{index}_j = i` and
-    :math:`N_i` indicates the number of indices referencing :math:`i`.
+    where sum is over :math:`j` such that :math:`\mathrm{index}_j = i`.
 
     Args:
         src (Tensor): The source tensor.
@@ -89,4 +85,4 @@ def scatter_mean(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
        [torch.FloatTensor of size 2x6]
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
-    return ScatterMean.apply(out, src, index, dim)
+    return ScatterMul.apply(out, src, index, dim)
