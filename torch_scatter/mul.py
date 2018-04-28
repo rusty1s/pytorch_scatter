@@ -61,7 +61,7 @@ def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
             If :attr:`dim_size` is not given, a minimal sized output tensor is
             returned. (default: :obj:`None`)
         fill_value (int, optional): If :attr:`out` is not given, automatically
-            fill output tensor with :attr:`fill_value`. (default: :obj:`0`)
+            fill output tensor with :attr:`fill_value`. (default: :obj:`1`)
 
     :rtype: :class:`Tensor`
 
