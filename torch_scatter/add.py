@@ -50,7 +50,8 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     .. math::
         \mathrm{out}_i = \mathrm{out}_i + \sum_j \mathrm{src}_j
 
-    where sum is over :math:`j` such that :math:`\mathrm{index}_j = i`.
+    where :math:`\sum` is over :math:`j` such that
+    :math:`\mathrm{index}_j = i`.
 
     Args:
         src (Tensor): The source tensor.

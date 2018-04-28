@@ -4,55 +4,52 @@ from .utils.ffi import get_func
 from .utils.gen import gen
 
 
-class ScatterMean(Function):
+class ScatterDiv(Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
-        count = src.new_zeros(out.size())
-        func = get_func('scatter_mean', src)
-        func(dim, out, index, src, count)
-        count[count == 0] = 1
-        out /= count
+        func = get_func('scatter_div', src)
+        func(dim, out, index, src)
 
         ctx.mark_dirty(out)
-        ctx.save_for_backward(index, count)
+        ctx.save_for_backward(out, src, index)
 
         return out
 
     @staticmethod
     def backward(ctx, grad_out):
-        index, count = ctx.saved_variables
+        out, src, index = ctx.saved_variables
 
         grad_src = None
         if ctx.needs_input_grad[1]:
-            grad_src = grad_out[index] / count[index]
+            grad_src = -(out * grad_out)[index] / src
 
         return None, grad_src, None, None
 
 
-def scatter_mean(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
+def scatter_div(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
     r"""
     |
 
     .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
-            master/docs/source/_figures/mean.svg?sanitize=true
+            master/docs/source/_figures/div.svg?sanitize=true
         :align: center
         :width: 400px
 
     |
 
-    Averages all values from the :attr:`src` tensor into :attr:`out` at the
+    Divides all values from the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along an given axis
     :attr:`dim`.If multiple indices reference the same location, their
-    **contributions average** (`cf.` :meth:`~torch_scatter.scatter_add`).
+    **contributions divide** (`cf.` :meth:`~torch_scatter.scatter_add`).
 
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{out}_i = \mathrm{out}_i + \frac{1}{N_i} \cdot
-        \sum_j \mathrm{src}_j
+        \mathrm{out}_i = \mathrm{out}_i \cdot \prod_j
+        \frac{1}{\mathrm{src}_j}
 
-    where :math:`\sum` is over :math:`j` such that :math:`\mathrm{index}_j = i`
-    add :math:`N_i` indicates the number of indices referencing :math:`i`.
+    where :math:`\prod` is over :math:`j` such that
+    :math:`\mathrm{index}_j = i`.
 
     Args:
         src (Tensor): The source tensor.
@@ -75,18 +72,18 @@ def scatter_mean(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
     .. testcode::
 
-        from torch_scatter import scatter_mean
-        src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        from torch_scatter import scatter_div
+        src = torch.tensor([[2, 0, 3, 4, 3], [2, 3, 4, 2, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
-        out = src.new_zeros((2, 6))
-        out = scatter_mean(src, index, out=out)
+        out = src.new_ones((2, 6))
+        out = scatter_div(src, index, out=out)
         print(out)
 
     .. testoutput::
 
-        0.0000  0.0000  4.0000  3.0000  1.5000  0.0000
-        1.0000  4.0000  2.0000  0.0000  0.0000  0.0000
+        1.0000  1.0000  0.2500  0.3333  0.2500  1.0000
+        0.5000  0.2500  0.1667  1.0000  1.0000  1.0000
        [torch.FloatTensor of size 2x6]
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
-    return ScatterMean.apply(out, src, index, dim)
+    return ScatterDiv.apply(out, src, index, dim)
