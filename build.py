@@ -1,12 +1,8 @@
 import os.path as osp
-import shutil
 import subprocess
 
 import torch
 from torch.utils.ffi import create_extension
-
-if osp.exists('build'):
-    shutil.rmtree('build')
 
 headers = ['torch_scatter/src/cpu.h']
 sources = ['torch_scatter/src/cpu.c']

@@ -48,7 +48,7 @@ def scatter_div(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
         \mathrm{out}_i = \mathrm{out}_i \cdot \prod_j
         \frac{1}{\mathrm{src}_j}
 
-    where :math:`\prod` is over :math:`j` such that
+    where :math:`\prod_j` is over :math:`j` such that
     :math:`\mathrm{index}_j = i`.
 
     Args:
@@ -73,17 +73,19 @@ def scatter_div(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
     .. testcode::
 
         from torch_scatter import scatter_div
-        src = torch.tensor([[2, 0, 3, 4, 3], [2, 3, 4, 2, 4]])
+
+        src = torch.tensor([[2, 1, 1, 4, 2], [1, 2, 1, 2, 4]]).float()
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_ones((2, 6))
+
         out = scatter_div(src, index, out=out)
+
         print(out)
 
     .. testoutput::
 
-        1.0000  1.0000  0.2500  0.3333  0.2500  1.0000
-        0.5000  0.2500  0.1667  1.0000  1.0000  1.0000
-       [torch.FloatTensor of size 2x6]
+       tensor([[ 1.0000,  1.0000,  0.2500,  0.5000,  0.5000,  1.0000],
+               [ 0.5000,  0.2500,  0.5000,  1.0000,  1.0000,  1.0000]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return ScatterDiv.apply(out, src, index, dim)

@@ -47,7 +47,7 @@ def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
     .. math::
         \mathrm{out}_i = \mathrm{out}_i \cdot \prod_j \mathrm{src}_j
 
-    where :math:`\prod` is over :math:`j` such that
+    where :math:`\prod_j` is over :math:`j` such that
     :math:`\mathrm{index}_j = i`.
 
     Args:
@@ -72,17 +72,19 @@ def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
     .. testcode::
 
         from torch_scatter import scatter_mul
+
         src = torch.tensor([[2, 0, 3, 4, 3], [2, 3, 4, 2, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_ones((2, 6))
+
         out = scatter_mul(src, index, out=out)
+
         print(out)
 
     .. testoutput::
 
-        1  1  4  3  6  0
-        6  4  8  1  1  1
-       [torch.FloatTensor of size 2x6]
+       tensor([[ 1,  1,  4,  3,  6,  0],
+               [ 6,  4,  8,  1,  1,  1]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return ScatterMul.apply(out, src, index, dim)
