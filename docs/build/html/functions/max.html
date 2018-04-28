@@ -209,20 +209,16 @@ fill output tensor with <code class="xref py py-attr docutils literal notranslat
 <span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">new_zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
-<span class="n">out</span> <span class="o">=</span> <span class="n">scatter_max</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+<span class="n">out</span><span class="p">,</span> <span class="n">argmax</span> <span class="o">=</span> <span class="n">scatter_max</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
 <span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">argmax</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(
- 0  0  4  3  2  0
- 2  4  3  0  0  0
-[torch.FloatTensor of size 2x6]
-,
--1 -1  3  4  0  1
- 1  4  3 -1 -1 -1
-[torch.LongTensor of size 2x6]
-)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tensor([[ 0,  0,  4,  3,  2,  0],
+        [ 2,  4,  3,  0,  0,  0]])
+tensor([[-1, -1,  3,  4,  0,  1],
+        [ 1,  4,  3, -1, -1, -1]])
 </pre></div>
 </div>
 </dd></dl>
