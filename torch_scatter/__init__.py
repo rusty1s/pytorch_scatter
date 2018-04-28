@@ -1,5 +1,6 @@
-from .add import ScatterAdd, scatter_add
+from .add import scatter_add
+from .sub import scatter_sub
 
 __version__ = '1.0.0'
 
-__all__ = ['ScatterAdd', 'scatter_add', '__version__']
+__all__ = ['scatter_add', 'scatter_sub', '__version__']
