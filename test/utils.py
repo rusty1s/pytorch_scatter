@@ -1,12 +1,16 @@
 import torch
-from torch._tensor_docs import tensor_classes
+from torch.testing import get_all_dtypes
 
-tensors = [t[:-4] for t in tensor_classes]
-tensors.remove('ShortTensor')  # TODO: PyTorch `atomicAdd` bug with short type.
-tensors.remove('ByteTensor')  # We cannot properly test unsigned values.
-tensors.remove('CharTensor')  # Overflow on gradient computations :(
+dtypes = get_all_dtypes()
+dtypes.remove(torch.half)
+dtypes.remove(torch.short)  # TODO: PyTorch `atomicAdd` bug with short type.
+dtypes.remove(torch.uint8)  # We cannot properly test unsigned values.
+dtypes.remove(torch.int8)  # Overflow on gradient computations :(
+
+devices = [torch.device('cpu')]
+if torch.cuda.is_available():  # pragma: no cover
+    devices += [torch.device('cuda:{}'.format(torch.cuda.current_device()))]
 
 
-def Tensor(str, x):
-    tensor = getattr(torch, str)
-    return tensor(x)
+def tensor(x, dtype, device):
+    return None if x is None else torch.tensor(x, dtype=dtype, device=device)
