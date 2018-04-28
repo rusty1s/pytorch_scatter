@@ -49,22 +49,20 @@ pip install cffi torch-scatter
 import torch
 from torch_scatter import scatter_max
 
-input = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
-index = torch.LongTensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
+src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
 
-max, argmax = scatter_max(index, input, dim=1)
+out, argmax = scatter_max(src, input)
 ```
 
 ```
-print(max)
- 0  0  4  3  2  0
- 2  4  3  0  0  0
-[torch.FloatTensor of size 2x6]
+print(out)
+tensor([[ 0,  0,  4,  3,  2,  0],
+        [ 2,  4,  3,  0,  0,  0]])
 
 print(argmax)
--1 -1  3  4  0  1
- 1  4  3 -1 -1 -1
-[torch.LongTensor of size 2x6]
+tensor([[-1, -1,  3,  4,  0,  1]
+        [ 1,  4,  3, -1, -1, -1]])
 ```
 
 ## Running tests
