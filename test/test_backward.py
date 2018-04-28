@@ -7,7 +7,7 @@ import torch_scatter
 
 from .utils import devices
 
-funcs = ['add']
+funcs = ['add', 'sub']
 indices = [2, 0, 1, 1, 0]
 
 
