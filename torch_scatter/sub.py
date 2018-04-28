@@ -22,7 +22,7 @@ def scatter_sub(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     .. math::
         \mathrm{out}_i = \mathrm{out}_i - \sum_j \mathrm{src}_j
 
-    where :math:`\sum` is over :math:`j` such that
+    where :math:`\sum_j` is over :math:`j` such that
     :math:`\mathrm{index}_j = i`.
 
     Args:
@@ -47,16 +47,18 @@ def scatter_sub(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     .. testcode::
 
         from torch_scatter import scatter_sub
+
         src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_zeros((2, 6))
+
         out = scatter_sub(src, index, out=out)
+
         print(out)
 
     .. testoutput::
 
-        0  0 -4 -3 -3  0
-       -2 -4 -4  0  0  0
-       [torch.FloatTensor of size 2x6]
+       tensor([[ 0,  0, -4, -3, -3,  0],
+               [-2, -4, -4,  0,  0,  0]])
     """
     return scatter_add(src.neg(), index, dim, out, dim_size, fill_value)

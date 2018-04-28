@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="pytorch_scatter master documentation" href="../index.html"/>
-        <link rel="next" title="Scatter Sub" href="sub.html"/>
-        <link rel="prev" title="Scatter Min" href="min.html"/> 
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scatter Sub" href="sub.html" />
+    <link rel="prev" title="Scatter Min" href="min.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -66,7 +59,7 @@
             
             
               <div class="version">
-                master (0.3.0)
+                master (1.0.0)
               </div>
             
           
@@ -110,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">pytorch_scatter</a>
@@ -118,9 +111,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -165,8 +159,8 @@
   <div class="section" id="module-torch_scatter">
 <span id="scatter-mul"></span><h1>Scatter Mul<a class="headerlink" href="#module-torch_scatter" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="torch_scatter.scatter_mul_">
-<code class="descclassname">torch_scatter.</code><code class="descname">scatter_mul_</code><span class="sig-paren">(</span><em>output</em>, <em>index</em>, <em>input</em>, <em>dim=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_scatter/functions/mul.html#scatter_mul_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torch_scatter.scatter_mul_" title="Permalink to this definition">¶</a></dt>
+<dt id="torch_scatter.scatter_mul">
+<code class="descclassname">torch_scatter.</code><code class="descname">scatter_mul</code><span class="sig-paren">(</span><em>src</em>, <em>index</em>, <em>dim=-1</em>, <em>out=None</em>, <em>dim_size=None</em>, <em>fill_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_scatter/mul.html#scatter_mul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torch_scatter.scatter_mul" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -174,83 +168,51 @@
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Multiplies all values from the <code class="xref py py-attr docutils literal"><span class="pre">input</span></code> tensor into <code class="xref py py-attr docutils literal"><span class="pre">output</span></code> at
-the indices specified in the <code class="xref py py-attr docutils literal"><span class="pre">index</span></code> tensor along an given axis
-<code class="xref py py-attr docutils literal"><span class="pre">dim</span></code>. If multiple indices reference the same location, their
-<strong>contributions multiply</strong> (<cite>cf.</cite> <a class="reference internal" href="add.html#torch_scatter.scatter_add_" title="torch_scatter.scatter_add_"><code class="xref py py-meth docutils literal"><span class="pre">scatter_add_()</span></code></a>).</p>
+<p>Multiplies all values from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">src</span></code> tensor into <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> at the
+indices specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index</span></code> tensor along an given axis
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.If multiple indices reference the same location, their
+<strong>contributions multiply</strong> (<cite>cf.</cite> <a class="reference internal" href="add.html#torch_scatter.scatter_add" title="torch_scatter.scatter_add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scatter_add()</span></code></a>).</p>
 <p>For one-dimensional tensors, the operation computes</p>
-<div class="math">
-\[\mathrm{output}_i = \mathrm{output}_i \cdot \prod_j \mathrm{input}_j\]</div>
-<p>where sum is over <span class="math">\(j\)</span> such that <span class="math">\(\mathrm{index}_j = i\)</span>.</p>
+<div class="math notranslate">
+\[\mathrm{out}_i = \mathrm{out}_i \cdot \prod_j \mathrm{src}_j\]</div>
+<p>where <span class="math notranslate">\(\prod_j\)</span> is over <span class="math notranslate">\(j\)</span> such that
+<span class="math notranslate">\(\mathrm{index}_j = i\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>output</strong> (<em>Tensor</em>) – The destination tensor</li>
-<li><strong>index</strong> (<em>LongTensor</em>) – The indices of elements to scatter</li>
-<li><strong>input</strong> (<em>Tensor</em>) – The source tensor</li>
-<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index</li>
+<li><strong>src</strong> (<em>Tensor</em>) – The source tensor.</li>
+<li><strong>index</strong> (<em>LongTensor</em>) – The indices of elements to scatter.</li>
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index.
+(default: <code class="xref py py-obj docutils literal notranslate"><span class="pre">-1</span></code>)</li>
+<li><strong>out</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The destination tensor. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
+<li><strong>dim_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
+create output with size <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> at dimension <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.
+If <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> is not given, a minimal sized output tensor is
+returned. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
+<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
+fill output tensor with <code class="xref py py-attr docutils literal notranslate"><span class="pre">fill_value</span></code>. (default: <code class="xref py py-obj docutils literal notranslate"><span class="pre">0</span></code>)</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">Tensor</span></code></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
 </td>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch_scatter</span> <span class="k">import</span> <span class="n">scatter_mul_</span>
-<span class="nb">input</span> <span class="o">=</span>     <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
-<span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="n">scatter_mul_</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-none"><div class="highlight"><pre><span></span> 1  1  4  3  6  0
- 6  4  8  1  1  1
-[torch.FloatTensor of size 2x6]
-</pre></div>
-</div>
-</dd></dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch_scatter</span> <span class="kn">import</span> <span class="n">scatter_mul</span>
 
-<dl class="function">
-<dt id="torch_scatter.scatter_mul">
-<code class="descclassname">torch_scatter.</code><code class="descname">scatter_mul</code><span class="sig-paren">(</span><em>index</em>, <em>input</em>, <em>dim=0</em>, <em>size=None</em>, <em>fill_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_scatter/functions/mul.html#scatter_mul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torch_scatter.scatter_mul" title="Permalink to this definition">¶</a></dt>
-<dd><p>Multiplies all values from the <code class="xref py py-attr docutils literal"><span class="pre">input</span></code> tensor at the indices
-specified in the <code class="xref py py-attr docutils literal"><span class="pre">index</span></code> tensor along an given axis <code class="xref py py-attr docutils literal"><span class="pre">dim</span></code>
-(<cite>cf.</cite> <a class="reference internal" href="#torch_scatter.scatter_mul_" title="torch_scatter.scatter_mul_"><code class="xref py py-meth docutils literal"><span class="pre">scatter_mul_()</span></code></a> and
-<a class="reference internal" href="add.html#torch_scatter.scatter_add" title="torch_scatter.scatter_add"><code class="xref py py-meth docutils literal"><span class="pre">scatter_add()</span></code></a>).</p>
-<p>For one-dimensional tensors, the operation computes</p>
-<div class="math">
-\[\mathrm{output}_i = \mathrm{fill\_value} \cdot \prod_j \mathrm{input}_j\]</div>
-<p>where prod is over <span class="math">\(j\)</span> such that <span class="math">\(\mathrm{index}_j = i\)</span>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>index</strong> (<em>LongTensor</em>) – The indices of elements to scatter</li>
-<li><strong>input</strong> (<em>Tensor</em>) – The source tensor</li>
-<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – Output size at dimension <code class="xref py py-attr docutils literal"><span class="pre">dim</span></code></li>
-<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – Initial filling of output tensor</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">Tensor</span></code></p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch_scatter</span> <span class="k">import</span> <span class="n">scatter_mul</span>
-<span class="nb">input</span> <span class="o">=</span>     <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
-<span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">output</span> <span class="o">=</span> <span class="n">scatter_mul</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">new_ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="n">out</span> <span class="o">=</span> <span class="n">scatter_mul</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-none"><div class="highlight"><pre><span></span> 1  1  4  3  6  0
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> 1  1  4  3  6  0
  6  4  8  1  1  1
 [torch.FloatTensor of size 2x6]
 </pre></div>
@@ -261,9 +223,7 @@ specified in the <code class="xref py py-attr docutils literal"><span class="pre
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -285,7 +245,7 @@ specified in the <code class="xref py py-attr docutils literal"><span class="pre
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -304,6 +264,7 @@ specified in the <code class="xref py py-attr docutils literal"><span class="pre
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
             VERSION:'master',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -322,14 +283,13 @@ specified in the <code class="xref py py-attr docutils literal"><span class="pre
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

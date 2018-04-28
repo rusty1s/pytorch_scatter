@@ -53,7 +53,7 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     .. math::
         \mathrm{out}_i = \max(\mathrm{out}_i, \max_j(\mathrm{src}_j))
 
-    where :math:`\max` is over :math:`j` such that
+    where :math:`\max_j` is over :math:`j` such that
     :math:`\mathrm{index}_j = i`.
 
     Args:
@@ -78,23 +78,22 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     .. testcode::
 
         from torch_scatter import scatter_max
+
         src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_zeros((2, 6))
-        out = scatter_max(src, index, out=out)
+
+        out, argmax = scatter_max(src, index, out=out)
+
         print(out)
+        print(argmax)
 
     .. testoutput::
 
-       (
-        0  0  4  3  2  0
-        2  4  3  0  0  0
-       [torch.FloatTensor of size 2x6]
-       ,
-       -1 -1  3  4  0  1
-        1  4  3 -1 -1 -1
-       [torch.LongTensor of size 2x6]
-       )
+       tensor([[ 0,  0,  4,  3,  2,  0],
+               [ 2,  4,  3,  0,  0,  0]])
+       tensor([[-1, -1,  3,  4,  0,  1],
+               [ 1,  4,  3, -1, -1, -1]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return ScatterMax.apply(out, src, index, dim)
