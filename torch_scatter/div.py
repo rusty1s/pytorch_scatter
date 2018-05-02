@@ -12,6 +12,7 @@ class ScatterDiv(Function):
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(out, src, index)
+        ctx.dim = dim
 
         return out
 
@@ -21,7 +22,7 @@ class ScatterDiv(Function):
 
         grad_src = None
         if ctx.needs_input_grad[1]:
-            grad_src = -(out * grad_out)[index] / src
+            grad_src = -(out * grad_out).gather(ctx.dim, index) / src
 
         return None, grad_src, None, None
 
