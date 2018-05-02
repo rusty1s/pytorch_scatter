@@ -15,6 +15,7 @@ class ScatterMean(Function):
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(index, count)
+        ctx.dim = dim
 
         return out
 
@@ -24,7 +25,8 @@ class ScatterMean(Function):
 
         grad_src = None
         if ctx.needs_input_grad[1]:
-            grad_src = grad_out[index] / count[index]
+            grad_src = grad_out.gather(ctx.dim, index)
+            grad_src /= count.gather(ctx.dim, index)
 
         return None, grad_src, None, None
 

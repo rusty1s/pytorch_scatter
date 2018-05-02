@@ -1,24 +1,4 @@
-from torch.autograd import Function
-
 from .utils.gen import gen
-
-
-class ScatterAdd(Function):
-    @staticmethod
-    def forward(ctx, out, src, index, dim):
-        ctx.mark_dirty(out)
-        ctx.save_for_backward(index)
-        return out.scatter_add_(dim, index, src)
-
-    @staticmethod
-    def backward(ctx, grad_out):
-        index, = ctx.saved_variables
-
-        grad_src = None
-        if ctx.needs_input_grad[1]:
-            grad_src = grad_out[index]
-
-        return None, grad_src, None, None
 
 
 def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
@@ -90,4 +70,4 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
                [ 2,  4,  4,  0,  0,  0]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
-    return ScatterAdd.apply(out, src, index, dim)
+    return out.scatter_add_(dim, index, src)

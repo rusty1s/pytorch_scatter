@@ -12,7 +12,7 @@ def gen(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
     # Generate output tensor if not given.
     if out is None:
-        dim_size = index.max() + 1 if dim_size is None else dim_size
+        dim_size = index.max().item() + 1 if dim_size is None else dim_size
         out_size = list(src.size())
         out_size[dim] = dim_size
         out = src.new_full(out_size, fill_value)
