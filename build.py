@@ -15,8 +15,8 @@ with_cuda = False
 if torch.cuda.is_available():
     subprocess.call(['./build.sh', osp.dirname(torch.__file__)])
 
-    headers += ['torch_scatter/src/cuda.h']
-    sources += ['torch_scatter/src/cuda.c']
+    headers += ['torch_scatter/src/gpu.h']
+    sources += ['torch_scatter/src/gpu.c']
     include_dirs += ['torch_scatter/kernel']
     define_macros += [('WITH_CUDA', None)]
     extra_objects += ['torch_scatter/build/kernel.so']
