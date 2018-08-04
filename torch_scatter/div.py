@@ -1,6 +1,6 @@
 from torch.autograd import Function
 
-from .utils.ffi import get_func
+from .utils.ext import get_func
 from .utils.gen import gen
 
 
@@ -8,7 +8,7 @@ class ScatterDiv(Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
         func = get_func('scatter_div', src)
-        func(dim, out, index, src)
+        func(src, index, out, dim)
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(out, src, index)

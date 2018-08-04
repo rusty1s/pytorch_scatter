@@ -40,7 +40,7 @@ If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
 Then run:
 
 ```
-pip install cffi torch-scatter
+pip install torch-scatter
 ```
 
 ## Example

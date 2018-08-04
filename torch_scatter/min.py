@@ -1,6 +1,6 @@
 from torch.autograd import Function
 
-from .utils.ffi import get_func
+from .utils.ext import get_func
 from .utils.gen import gen
 
 
@@ -9,7 +9,7 @@ class ScatterMin(Function):
     def forward(ctx, out, src, index, dim):
         arg = index.new_full(out.size(), -1)
         func = get_func('scatter_min', src)
-        func(dim, out, index, src, arg)
+        func(src, index, out, arg, dim)
 
         ctx.mark_dirty(out)
         ctx.dim = dim
@@ -25,7 +25,7 @@ class ScatterMin(Function):
         if ctx.needs_input_grad[1]:
             grad_src = grad_out.new_zeros(index.size())
             func = get_func('index_backward', grad_out)
-            func(ctx.dim, grad_src, index, grad_out, arg)
+            func(grad_out, index, arg, grad_src, ctx.dim)
 
         return None, grad_src, None, None
 
