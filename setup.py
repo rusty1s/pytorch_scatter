@@ -1,11 +1,22 @@
-from os import path as osp
-
+import glob
 from setuptools import setup, find_packages
 
-__version__ = '1.0.3'
+import torch.cuda
+from torch.utils.cpp_extension import CppExtension, CUDAExtension
+
+ext_modules = [CppExtension('scatter_cpu', ['cpu/scatter.cpp'])]
+cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
+
+if torch.cuda.is_available():
+    ext_modules += [
+        CUDAExtension('scatter_cuda',
+                      ['cuda/scatter.cpp'] + glob.glob('cuda/*.cu'))
+    ]
+
+__version__ = '1.0.4'
 url = 'https://github.com/rusty1s/pytorch_scatter'
 
-install_requires = ['cffi']
+install_requires = []
 setup_requires = ['pytest-runner', 'cffi']
 tests_require = ['pytest', 'pytest-cov']
 
@@ -21,7 +32,7 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    packages=find_packages(exclude=['build']),
-    ext_package='',
-    cffi_modules=[osp.join(osp.dirname(__file__), 'build.py:ffi')],
+    ext_modules=ext_modules,
+    cmdclass=cmdclass,
+    packages=find_packages(),
 )
