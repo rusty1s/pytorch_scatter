@@ -4,7 +4,11 @@ from setuptools import setup, find_packages
 import torch.cuda
 from torch.utils.cpp_extension import CppExtension, CUDAExtension
 
-ext_modules = [CppExtension('scatter_cpu', ['cpu/scatter.cpp'])]
+ext_modules = [
+    CppExtension(
+        'scatter_cpu', ['cpu/scatter.cpp'],
+        extra_compile_args=['-Wno-unused-variable'])
+]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
 if torch.cuda.is_available():

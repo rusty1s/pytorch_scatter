@@ -11,7 +11,7 @@ void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
         idx = index_data[i * index_stride];
         out_data[idx * out_stride] *= src_data[i * src_stride];
       }
-    })
+    });
   });
 }
 
@@ -24,7 +24,7 @@ void scatter_div(at::Tensor src, at::Tensor index, at::Tensor out,
         idx = index_data[i * index_stride];
         out_data[idx * out_stride] /= src_data[i * src_stride];
       }
-    })
+    });
   });
 }
 
@@ -41,7 +41,7 @@ void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
                      arg_data[idx * arg_stride] = i;
                    }
                  }
-               })
+               });
   });
 }
 
@@ -58,7 +58,7 @@ void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
                      arg_data[idx * arg_stride] = i;
                    }
                  }
-               })
+               });
   });
 }
 
@@ -74,7 +74,7 @@ void index_backward(at::Tensor grad, at::Tensor index, at::Tensor arg,
                      out_data[i * out_stride] = grad_data[idx * grad_stride];
                    }
                  }
-               })
+               });
   });
 }
 
