@@ -1,6 +1,12 @@
 language: python
 sudo: required
 dist: trusty
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.9
 matrix:
   include:
     - python: 2.7
