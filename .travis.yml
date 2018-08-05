@@ -8,7 +8,6 @@ addons:
     packages:
       - g++-4.9
 env:
-  - CC=g++-4.9
   - CXX=g++-4.9
 matrix:
   include:
