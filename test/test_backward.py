@@ -11,15 +11,18 @@ dtypes = [torch.float, torch.double]
 funcs = ['add', 'sub', 'mul', 'div', 'mean']
 indices = [2, 0, 1, 1, 0]
 
-# @pytest.mark.parametrize('func,device', product(funcs, devices))
-# def test_backward(func, device):
-#     index = torch.tensor(indices, dtype=torch.long, device=device)
-#     src = torch.rand((index.size(0), 2), dtype=torch.double, device=device)
-#     src.requires_grad_()
 
-#     op = getattr(torch_scatter, 'scatter_{}'.format(func))
-#     data = (src, index, 0)
-#     assert gradcheck(op, data, eps=1e-6, atol=1e-4) is True
+@pytest.mark.parametrize('func,device', product(funcs, devices))
+def test_backward(func, device):
+    pass
+    # index = torch.tensor(indices, dtype=torch.long, device=device)
+    # src = torch.rand((index.size(0), 2), dtype=torch.double, device=device)
+    # src.requires_grad_()
+
+    # op = getattr(torch_scatter, 'scatter_{}'.format(func))
+    # data = (src, index, 0)
+    # assert gradcheck(op, data, eps=1e-6, atol=1e-4) is True
+
 
 tests = [{
     'name': 'max',
