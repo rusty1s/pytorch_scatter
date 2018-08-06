@@ -118,6 +118,8 @@ def test_forward(test, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
     expected = tensor(test['expected'], dtype, device)
+    print(src)
+    print(index)
 
     op = getattr(torch_scatter, 'scatter_{}'.format(test['name']))
     out = op(src, index, test['dim'], fill_value=test['fill_value'])
