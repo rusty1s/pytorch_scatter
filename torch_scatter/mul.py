@@ -9,7 +9,9 @@ class ScatterMul(Function):
     def forward(ctx, out, src, index, dim):
         print("DRIN")
         func = get_func('scatter_mul', src)
+        print(func)
         func(src, index, out, dim)
+        print(out)
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(out, src, index)
