@@ -7,11 +7,8 @@ from torch_scatter.utils.gen import gen
 class ScatterMul(Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
-        print("DRIN")
         func = get_func('scatter_mul', src)
-        print(func)
         func(src, index, out, dim)
-        print(out)
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(out, src, index)
