@@ -17,7 +17,7 @@
     auto TENSOR3##_stride = TENSOR3.stride(DIM);                               \
                                                                                \
     auto dims = TENSOR1.dim();                                                 \
-    auto zeros = at::zeros(dims, torch::CPU(at::kLong));                       \
+    auto zeros = at::zeros(torch::CPU(at::kLong), {dims});                     \
     auto counter = zeros.data<int64_t>();                                      \
     bool has_finished = false;                                                 \
                                                                                \
@@ -76,7 +76,7 @@
     auto TENSOR4##_stride = TENSOR4.stride(DIM);                               \
                                                                                \
     auto dims = TENSOR1.dim();                                                 \
-    auto zeros = at::zeros(dims, torch::CPU(at::kLong));                       \
+    auto zeros = at::zeros(torch::CPU(at::kLong), {dims});                     \
     auto counter = zeros.data<int64_t>();                                      \
     bool has_finished = false;                                                 \
                                                                                \
