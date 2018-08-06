@@ -1,4 +1,4 @@
-from .utils.gen import gen
+from torch_scatter.utils.gen import gen
 
 
 def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):

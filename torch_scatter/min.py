@@ -1,7 +1,7 @@
 from torch.autograd import Function
 
-from .utils.ext import get_func
-from .utils.gen import gen
+from torch_scatter.utils.ext import get_func
+from torch_scatter.utils.gen import gen
 
 
 class ScatterMin(Function):
