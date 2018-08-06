@@ -5,10 +5,13 @@
 void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
                  int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
+  printf("elems_per_row: %lli\n", elems_per_row);
   AT_DISPATCH_ALL_TYPES(src.type(), "scatter_mul", [&] {
     DIM_APPLY3(scalar_t, src, int64_t, index, scalar_t, out, dim, {
       for (i = 0; i < elems_per_row; i++) {
         idx = index_data[i * index_stride];
+        printf("i: %lli, idx: %lli\n", i, idx);
+        printf("src: %lli\n", (int64_t)src_data[i * src_stride]);
         out_data[idx * out_stride] *= src_data[i * src_stride];
       }
     });
