@@ -3,6 +3,9 @@ from torch.testing import get_all_dtypes
 
 dtypes = get_all_dtypes()
 dtypes.remove(torch.half)
+dtypes.remove(torch.short)  # PyTorch scatter does not work on short types.
+
+grad_dtypes = [torch.float, torch.double]
 
 devices = [torch.device('cpu')]
 if torch.cuda.is_available():  # pragma: no cover

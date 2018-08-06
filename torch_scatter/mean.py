@@ -1,6 +1,6 @@
 import torch
 
-from .add import scatter_add
+from torch_scatter import scatter_add
 
 
 def scatter_mean(src, index, dim=-1, out=None, dim_size=None, fill_value=0):

@@ -5,9 +5,8 @@ import torch
 from torch.autograd import gradcheck
 import torch_scatter
 
-from .utils import devices, tensor
+from .utils import grad_dtypes as dtypes, devices, tensor
 
-dtypes = [torch.float, torch.double]
 funcs = ['add', 'sub', 'mul', 'div', 'mean']
 indices = [2, 0, 1, 1, 0]
 
