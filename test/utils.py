@@ -8,7 +8,7 @@ dtypes.remove(torch.short)  # PyTorch scatter does not work on short types.
 grad_dtypes = [torch.float, torch.double]
 
 devices = [torch.device('cpu')]
-if torch.cuda.is_available():  # pragma: no cover
+if torch.cuda.is_available():
     devices += [torch.device('cuda:{}'.format(torch.cuda.current_device()))]
 
 
