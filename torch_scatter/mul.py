@@ -84,8 +84,8 @@ def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
 
     .. testoutput::
 
-       tensor([[ 1,  1,  4,  3,  6,  0],
-               [ 6,  4,  8,  1,  1,  1]])
+       tensor([[1, 1, 4, 3, 6, 0],
+               [6, 4, 8, 1, 1, 1]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return ScatterMul.apply(out, src, index, dim)
