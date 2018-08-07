@@ -1,7 +1,5 @@
-import glob
 from setuptools import setup, find_packages
-
-import torch.cuda
+import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension
 
 ext_modules = [
@@ -14,7 +12,7 @@ cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 if torch.cuda.is_available():
     ext_modules += [
         CUDAExtension('scatter_cuda',
-                      ['cuda/scatter.cpp'] + glob.glob('cuda/*.cu'))
+                      ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'])
     ]
 
 __version__ = '1.0.4'
