@@ -15,8 +15,6 @@ addons:
       - g++-4.9
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - $CC --version
-  - $CXX --version
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp27-cp27mu-linux_x86_64.whl; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip install  http://download.pytorch.org/whl/cpu/torch-0.4.1-cp35-cp35m-linux_x86_64.whl; fi
@@ -25,6 +23,8 @@ install:
   - pip install flake8
   - pip install codecov
 script:
+  - $CC --version
+  - $CXX --version
   - pycodestyle .
   - flake8 .
   - python setup.py install
