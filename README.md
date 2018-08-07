@@ -35,13 +35,26 @@ All included operations work on varying data types, are implemented both for CPU
 
 ## Installation
 
-Check that `nvcc` is accessible from terminal, e.g. `nvcc --version`.
-If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
+Ensure that at least PyTorch 0.4.1 is installed and verify that `cuda/bin` and `cuda/install` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+
+```
+$ python -c "import torch; print(torch.__version__)"
+>>> 0.4.1
+
+$ echo $PATH
+>>> /usr/local/cuda/bin:...
+
+$ echo $CPATH
+>>> /usr/local/cuda/install:...
+```
+
 Then run:
 
 ```
 pip install torch-scatter
 ```
+
+If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_scatter/issues).
 
 ## Example
 
