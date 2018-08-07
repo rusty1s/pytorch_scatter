@@ -24,10 +24,6 @@ install:
   - pip install flake8
   - pip install codecov
 script:
-  - which $CC
-  - which $CXX
-  - $CC --version
-  - $CXX --version
   - pycodestyle .
   - flake8 .
   - python setup.py install

@@ -85,8 +85,8 @@ def scatter_div(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
 
     .. testoutput::
 
-       tensor([[ 1.0000,  1.0000,  0.2500,  0.5000,  0.5000,  1.0000],
-               [ 0.5000,  0.2500,  0.5000,  1.0000,  1.0000,  1.0000]])
+       tensor([[1.0000, 1.0000, 0.2500, 0.5000, 0.5000, 1.0000],
+               [0.5000, 0.2500, 0.5000, 1.0000, 1.0000, 1.0000]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return ScatterDiv.apply(out, src, index, dim)

@@ -90,8 +90,8 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
     .. testoutput::
 
-       tensor([[ 0,  0,  4,  3,  2,  0],
-               [ 2,  4,  3,  0,  0,  0]])
+       tensor([[0, 0, 4, 3, 2, 0],
+               [2, 4, 3, 0, 0, 0]])
        tensor([[-1, -1,  3,  4,  0,  1],
                [ 1,  4,  3, -1, -1, -1]])
     """
