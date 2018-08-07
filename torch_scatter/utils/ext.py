@@ -6,5 +6,5 @@ if torch.cuda.is_available():
 
 
 def get_func(name, tensor):
-    scatter = scatter_cuda if tensor.is_cuda else scatter_cpu
-    return getattr(scatter, name)
+    module = scatter_cuda if tensor.is_cuda else scatter_cpu
+    return getattr(module, name)
