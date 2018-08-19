@@ -1,3 +1,5 @@
+#pragma once
+
 #define ATOMIC(NAME)                                                           \
   template <typename scalar, size_t size> struct Atomic##NAME##IntegerImpl;    \
                                                                                \
