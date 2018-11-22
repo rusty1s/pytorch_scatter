@@ -19,7 +19,7 @@ class ScatterMax(Function):
 
     @staticmethod
     def backward(ctx, grad_out, grad_arg):
-        index, arg = ctx.saved_variables
+        index, arg = ctx.saved_tensors
 
         grad_src = None
         if ctx.needs_input_grad[1]:

@@ -18,7 +18,7 @@ class ScatterMul(Function):
 
     @staticmethod
     def backward(ctx, grad_out):
-        out, src, index = ctx.saved_variables
+        out, src, index = ctx.saved_tensors
 
         grad_src = None
         if ctx.needs_input_grad[1]:
