@@ -1,10 +1,13 @@
 import torch
-import scatter_cpu
+import torch_scatter.scatter_cpu
 
 if torch.cuda.is_available():
-    import scatter_cuda
+    import torch_scatter.scatter_cuda
 
 
 def get_func(name, tensor):
-    module = scatter_cuda if tensor.is_cuda else scatter_cpu
+    if tensor.is_cuda:
+        module = torch_scatter.scatter_cuda
+    else:
+        module = torch_scatter.scatter_cpu
     return getattr(module, name)

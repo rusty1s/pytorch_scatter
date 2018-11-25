@@ -4,14 +4,14 @@ from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
 ext_modules = [
     CppExtension(
-        'scatter_cpu', ['cpu/scatter.cpp'],
+        'torch_scatter.scatter_cpu', ['cpu/scatter.cpp'],
         extra_compile_args=['-Wno-unused-variable'])
 ]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
 if CUDA_HOME is not None:
     ext_modules += [
-        CUDAExtension('scatter_cuda',
+        CUDAExtension('torch_scatter.scatter_cuda',
                       ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'])
     ]
 
