@@ -15,7 +15,7 @@ if CUDA_HOME is not None:
                       ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'])
     ]
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 url = 'https://github.com/rusty1s/pytorch_scatter'
 
 install_requires = []

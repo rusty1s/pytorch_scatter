@@ -7,7 +7,7 @@ from .std import scatter_std
 from .max import scatter_max
 from .min import scatter_min
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 __all__ = [
     'scatter_add',
