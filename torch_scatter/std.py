@@ -43,6 +43,8 @@ def scatter_std(src, index, dim=-1, out=None, dim_size=None, unbiased=True):
         unbiased (bool, optional): If set to :obj:`False`, then the standard-
             deviation will be calculated via the biased estimator.
             (default: :obj:`True`)
+
+    :rtype: :class:`Tensor`
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value=0)
 
