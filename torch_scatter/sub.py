@@ -13,7 +13,7 @@ def scatter_sub(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     |
 
     Subtracts all values from the :attr:`src` tensor into :attr:`out` at the
-    indices specified in the :attr:`index` tensor along an given axis
+    indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`.If multiple indices reference the same location, their
     **negated contributions add** (`cf.` :meth:`~torch_scatter.scatter_add`).
 

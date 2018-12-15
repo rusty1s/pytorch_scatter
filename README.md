@@ -28,6 +28,7 @@ The package consists of the following operations:
 * [**Scatter Mul**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mul.html)
 * [**Scatter Div**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/div.html)
 * [**Scatter Mean**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mean.html)
+* [**Scatter Std**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/std.html)
 * [**Scatter Min**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/min.html)
 * [**Scatter Max**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/max.html)
 

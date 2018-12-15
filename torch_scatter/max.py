@@ -42,7 +42,7 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     |
 
     Maximizes all values from the :attr:`src` tensor into :attr:`out` at the
-    indices specified in the :attr:`index` tensor along an given axis
+    indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`.If multiple indices reference the same location, their
     **contributions maximize** (`cf.` :meth:`~torch_scatter.scatter_add`).
     The second return tensor contains index location in :attr:`src` of each
