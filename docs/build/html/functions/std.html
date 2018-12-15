@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Scatter Div &mdash; pytorch_scatter master documentation</title>
+  <title>Scatter Std &mdash; pytorch_scatter master documentation</title>
   
 
   
@@ -36,8 +36,8 @@
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="pytorch_scatter master documentation" href="../index.html"/>
-        <link rel="next" title="Scatter Max" href="max.html"/>
-        <link rel="prev" title="Scatter Add" href="add.html"/> 
+        <link rel="next" title="Scatter Sub" href="sub.html"/>
+        <link rel="prev" title="Scatter Mul" href="mul.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -93,12 +93,12 @@
               <p class="caption"><span class="caption-text">Package reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="add.html">Scatter Add</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Scatter Div</a></li>
+<li class="toctree-l1"><a class="reference internal" href="div.html">Scatter Div</a></li>
 <li class="toctree-l1"><a class="reference internal" href="max.html">Scatter Max</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mean.html">Scatter Mean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="min.html">Scatter Min</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mul.html">Scatter Mul</a></li>
-<li class="toctree-l1"><a class="reference internal" href="std.html">Scatter Std</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scatter Std</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sub.html">Scatter Sub</a></li>
 </ul>
 
@@ -144,13 +144,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>Scatter Div</li>
+      <li>Scatter Std</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/functions/div.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/functions/std.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -164,32 +164,33 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-torch_scatter">
-<span id="scatter-div"></span><h1>Scatter Div<a class="headerlink" href="#module-torch_scatter" title="Permalink to this headline">¶</a></h1>
+<span id="scatter-std"></span><h1>Scatter Std<a class="headerlink" href="#module-torch_scatter" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="torch_scatter.scatter_div">
-<code class="descclassname">torch_scatter.</code><code class="descname">scatter_div</code><span class="sig-paren">(</span><em>src</em>, <em>index</em>, <em>dim=-1</em>, <em>out=None</em>, <em>dim_size=None</em>, <em>fill_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_scatter/div.html#scatter_div"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torch_scatter.scatter_div" title="Permalink to this definition">¶</a></dt>
+<dt id="torch_scatter.scatter_std">
+<code class="descclassname">torch_scatter.</code><code class="descname">scatter_std</code><span class="sig-paren">(</span><em>src</em>, <em>index</em>, <em>dim=-1</em>, <em>out=None</em>, <em>dim_size=None</em>, <em>unbiased=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_scatter/std.html#scatter_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torch_scatter.scatter_std" title="Permalink to this definition">¶</a></dt>
 <dd><div class="line-block">
 <div class="line"><br /></div>
 </div>
-<a class="reference internal image-reference" href="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/div.svg?sanitize=true"><img alt="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/div.svg?sanitize=true" class="align-center" src="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/div.svg?sanitize=true" style="width: 400px;" /></a>
+<a class="reference internal image-reference" href="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/std.svg?sanitize=true"><img alt="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/std.svg?sanitize=true" class="align-center" src="https://raw.githubusercontent.com/rusty1s/pytorch_scatter/master/docs/source/_figures/std.svg?sanitize=true" style="width: 400px;" /></a>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Divides all values from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">src</span></code> tensor into <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> at the
-indices specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index</span></code> tensor along a given axis
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.If multiple indices reference the same location, their
-<strong>contributions divide</strong> (<cite>cf.</cite> <a class="reference internal" href="add.html#torch_scatter.scatter_add" title="torch_scatter.scatter_add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scatter_add()</span></code></a>).</p>
+<p>Computes the standard-deviation from all values from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">src</span></code> tensor
+into <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> at the indices specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index</span></code> tensor along
+a given axis <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code> (<cite>cf.</cite> <a class="reference internal" href="add.html#torch_scatter.scatter_add" title="torch_scatter.scatter_add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scatter_add()</span></code></a>).</p>
 <p>For one-dimensional tensors, the operation computes</p>
 <div class="math notranslate nohighlight">
-\[\mathrm{out}_i = \mathrm{out}_i \cdot \prod_j
-\frac{1}{\mathrm{src}_j}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\prod_j\)</span> is over <span class="math notranslate nohighlight">\(j\)</span> such that
-<span class="math notranslate nohighlight">\(\mathrm{index}_j = i\)</span>.</p>
+\[\mathrm{out}_i = \sqrt{\frac{\sum_j {\left( x_j - \overline{x}_i
+\right)}^2}{N_i - 1}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sum_j\)</span> is over <span class="math notranslate nohighlight">\(j\)</span> such that
+<span class="math notranslate nohighlight">\(\mathrm{index}_j = i\)</span>. <span class="math notranslate nohighlight">\(N_i\)</span> and <span class="math notranslate nohighlight">\(\overline{x}_i\)</span>
+indicate the number of indices referencing <span class="math notranslate nohighlight">\(i\)</span> and their mean value,
+respectively.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>src</strong> (<em>Tensor</em>) – The source tensor.</li>
 <li><strong>index</strong> (<em>LongTensor</em>) – The indices of elements to scatter.</li>
 <li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index.
@@ -199,31 +200,14 @@ indices specified in the <code class="xref py py-attr docutils literal notransla
 create output with size <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> at dimension <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.
 If <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> is not given, a minimal sized output tensor is
 returned. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
-<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
-fill output tensor with <code class="xref py py-attr docutils literal notranslate"><span class="pre">fill_value</span></code>. (default: <code class="xref py py-obj docutils literal notranslate"><span class="pre">1</span></code>)</li>
+<li><strong>unbiased</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – If set to <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>, then the standard-
+deviation will be calculated via the biased estimator.
+(default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>)</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></p>
 </td>
 </tr>
 </tbody>
 </table>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch_scatter</span> <span class="kn">import</span> <span class="n">scatter_div</span>
-
-<span class="n">src</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
-<span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">out</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">new_ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-
-<span class="n">out</span> <span class="o">=</span> <span class="n">scatter_div</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tensor([[1.0000, 1.0000, 0.2500, 0.5000, 0.5000, 1.0000],
-        [0.5000, 0.2500, 0.5000, 1.0000, 1.0000, 1.0000]])
-</pre></div>
-</div>
 </dd></dl>
 
 </div>
@@ -238,10 +222,10 @@ fill output tensor with <code class="xref py py-attr docutils literal notranslat
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="max.html" class="btn btn-neutral float-right" title="Scatter Max" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sub.html" class="btn btn-neutral float-right" title="Scatter Sub" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="add.html" class="btn btn-neutral" title="Scatter Add" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mul.html" class="btn btn-neutral" title="Scatter Mul" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

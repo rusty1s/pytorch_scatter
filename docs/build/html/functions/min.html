@@ -25,19 +25,26 @@
   
 
   
+  
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Scatter Mul" href="mul.html" />
-    <link rel="prev" title="Scatter Mean" href="mean.html" /> 
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pytorch_scatter master documentation" href="../index.html"/>
+        <link rel="next" title="Scatter Mul" href="mul.html"/>
+        <link rel="prev" title="Scatter Mean" href="mean.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
@@ -59,7 +66,7 @@
             
             
               <div class="version">
-                master (1.0.0)
+                master (1.1.0)
               </div>
             
           
@@ -91,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mean.html">Scatter Mean</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Scatter Min</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mul.html">Scatter Mul</a></li>
+<li class="toctree-l1"><a class="reference internal" href="std.html">Scatter Std</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sub.html">Scatter Sub</a></li>
 </ul>
 
@@ -103,7 +111,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">pytorch_scatter</a>
@@ -111,10 +119,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -169,16 +176,16 @@
 <div class="line"><br /></div>
 </div>
 <p>Minimizes all values from the <code class="xref py py-attr docutils literal notranslate"><span class="pre">src</span></code> tensor into <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> at the
-indices specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index</span></code> tensor along an given axis
+indices specified in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">index</span></code> tensor along a given axis
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.If multiple indices reference the same location, their
 <strong>contributions maximize</strong> (<cite>cf.</cite> <a class="reference internal" href="add.html#torch_scatter.scatter_add" title="torch_scatter.scatter_add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scatter_add()</span></code></a>).
 The second return tensor contains index location in <code class="xref py py-attr docutils literal notranslate"><span class="pre">src</span></code> of each
 minimum value (known as argmax).</p>
 <p>For one-dimensional tensors, the operation computes</p>
-<div class="math notranslate">
+<div class="math notranslate nohighlight">
 \[\mathrm{out}_i = \min(\mathrm{out}_i, \min_j(\mathrm{src}_j))\]</div>
-<p>where <span class="math notranslate">\(\min_j\)</span> is over <span class="math notranslate">\(j\)</span> such that
-<span class="math notranslate">\(\mathrm{index}_j = i\)</span>.</p>
+<p>where <span class="math notranslate nohighlight">\(\min_j\)</span> is over <span class="math notranslate nohighlight">\(j\)</span> such that
+<span class="math notranslate nohighlight">\(\mathrm{index}_j = i\)</span>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -186,14 +193,14 @@ minimum value (known as argmax).</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>src</strong> (<em>Tensor</em>) – The source tensor.</li>
 <li><strong>index</strong> (<em>LongTensor</em>) – The indices of elements to scatter.</li>
-<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index.
+<li><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which to index.
 (default: <code class="xref py py-obj docutils literal notranslate"><span class="pre">-1</span></code>)</li>
-<li><strong>out</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The destination tensor. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
-<li><strong>dim_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
+<li><strong>out</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The destination tensor. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
+<li><strong>dim_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
 create output with size <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> at dimension <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim</span></code>.
 If <code class="xref py py-attr docutils literal notranslate"><span class="pre">dim_size</span></code> is not given, a minimal sized output tensor is
-returned. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
-<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
+returned. (default: <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>)</li>
+<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">out</span></code> is not given, automatically
 fill output tensor with <code class="xref py py-attr docutils literal notranslate"><span class="pre">fill_value</span></code>. (default: <code class="xref py py-obj docutils literal notranslate"><span class="pre">0</span></code>)</li>
 </ul>
 </td>
@@ -227,7 +234,9 @@ tensor([[-1, -1,  3,  4,  0,  1],
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -249,7 +258,7 @@ tensor([[-1, -1,  3,  4,  0,  1],
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -268,7 +277,6 @@ tensor([[-1, -1,  3,  4,  0,  1],
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
             VERSION:'master',
-            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -287,13 +295,14 @@ tensor([[-1, -1,  3,  4,  0,  1],
     <script type="text/javascript" src="../_static/js/theme.js"></script>
   
 
+  
+  
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.StickyNav.enable();
       });
-  </script> 
+  </script>
+   
 
 </body>
 </html>

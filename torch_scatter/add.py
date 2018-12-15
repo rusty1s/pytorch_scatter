@@ -13,7 +13,7 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     |
 
     Sums all values from the :attr:`src` tensor into :attr:`out` at the indices
-    specified in the :attr:`index` tensor along an given axis :attr:`dim`. For
+    specified in the :attr:`index` tensor along a given axis :attr:`dim`. For
     each value in :attr:`src`, its output index is specified by its index in
     :attr:`input` for dimensions outside of :attr:`dim` and by the
     corresponding value in :attr:`index` for dimension :attr:`dim`. If
