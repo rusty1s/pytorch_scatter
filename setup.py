@@ -1,11 +1,16 @@
+import platform
 from setuptools import setup, find_packages
 import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
+extra_compile_args = []
+if platform.system() != 'Windows':
+    extra_compile_args += ['-Wno-unused-variable']
+
 ext_modules = [
     CppExtension(
         'torch_scatter.scatter_cpu', ['cpu/scatter.cpp'],
-        extra_compile_args=['-Wno-unused-variable'])
+        extra_compile_args=extra_compile_args)
 ]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
