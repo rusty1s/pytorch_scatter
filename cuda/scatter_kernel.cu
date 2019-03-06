@@ -43,6 +43,7 @@ scatter_mul_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
 
 void scatter_mul_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                       int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.type(), "scatter_mul_kernel", [&] {
     KERNEL_RUN(scatter_mul_kernel, index.dim(), index.numel(),
                at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src),
@@ -69,6 +70,7 @@ scatter_div_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
 
 void scatter_div_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                       int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.type(), "scatter_div_kernel", [&] {
     KERNEL_RUN(scatter_div_kernel, index.dim(), index.numel(),
                at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src),
@@ -114,6 +116,7 @@ scatter_max_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
 
 void scatter_max_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                       at::Tensor arg, int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.type(), "scatter_max_kernel", [&] {
     auto src_info = at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src);
     auto index_info = at::cuda::detail::getTensorInfo<int64_t, int64_t>(index);
@@ -144,6 +147,7 @@ scatter_min_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
 
 void scatter_min_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                       at::Tensor arg, int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.type(), "scatter_min_kernel", [&] {
     auto src_info = at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src);
     auto index_info = at::cuda::detail::getTensorInfo<int64_t, int64_t>(index);
@@ -179,6 +183,7 @@ index_backward_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> grad,
 
 void index_backward_cuda(at::Tensor grad, at::Tensor index, at::Tensor arg,
                          at::Tensor out, int64_t dim) {
+  cudaSetDevice(grad.get_device());
   AT_DISPATCH_ALL_TYPES(grad.type(), "index_backward_kernel", [&] {
     KERNEL_RUN(index_backward_kernel, index.dim(), index.numel(),
                at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad),
