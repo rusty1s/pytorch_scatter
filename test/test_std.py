@@ -15,5 +15,6 @@ def test_std(dtype, device, bias):
     index = tensor([[0, 0, 0, 0, 0], [1, 1, 1, 1, 1]], torch.long, device)
 
     out = scatter_std(src, index, dim=-1, unbiased=bias)
-    expected = src.std(dim=-1, unbiased=bias)
-    assert out.tolist() == [[expected[0].item(), 0], [0, expected[0].item()]]
+    std = src.std(dim=-1, unbiased=bias)[0].item()
+    expected = torch.tensor([[std, 0], [0, std]], dtype=out.dtype)
+    assert torch.allclose(out, expected)
