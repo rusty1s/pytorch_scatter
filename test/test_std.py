@@ -16,5 +16,5 @@ def test_std(dtype, device, bias):
 
     out = scatter_std(src, index, dim=-1, unbiased=bias)
     std = src.std(dim=-1, unbiased=bias)[0].item()
-    expected = torch.tensor([[std, 0], [0, std]], dtype=out.dtype)
+    expected = tensor([[std, 0], [0, std]], dtype, device)
     assert torch.allclose(out, expected)
