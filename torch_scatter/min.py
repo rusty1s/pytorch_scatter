@@ -44,9 +44,9 @@ def scatter_min(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     Minimizes all values from the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`.If multiple indices reference the same location, their
-    **contributions maximize** (`cf.` :meth:`~torch_scatter.scatter_add`).
+    **contributions minimize** (`cf.` :meth:`~torch_scatter.scatter_add`).
     The second return tensor contains index location in :attr:`src` of each
-    minimum value (known as argmax).
+    minimum value (known as argmin).
 
     For one-dimensional tensors, the operation computes
 
@@ -83,10 +83,10 @@ def scatter_min(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
         index = torch.tensor([[ 4, 5,  4,  2,  3], [0,  0,  2,  2,  1]])
         out = src.new_zeros((2, 6))
 
-        out, argmax = scatter_min(src, index, out=out)
+        out, argmin = scatter_min(src, index, out=out)
 
         print(out)
-        print(argmax)
+        print(argmin)
 
     .. testoutput::
 
@@ -97,5 +97,5 @@ def scatter_min(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     if src.size(dim) == 0:  # pragma: no cover
-        return out
+        return out, index.new_full(out.size(), -1)
     return ScatterMin.apply(out, src, index, dim)
