@@ -97,5 +97,5 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     if src.size(dim) == 0:  # pragma: no cover
-        return out
+        return out, index.new_full(out.size(), -1)
     return ScatterMax.apply(out, src, index, dim)
