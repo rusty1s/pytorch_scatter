@@ -2,8 +2,10 @@ import torch
 from torch.testing import get_all_dtypes
 
 dtypes = get_all_dtypes()
+
 dtypes.remove(torch.half)
 dtypes.remove(torch.short)  # PyTorch scatter does not work on short types.
+dtypes.remove(torch.bool)
 
 grad_dtypes = [torch.float, torch.double]
 
