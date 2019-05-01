@@ -36,7 +36,7 @@ All included operations work on varying data types, are implemented both for CPU
 
 ## Installation
 
-Ensure that at least PyTorch 1.0.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+Ensure that at least PyTorch 1.1.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
 
 ```
 $ python -c "import torch; print(torch.__version__)"

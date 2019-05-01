@@ -5,7 +5,7 @@
 void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
                  int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(src.type(), "scatter_mul", [&] {
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_mul", [&] {
     DIM_APPLY3(scalar_t, src, int64_t, index, scalar_t, out, dim, {
       for (i = 0; i < elems_per_row; i++) {
         idx = index_data[i * index_stride];
@@ -18,7 +18,7 @@ void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
 void scatter_div(at::Tensor src, at::Tensor index, at::Tensor out,
                  int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(src.type(), "scatter_div", [&] {
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_div", [&] {
     DIM_APPLY3(scalar_t, src, int64_t, index, scalar_t, out, dim, {
       for (i = 0; i < elems_per_row; i++) {
         idx = index_data[i * index_stride];
@@ -31,7 +31,7 @@ void scatter_div(at::Tensor src, at::Tensor index, at::Tensor out,
 void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
                  at::Tensor arg, int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(src.type(), "scatter_max", [&] {
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_max", [&] {
     DIM_APPLY4(scalar_t, src, int64_t, index, scalar_t, out, int64_t, arg, dim,
                {
                  for (i = 0; i < elems_per_row; i++) {
@@ -48,7 +48,7 @@ void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
 void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
                  at::Tensor arg, int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(src.type(), "scatter_min", [&] {
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_min", [&] {
     DIM_APPLY4(scalar_t, src, int64_t, index, scalar_t, out, int64_t, arg, dim,
                {
                  for (i = 0; i < elems_per_row; i++) {
@@ -65,7 +65,7 @@ void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
 void index_backward(at::Tensor grad, at::Tensor index, at::Tensor arg,
                     at::Tensor out, int64_t dim) {
   int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(grad.type(), "index_backward", [&] {
+  AT_DISPATCH_ALL_TYPES(grad.scalar_type(), "index_backward", [&] {
     DIM_APPLY4(scalar_t, grad, int64_t, index, int64_t, arg, scalar_t, out, dim,
                {
                  for (i = 0; i < elems_per_row; i++) {
