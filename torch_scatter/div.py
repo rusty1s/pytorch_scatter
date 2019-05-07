@@ -75,7 +75,7 @@ def scatter_div(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
 
         from torch_scatter import scatter_div
 
-        src = torch.tensor([[2, 1, 1, 4, 2], [1, 2, 1, 2, 4]]).float()
+        src = torch.Tensor([[2, 1, 1, 4, 2], [1, 2, 1, 2, 4]]).float()
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_ones((2, 6))
 

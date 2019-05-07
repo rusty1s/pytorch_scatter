@@ -56,7 +56,7 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
         from torch_scatter import scatter_add
 
-        src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        src = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_zeros((2, 6))
 

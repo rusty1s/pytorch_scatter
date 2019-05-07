@@ -74,7 +74,7 @@ def scatter_mul(src, index, dim=-1, out=None, dim_size=None, fill_value=1):
 
         from torch_scatter import scatter_mul
 
-        src = torch.tensor([[2, 0, 3, 4, 3], [2, 3, 4, 2, 4]])
+        src = torch.Tensor([[2, 0, 3, 4, 3], [2, 3, 4, 2, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_ones((2, 6))
 

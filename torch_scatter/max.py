@@ -1,3 +1,4 @@
+import torch
 from torch.autograd import Function
 
 from torch_scatter.utils.ext import get_func
@@ -30,7 +31,7 @@ class ScatterMax(Function):
         return None, grad_src, None, None
 
 
-def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
+def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=None):
     r"""
     |
 
@@ -67,7 +68,9 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
             If :attr:`dim_size` is not given, a minimal sized output tensor is
             returned. (default: :obj:`None`)
         fill_value (int, optional): If :attr:`out` is not given, automatically
-            fill output tensor with :attr:`fill_value`. (default: :obj:`0`)
+            fill output tensor with :attr:`fill_value`. If set to :obj:`None`,
+            the output tensor is filled with the smallest possible value of
+            :obj:`src.dtype`. (default: :obj:`None`)
 
     :rtype: (:class:`Tensor`, :class:`LongTensor`)
 
@@ -79,7 +82,7 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
         from torch_scatter import scatter_max
 
-        src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
+        src = torch.Tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
         index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
         out = src.new_zeros((2, 6))
 
@@ -95,6 +98,9 @@ def scatter_max(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
        tensor([[-1, -1,  3,  4,  0,  1],
                [ 1,  4,  3, -1, -1, -1]])
     """
+    if fill_value is None:
+        op = torch.finfo if torch.is_floating_point(src) else torch.iinfo
+        fill_value = op(src.dtype).min
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     if src.size(dim) == 0:  # pragma: no cover
         return out, index.new_full(out.size(), -1)
