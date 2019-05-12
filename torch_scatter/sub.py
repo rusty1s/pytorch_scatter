@@ -58,7 +58,7 @@ def scatter_sub(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
     .. testoutput::
 
-       tensor([[ 0,  0, -4, -3, -3,  0],
-               [-2, -4, -4,  0,  0,  0]])
+       tensor([[ 0.,  0., -4., -3., -3.,  0.],
+               [-2., -4., -4.,  0.,  0.,  0.]])
     """
     return scatter_add(src.neg(), index, dim, out, dim_size, fill_value)

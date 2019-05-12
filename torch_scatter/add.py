@@ -66,8 +66,8 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
 
     .. testoutput::
 
-       tensor([[0, 0, 4, 3, 3, 0],
-               [2, 4, 4, 0, 0, 0]])
+       tensor([[0., 0., 4., 3., 3., 0.],
+               [2., 4., 4., 0., 0., 0.]])
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value)
     return out.scatter_add_(dim, index, src)
