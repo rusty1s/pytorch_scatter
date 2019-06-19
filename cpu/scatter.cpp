@@ -62,26 +62,9 @@ void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 }
 
-void index_backward(at::Tensor grad, at::Tensor index, at::Tensor arg,
-                    at::Tensor out, int64_t dim) {
-  int64_t elems_per_row = index.size(dim), i, idx;
-  AT_DISPATCH_ALL_TYPES(grad.scalar_type(), "index_backward", [&] {
-    DIM_APPLY4(scalar_t, grad, int64_t, index, int64_t, arg, scalar_t, out, dim,
-               {
-                 for (i = 0; i < elems_per_row; i++) {
-                   idx = index_data[i * index_stride];
-                   if (arg_data[idx * arg_stride] == i) {
-                     out_data[i * out_stride] = grad_data[idx * grad_stride];
-                   }
-                 }
-               });
-  });
-}
-
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("scatter_mul", &scatter_mul, "Scatter Mul (CPU)");
   m.def("scatter_div", &scatter_div, "Scatter Div (CPU)");
   m.def("scatter_max", &scatter_max, "Scatter Max (CPU)");
   m.def("scatter_min", &scatter_min, "Scatter Min (CPU)");
-  m.def("index_backward", &index_backward, "Index Backward (CPU)");
 }

@@ -47,19 +47,9 @@ void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
   scatter_min_cuda(src, index, out, arg, dim);
 }
 
-void index_backward(at::Tensor grad, at::Tensor index, at::Tensor arg,
-                    at::Tensor out, int64_t dim) {
-  CHECK_CUDA(grad);
-  CHECK_CUDA(index);
-  CHECK_CUDA(arg);
-  CHECK_CUDA(out);
-  index_backward_cuda(grad, index, arg, out, dim);
-}
-
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("scatter_mul", &scatter_mul, "Scatter Mul (CUDA)");
   m.def("scatter_div", &scatter_div, "Scatter Div (CUDA)");
   m.def("scatter_max", &scatter_max, "Scatter Max (CUDA)");
   m.def("scatter_min", &scatter_min, "Scatter Min (CUDA)");
-  m.def("index_backward", &index_backward, "Index Backward (CUDA)");
 }

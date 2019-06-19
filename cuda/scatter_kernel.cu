@@ -159,36 +159,3 @@ void scatter_min_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                dim);
   });
 }
-
-template <typename scalar_t, int64_t Dims>
-__global__ void
-index_backward_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> grad,
-                      at::cuda::detail::TensorInfo<int64_t, int64_t> index,
-                      at::cuda::detail::TensorInfo<int64_t, int64_t> arg,
-                      at::cuda::detail::TensorInfo<scalar_t, int64_t> out,
-                      int64_t dim, size_t numel) {
-  const size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-  const size_t stride = blockDim.x * gridDim.x;
-  for (ptrdiff_t i = idx; i < numel; i += stride) {
-    int64_t gradOffset = 0, indexOffset = 0, argOffset = 0, outOffset = 0;
-    IndexToScatterOffsets4<scalar_t, int64_t, scalar_t, Dims>::compute(
-        i, dim, index, &indexOffset, out, &outOffset, arg, &argOffset, grad,
-        &gradOffset);
-    if (arg.data[argOffset] ==
-        (outOffset / out.strides[dim]) % out.sizes[dim]) {
-      out.data[outOffset] = grad.data[gradOffset];
-    }
-  }
-}
-
-void index_backward_cuda(at::Tensor grad, at::Tensor index, at::Tensor arg,
-                         at::Tensor out, int64_t dim) {
-  cudaSetDevice(grad.get_device());
-  AT_DISPATCH_ALL_TYPES(grad.scalar_type(), "index_backward_kernel", [&] {
-    KERNEL_RUN(index_backward_kernel, index.dim(), index.numel(),
-               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad),
-               at::cuda::detail::getTensorInfo<int64_t, int64_t>(index),
-               at::cuda::detail::getTensorInfo<int64_t, int64_t>(arg),
-               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(out), dim);
-  });
-}

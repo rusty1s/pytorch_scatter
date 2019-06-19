@@ -25,8 +25,7 @@ class ScatterMin(Function):
         grad_src = None
         if ctx.needs_input_grad[1]:
             grad_src = grad_out.new_zeros(index.size())
-            func = get_func('index_backward', grad_out)
-            func(grad_out, index, arg, grad_src, ctx.dim)
+            grad_src.scatter_(ctx.dim, arg.detach(), grad_out)
 
         return None, grad_src, None, None
 
