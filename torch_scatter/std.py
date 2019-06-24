@@ -48,8 +48,12 @@ def scatter_std(src, index, dim=-1, out=None, dim_size=None, unbiased=True):
     """
     src, out, index, dim = gen(src, index, dim, out, dim_size, fill_value=0)
 
-    tmp = scatter_add(src, index, dim, None, dim_size)
-    count = scatter_add(torch.ones_like(src), index, dim, None, dim_size)
+    tmp = None if out is None else out.clone().fill_(0)
+    tmp = scatter_add(src, index, dim, tmp, dim_size)
+
+    count = None if out is None else out.clone().fill_(0)
+    count = scatter_add(torch.ones_like(src), index, dim, count, dim_size)
+
     mean = tmp / count.clamp(min=1)
 
     var = (src - mean.gather(dim, index))

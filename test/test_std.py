@@ -22,8 +22,9 @@ def test_std(dtype, device, bias):
 
 @pytest.mark.parametrize('dtype,device', product(dtypes, devices))
 def test_empty_std(dtype, device):
-    src = tensor([], dtype, device)
-    index = tensor([], torch.long, device)
+    out = torch.zeros(1, 5, dtype=dtype, device=device)
+    src = tensor([], dtype, device).view(0, 5)
+    index = tensor([], torch.long, device).view(0, 5)
 
-    out = scatter_std(src, index, dim=-1)
-    assert out.tolist() == []
+    out = scatter_std(src, index, dim=0, out=out)
+    assert out.tolist() == [[0, 0, 0, 0, 0]]
