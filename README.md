@@ -26,14 +26,14 @@ This package consists of a small extension library of highly optimized sparse up
 Scatter operations can be roughly described as reduce operations based on a given "group-index" tensor.
 The package consists of the following operations:
 
-* [**Scatter Add**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/add.html)
-* [**Scatter Sub**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/sub.html)
-* [**Scatter Mul**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mul.html)
-* [**Scatter Div**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/div.html)
-* [**Scatter Mean**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/mean.html)
-* [**Scatter Std**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/std.html)
-* [**Scatter Min**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/min.html)
-* [**Scatter Max**](https://rusty1s.github.io/pytorch_scatter/build/html/functions/max.html)
+* [**Scatter Add**](https://pytorch-scatter.readthedocs.io/en/latest/functions/add.html)
+* [**Scatter Sub**](https://pytorch-scatter.readthedocs.io/en/latest/functions/sub.html)
+* [**Scatter Mul**](https://pytorch-scatter.readthedocs.io/en/latest/functions/mul.html)
+* [**Scatter Div**](https://pytorch-scatter.readthedocs.io/en/latest/functions/div.html)
+* [**Scatter Mean**](https://pytorch-scatter.readthedocs.io/en/latest/functions/mean.html)
+* [**Scatter Std**](https://pytorch-scatter.readthedocs.io/en/latest/functions/std.html)
+* [**Scatter Min**](https://pytorch-scatter.readthedocs.io/en/latest/functions/min.html)
+* [**Scatter Max**](https://pytorch-scatter.readthedocs.io/en/latest/functions/max.html)
 
 All included operations work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
 
