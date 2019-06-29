@@ -5,11 +5,8 @@ python:
   version: 3.7
   install:
     - requirements: docs/requirements.txt
-    - method: pip
+    - method: setuptools
       path: .
-      extra_requirements:
-        - torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
-
   system_packages: true
 
 formats: []
