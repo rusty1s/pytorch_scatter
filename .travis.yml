@@ -17,6 +17,7 @@ before_install:
   - export CC="gcc-4.9"
   - export CXX="g++-4.9"
 install:
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; pip install future; fi
   - pip install numpy
   - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install pycodestyle
