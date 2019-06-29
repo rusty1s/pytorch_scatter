@@ -23,7 +23,6 @@ install:
   - pip install pycodestyle
   - pip install flake8
   - pip install codecov
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install "pytest<5.0"; fi
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pycodestyle .; fi
   - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then flake8 .; fi
