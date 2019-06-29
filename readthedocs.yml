@@ -6,9 +6,10 @@ python:
   install:
     - requirements: docs/requirements.txt
     - method: pip
-      path: torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
-    - method: setuptools
       path: .
+      extra_requirements:
+        - torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+
   system_packages: true
 
 formats: []
