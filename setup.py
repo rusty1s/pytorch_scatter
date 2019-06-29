@@ -25,7 +25,7 @@ url = 'https://github.com/rusty1s/pytorch_scatter'
 
 install_requires = []
 setup_requires = ['pytest-runner']
-tests_require = ['pytest-cov', 'pytest<5.0']
+tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_scatter',

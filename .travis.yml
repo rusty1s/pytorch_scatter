@@ -3,7 +3,6 @@ sudo: required
 dist: trusty
 matrix:
   include:
-    - python: 2.7
     - python: 3.5
     - python: 3.6
 addons:
@@ -17,15 +16,14 @@ before_install:
   - export CC="gcc-4.9"
   - export CXX="g++-4.9"
 install:
-  - pip install future
   - pip install numpy
   - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install pycodestyle
   - pip install flake8
   - pip install codecov
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pycodestyle .; fi
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then flake8 .; fi
+  - pycodestyle .
+  - flake8 .
   - python setup.py install
   - python setup.py test
   - cd docs && pip install -r requirements.txt && make clean && make html && make doctest && cd ..
