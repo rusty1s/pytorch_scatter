@@ -1,4 +1,5 @@
 -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+future
 numpy
 torch_nightly
 sphinx
