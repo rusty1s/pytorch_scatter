@@ -1,0 +1,4 @@
+python:
+  version: 3.7
+  use_system_site_packages: true
+  setup_py_install: true
