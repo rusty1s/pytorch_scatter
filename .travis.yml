@@ -23,8 +23,8 @@ install:
   - pip install flake8
   - pip install codecov
 script:
-  - pycodestyle .
-  - flake8 .
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then pycodestyle .; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then flake8 .; fi
   - python setup.py install
   - python setup.py test
   - cd docs && pip install -r requirements.txt && make clean && make html && make doctest && cd ..
