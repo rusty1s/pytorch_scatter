@@ -17,7 +17,7 @@ before_install:
   - export CC="gcc-4.9"
   - export CXX="g++-4.9"
 install:
-  - pip install future; python_version < '3.0'
+  - pip install future
   - pip install numpy
   - pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install pycodestyle
