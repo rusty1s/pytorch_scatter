@@ -7,6 +7,8 @@ python:
     - requirements: docs/requirements.txt
     - method: pip
       path: torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+    - method: setuptools
+      path: .
   system_packages: true
 
 formats: []
