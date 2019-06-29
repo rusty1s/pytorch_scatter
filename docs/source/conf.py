@@ -1,6 +1,7 @@
 import datetime
 import sphinx_rtd_theme
 import doctest
+import torch_scatter
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -19,8 +20,8 @@ author = 'Matthias Fey'
 project = 'pytorch_scatter'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
-version = 'master'
-release = 'master'
+version = torch_scatter.__version__
+release = torch_scatter.__version__
 
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
