@@ -1,12 +1,6 @@
-import os.path as osp
-import sys
 import datetime
 import sphinx_rtd_theme
 import doctest
-
-sys.path.insert(0, osp.abspath('../..'))
-
-from torch_scatter import __version__  # noqa
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -25,7 +19,7 @@ author = 'Matthias Fey'
 project = 'pytorch_scatter'
 copyright = '{}, {}'.format(datetime.datetime.now().year, author)
 
-version = 'master ({})'.format(__version__)
+version = 'master'
 release = 'master'
 
 html_theme = 'sphinx_rtd_theme'
