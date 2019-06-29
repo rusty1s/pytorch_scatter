@@ -6,7 +6,7 @@ python:
   install:
     - requirements: docs/requirements.txt
     - method: setuptools
-      path: .
+      path: package
   system_packages: true
 
 formats: []
