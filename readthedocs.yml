@@ -3,8 +3,10 @@ build:
 
 python:
   version: 3.7
-  use_system_site_packages: true
-  setup_py_install: true
+  install:
+    - requirements: docs/requirements.txt
+    - requirements: torch_nightly -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
+  system_packages: true
 
 formats: []
 
