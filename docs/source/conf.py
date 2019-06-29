@@ -27,5 +27,3 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 doctest_default_flags = doctest.NORMALIZE_WHITESPACE
 intersphinx_mapping = {'python': ('https://docs.python.org/', None)}
-
-autodoc_mock_imports = ['torch']
