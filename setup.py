@@ -23,8 +23,8 @@ if CUDA_HOME is not None:
 __version__ = '1.3.0'
 url = 'https://github.com/rusty1s/pytorch_scatter'
 
-install_requires = ['future']
-setup_requires = ['pytest-runner']
+install_requires = []
+setup_requires = ['pytest-runner', 'future']
 tests_require = ['pytest', 'pytest-cov']
 
 setup(
