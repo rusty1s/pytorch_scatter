@@ -2,6 +2,8 @@
 [pypi-url]: https://pypi.python.org/pypi/torch-scatter
 [build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
 [build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[docs-image]: https://readthedocs.org/projects/pytorch-scatter/badge/?version=latest
+[docs-url]: https://pytorch-scatter.readthedocs.io/en/latest/?badge=latest
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_scatter?branch=master
 
@@ -9,6 +11,7 @@
 
 [![PyPI Version][pypi-image]][pypi-url]
 [![Build Status][build-image]][build-url]
+[![Docs Status][docs-image]][docs-url]
 [![Code Coverage][coverage-image]][coverage-url]
 
 <p align="center">
