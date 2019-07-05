@@ -24,8 +24,11 @@ class ScatterMin(Function):
 
         grad_src = None
         if ctx.needs_input_grad[1]:
-            grad_src = grad_out.new_zeros(index.size())
-            grad_src.scatter_(ctx.dim, arg.detach(), grad_out)
+            size = list(index.size())
+            size[ctx.dim] += 1
+            grad_src = grad_out.new_zeros(size)
+            grad_src.scatter_(ctx.dim, arg.detach() + 1, grad_out)
+            grad_src = grad_src.narrow(ctx.dim, 1, index.size(ctx.dim))
 
         return None, grad_src, None, None
 
