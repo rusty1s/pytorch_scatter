@@ -6,7 +6,7 @@ dtypes = get_all_dtypes()
 dtypes.remove(torch.half)
 dtypes.remove(torch.short)  # PyTorch scatter does not work on short types.
 dtypes.remove(torch.bool)
-if torch.bfloat16 in dtypes:
+if hasattr(torch, 'bfloat16'):
     dtypes.remove(torch.bfloat16)
 
 grad_dtypes = [torch.float, torch.double]
