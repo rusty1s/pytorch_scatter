@@ -21,12 +21,14 @@ install:
   - pip install pycodestyle
   - pip install flake8
   - pip install codecov
+  - pip install sphinx
+  - pip install sphinx_rtd_theme
 script:
   - pycodestyle .
   - flake8 .
   - python setup.py install
   - python setup.py test
-  - cd docs && pip install -r requirements.txt && make clean && make html && make doctest && cd ..
+  - cd docs && make clean && make html && make doctest && cd ..
 after_success:
   - codecov
 notifications:
