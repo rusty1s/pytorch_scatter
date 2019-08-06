@@ -37,6 +37,11 @@ void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
                  for (i = 0; i < elems_per_row; i++) {
                    idx = index_data[i * index_stride];
                    if (src_data[i * src_stride] >= out_data[idx * out_stride]) {
+                     if (src_data[i * src_stride] == out_data[idx * out_stride]) {
+                        if (i > arg_data[idx * arg_stride])
+                          arg_data[idx * arg_stride] = i;
+                        continue;
+                     }
                      out_data[idx * out_stride] = src_data[i * src_stride];
                      arg_data[idx * arg_stride] = i;
                    }
