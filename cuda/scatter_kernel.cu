@@ -92,8 +92,11 @@ __global__ void arg_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
     IndexToScatterOffsets4<scalar_t, scalar_t, int64_t, Dims>::compute(
         i, dim, index, &indexOffset, src, &srcOffset, out, &outOffset, arg,
         &argOffset);
+    __syncthreads();
     if (src.data[srcOffset] == out.data[outOffset]) {
-      arg.data[argOffset] = (srcOffset / src.strides[dim]) % src.sizes[dim];
+      int64_t cur_id = (srcOffset / src.strides[dim]) % src.sizes[dim];
+      atomMax(&arg.data[argOffset], cur_id);
+     }
     }
   }
 }
