@@ -24,6 +24,8 @@ def scatter_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     :attr:`dim` = `i`, then :attr:`out` must be an n-dimensional tensor with
     size :math:`(x_0, ..., x_{i-1}, y, x_{i+1}, ..., x_{n-1})`. Moreover, the
     values of :attr:`index` must be between `0` and `out.size(dim) - 1`.
+    Both :attr:`src` and :attr:`index` are broadcasted in case their dimensions
+    do not match.
 
     For one-dimensional tensors, the operation computes
 
