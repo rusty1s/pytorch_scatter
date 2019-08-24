@@ -1,5 +1,7 @@
 from itertools import repeat
 
+import torch
+
 
 def maybe_dim_size(index, dim_size=None):
     if dim_size is not None:
@@ -14,7 +16,10 @@ def gen(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     if index.dim() == 1:
         index_size = list(repeat(1, src.dim()))
         index_size[dim] = src.size(dim)
-        index = index.view(index_size).expand_as(src)
+        if index.numel() > 0:
+            index = index.view(index_size).expand_as(src)
+        else:  # PyTorch has a bug when view is used on zero-element tensors.
+            index = src.new_empty(index_size, dtype=torch.long)
 
     # Generate output tensor if not given.
     if out is None:
