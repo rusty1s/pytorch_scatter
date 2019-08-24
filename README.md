@@ -35,7 +35,7 @@ The package consists of the following operations:
 * [**Scatter Min**](https://pytorch-scatter.readthedocs.io/en/latest/functions/min.html)
 * [**Scatter Max**](https://pytorch-scatter.readthedocs.io/en/latest/functions/max.html)
 
-All included operations work on varying data types, are implemented both for CPU and GPU and include a backwards implementation.
+All included operations are broadcastable, work on varying data types, and are implemented both for CPU and GPU with corresponding backward implementations.
 
 ## Installation
 
