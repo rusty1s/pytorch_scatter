@@ -20,7 +20,8 @@ def gen(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
         index_size[dim] = src.size(dim)
         if index.numel() > 0:
             index = index.view(index_size).expand_as(src)
-        else:  # PyTorch has a bug when view is used on zero-element tensors.
+        else:  # pragma: no cover
+            # PyTorch has a bug when view is used on zero-element tensors.
             index = src.new_empty(index_size, dtype=torch.long)
 
     # Broadcasting capabilties: Expand dimensions to match.
