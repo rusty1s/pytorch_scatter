@@ -17,7 +17,7 @@ before_install:
   - export CXX="g++-4.9"
 install:
   - pip install numpy
-  - pip install -q torch -f https://download.pytorch.org/whl/nightly/cpu/torch.html
+  - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
   - pip install pycodestyle
   - pip install flake8
   - pip install codecov
