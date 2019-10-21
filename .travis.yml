@@ -1,20 +1,24 @@
 language: python
-sudo: required
-dist: trusty
-matrix:
+
+jobs:
   include:
-    - python: 3.5
-    - python: 3.6
+    - os: linux
+      python: 3.7
+    - os: osx
+      python: 3.7
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.9
-      - g++-4.9
+      - gcc-5
+      - g++-5
 before_install:
-  - export CC="gcc-4.9"
-  - export CXX="g++-4.9"
+  - if [ "TRAVIS_OS_NAME" = "linux"]; then export CC=gcc-5; fi
+  - if [ "TRAVIS_OS_NAME" = "linux"]; then export CXX=g++-5; fi
+  - if [ "TRAVIS_OS_NAME" = "osx"]; then export MACOSX_DEPLOYMENT_TARGET=10.9; fi
+  - if [ "TRAVIS_OS_NAME" = "osx"]; then export CC=clang; fi
+  - if [ "TRAVIS_OS_NAME" = "osx"]; then export CXX=clang++; fi
 install:
   - pip install numpy
   - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
