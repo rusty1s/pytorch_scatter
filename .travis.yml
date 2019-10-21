@@ -18,13 +18,18 @@ jobs:
       addons:
         homebrew:
           packages: python3
+      cache:
+        directories:
+          - $HOME/Library/Caches/Homebrew
+          - /usr/local/Homebrew
+      before_install:
+        - python3 -m pip install --upgrade virtualenv
+        - virtualenv -p python3 --system-site-packages "$HOME/venv"
+        - source "$HOME/venv/bin/activate"
       env:
         - MACOSX_DEPLOYMENT_TARGET=10.9
         - CC=clang
         - CXX=clang++
-      before_install:
-        - alias pip=pip3
-        - alias python=python3
 install:
   - pip install numpy
   - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
