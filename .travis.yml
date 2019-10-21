@@ -1,25 +1,27 @@
-language: python
-
 jobs:
   include:
     - os: linux
+      language: python
       python: 3.7
-      before_install:
-        - export CC=gcc-5
-        - export CXX=g++-5
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-5
+            - g++-5
+      env:
+        - CC=gcc-5
+        - CXX=g++-5
     - os: osx
-      osx_image: xcode10.2
-      before_install:
-        - export MACOSX_DEPLOYMENT_TARGET=10.9
-        - export CC=clang
-        - export CXX=clang++
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-5
-      - g++-5
+      language: sh
+      addons:
+        homebrew:
+          packages: python3
+      env:
+        - MACOSX_DEPLOYMENT_TARGET=10.9
+        - CC=clang
+        - CXX=clang++
 install:
   - pip install numpy
   - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
