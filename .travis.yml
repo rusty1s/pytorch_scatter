@@ -9,7 +9,6 @@ jobs:
         - export CXX=g++-5
     - os: osx
       osx_image: xcode10.2
-      python: 3.7
       before_install:
         - export MACOSX_DEPLOYMENT_TARGET=10.9
         - export CC=clang
