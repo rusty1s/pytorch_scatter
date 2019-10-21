@@ -15,13 +15,15 @@ jobs:
         - CXX=g++-5
     - os: osx
       language: sh
-      addons:
-        homebrew:
-          packages: python3
+      before_cache:
+        - brew cleanup
       cache:
         directories:
           - $HOME/Library/Caches/Homebrew
           - /usr/local/Homebrew
+      addons:
+        homebrew:
+          packages: python3
       before_install:
         - python3 -m pip install --upgrade virtualenv
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
