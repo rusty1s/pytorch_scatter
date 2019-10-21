@@ -22,6 +22,9 @@ jobs:
         - MACOSX_DEPLOYMENT_TARGET=10.9
         - CC=clang
         - CXX=clang++
+      before_install:
+        - alias pip=pip3
+        - alias python=python3
 install:
   - pip install numpy
   - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
