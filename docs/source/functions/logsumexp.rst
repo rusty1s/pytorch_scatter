@@ -1,5 +1,5 @@
 Scatter LogSumExp
-===========
+=================
 
 .. automodule:: torch_scatter
    :noindex:
