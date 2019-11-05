@@ -2,11 +2,12 @@ from itertools import product
 
 import torch
 import pytest
-from torch_scatter import scatter_max, scatter_logsumexp
+from torch_scatter import scatter_logsumexp
 
 from .utils import devices, tensor
 
 SUPPORTED_FLOAT_DTYPES = {torch.float32, torch.float64}
+
 
 @pytest.mark.parametrize('dtype,device', product(SUPPORTED_FLOAT_DTYPES, devices))
 def test_logsumexp(dtype, device):

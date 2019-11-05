@@ -2,9 +2,11 @@ import torch
 
 from torch_scatter import scatter_add, scatter_max
 
+
 def scatter_log_softmax(src, index, dim=-1, dim_size=None):
     r"""
-    Numerical safe log-softmax of all values from the :attr:`src` tensor into :attr:`out` at the
+    Numerical safe log-softmax of all values from
+    the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`.If multiple indices reference the same location, their
     **contributions average** (`cf.` :meth:`~torch_scatter.scatter_add`).
@@ -12,7 +14,7 @@ def scatter_log_softmax(src, index, dim=-1, dim_size=None):
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{out}_i = softmax(\mathrm{src}_i) = 
+        \mathrm{out}_i = softmax(\mathrm{src}_i) =
         \mathrm{src}_i - \mathrm{logsumexp}_j ( \mathrm{src}_j)
 
     where :math:`\mathrm{logsumexp}_j` is over :math:`j` such that
@@ -42,9 +44,12 @@ def scatter_log_softmax(src, index, dim=-1, dim_size=None):
     :rtype: :class:`Tensor`
     """
     if not torch.is_floating_point(src):
-        raise ValueError('log_softmax can be computed only over tensors with floating point data types.')
+        raise ValueError('log_softmax can be computed only over '
+                         'tensors with floating point data types.')
 
-    max_value_per_index, _ = scatter_max(src, index, dim=dim, dim_size=dim_size)
+    max_value_per_index, _ = scatter_max(src, index,
+                                         dim=dim,
+                                         dim_size=dim_size)
     max_per_src_element = max_value_per_index.gather(dim, index)
 
     recentered_scores = src - max_per_src_element
@@ -62,7 +67,8 @@ def scatter_log_softmax(src, index, dim=-1, dim_size=None):
 
 def scatter_softmax(src, index, dim=-1, dim_size=None, epsilon=1e-16):
     r"""
-    Numerical safe log-softmax of all values from the :attr:`src` tensor into :attr:`out` at the
+    Numerical safe log-softmax of all values from
+    the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`. If multiple indices reference the same location, their
     **contributions average** (`cf.` :meth:`~torch_scatter.scatter_add`).
@@ -70,7 +76,7 @@ def scatter_softmax(src, index, dim=-1, dim_size=None, epsilon=1e-16):
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{out}_i = softmax(\mathrm{src}_i) = 
+        \mathrm{out}_i = softmax(\mathrm{src}_i) =
         \frac{\exp(\mathrm{src}_i)}{\mathrm{logsumexp}_j ( \mathrm{src}_j)}
 
     where :math:`\mathrm{logsumexp}_j` is over :math:`j` such that
@@ -100,9 +106,12 @@ def scatter_softmax(src, index, dim=-1, dim_size=None, epsilon=1e-16):
     :rtype: :class:`Tensor`
     """
     if not torch.is_floating_point(src):
-        raise ValueError('softmax can be computed only over tensors with floating point data types.')
+        raise ValueError('softmax can be computed only over '
+                         'tensors with floating point data types.')
 
-    max_value_per_index, _ = scatter_max(src, index, dim=dim, dim_size=dim_size)
+    max_value_per_index, _ = scatter_max(src, index,
+                                         dim=dim,
+                                         dim_size=dim_size)
     max_per_src_element = max_value_per_index.gather(dim, index)
 
     recentered_scores = src - max_per_src_element

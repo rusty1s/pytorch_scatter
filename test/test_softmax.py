@@ -9,6 +9,7 @@ from .utils import devices, tensor
 
 SUPPORTED_FLOAT_DTYPES = {torch.float32, torch.float64}
 
+
 @pytest.mark.parametrize('dtype,device', product(SUPPORTED_FLOAT_DTYPES, devices))
 def test_log_softmax(dtype, device):
     src = tensor([0.25, 0, 0.25, -2.1, 3.2, 7, -1, float('-inf')], dtype, device)

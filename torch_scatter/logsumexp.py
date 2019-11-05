@@ -3,9 +3,11 @@ import torch
 from . import scatter_add, scatter_max
 
 
-def scatter_logsumexp(src, index, dim=-1, out=None, dim_size=None, fill_value=None, epsilon=1e-16):
+def scatter_logsumexp(src, index, dim=-1, out=None, dim_size=None,
+                      fill_value=None, epsilon=1e-16):
     r"""
-    Numerically safe logsumexp of all values from the :attr:`src` tensor into :attr:`out` at the
+    Numerically safe logsumexp of all values from
+    the :attr:`src` tensor into :attr:`out` at the
     indices specified in the :attr:`index` tensor along a given axis
     :attr:`dim`. If multiple indices reference the same location, their
     **contributions logsumexp** (`cf.` :meth:`~torch_scatter.scatter_add`).
@@ -13,7 +15,8 @@ def scatter_logsumexp(src, index, dim=-1, out=None, dim_size=None, fill_value=No
     For one-dimensional tensors, the operation computes
 
     .. math::
-        \mathrm{out}_i = \log \left( \exp(\mathrm{out}_i) + \sum_j \exp(\mathrm{src}_j) \right)
+        \mathrm{out}_i = \log \left( \exp(\mathrm{out}_i)
+                        + \sum_j \exp(\mathrm{src}_j) \right)
 
     Compute a numerically safe logsumexp operation
     from the :attr:`src` tensor into :attr:`out` at the indices
@@ -40,13 +43,18 @@ def scatter_logsumexp(src, index, dim=-1, out=None, dim_size=None, fill_value=No
     :rtype: :class:`Tensor`
     """
     if not torch.is_floating_point(src):
-        raise ValueError('logsumexp can be computed over tensors with floating point data types.')
+        raise ValueError('logsumexp can only be computed over '
+                         'tensors with floating point data types.')
 
     if fill_value is None:
         fill_value = torch.finfo(src.dtype).min
 
-    dim_size = out.shape[dim] if dim_size is None and out is not None else dim_size
-    max_value_per_index, _ = scatter_max(src, index, dim=dim, out=out, dim_size=dim_size, fill_value=fill_value)
+    dim_size = out.shape[dim] \
+        if dim_size is None and out is not None else dim_size
+
+    max_value_per_index, _ = scatter_max(src, index, dim=dim,
+                                         out=out, dim_size=dim_size,
+                                         fill_value=fill_value)
     max_per_src_element = max_value_per_index.gather(dim, index)
 
     recentered_scores = src - max_per_src_element
