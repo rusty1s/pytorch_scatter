@@ -1,3 +1,5 @@
 include LICENSE
+
 recursive-include cpu *
 recursive-include cuda *
+recursive-include test *
