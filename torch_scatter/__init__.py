@@ -9,7 +9,7 @@ from .min import scatter_min
 from .logsumexp import scatter_logsumexp
 import torch_scatter.composite
 
-__version__ = '1.3.2'
+__version__ = '1.4.0'
 
 __all__ = [
     'scatter_add',
