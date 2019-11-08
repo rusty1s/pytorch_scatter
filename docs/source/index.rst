@@ -14,6 +14,7 @@ All included operations are broadcastable, work on varying data types, and are i
    :caption: Package reference
 
    functions/*
+   composite/*
 
 Indices and tables
 ==================
