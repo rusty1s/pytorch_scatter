@@ -34,6 +34,12 @@ The package consists of the following operations:
 * [**Scatter Std**](https://pytorch-scatter.readthedocs.io/en/latest/functions/std.html)
 * [**Scatter Min**](https://pytorch-scatter.readthedocs.io/en/latest/functions/min.html)
 * [**Scatter Max**](https://pytorch-scatter.readthedocs.io/en/latest/functions/max.html)
+* [**Scatter LogSumExp**](https://pytorch-scatter.readthedocs.io/en/latest/functions/logsumexp.html)
+
+In addition, we provide composite functions which make use of `scatter_*` operations under the hood:
+
+* [**Scatter Softmax**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_softmax)
+* [**Scatter LogSoftmax**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_log_softmax)
 
 All included operations are broadcastable, work on varying data types, and are implemented both for CPU and GPU with corresponding backward implementations.
 
