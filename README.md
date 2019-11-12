@@ -58,10 +58,10 @@ $ echo $CPATH
 >>> /usr/local/cuda/include:...
 ```
 
-Then run:
+Running in a docker container without nvidia driver, pytorch needs to evaluate the compute capabilities and fails. Ensure in this case that the compute capabilities are set in ENV TORCH_CUDA_ARCH_LIST
 
 ```
-pip install torch-scatter
+ENV TORCH_CUDA_ARCH_LIST = "6.0 6.1 7.2+PTX 7.5+PTX"
 ```
 
 If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_scatter/issues).
