@@ -1,5 +1,6 @@
 import platform
 from setuptools import setup, find_packages
+from sys import argv
 import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
@@ -19,7 +20,13 @@ ext_modules = [
 ]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
-if CUDA_HOME is not None:
+GPU = True
+for arg in argv:
+    if arg == '--cpu':
+        GPU = False
+        argv.remove(arg)
+
+if CUDA_HOME is not None and GPU:
     ext_modules += [
         CUDAExtension('torch_scatter.scatter_cuda',
                       ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'])
