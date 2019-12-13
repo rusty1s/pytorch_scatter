@@ -8,15 +8,14 @@ TORCH_MAJOR = int(torch.__version__.split('.')[0])
 TORCH_MINOR = int(torch.__version__.split('.')[1])
 
 extra_compile_args = []
-if platform.system() != 'Windows':
-    extra_compile_args += ['-Wno-unused-variable']
-
 if (TORCH_MAJOR > 1) or (TORCH_MAJOR == 1 and TORCH_MINOR > 2):
     extra_compile_args += ['-DVERSION_GE_1_3']
 
 ext_modules = [
-    CppExtension('torch_scatter.scatter_cpu', ['cpu/scatter.cpp'],
-                 extra_compile_args=extra_compile_args)
+    CppExtension(
+        'torch_scatter.scatter_cpu', ['cpu/scatter.cpp'],
+        extra_compile_args=extra_compile_args +
+        ['-Wno-unused-variable'] if platform.system() != 'Windows' else [])
 ]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
@@ -29,7 +28,11 @@ for arg in argv:
 if CUDA_HOME is not None and GPU:
     ext_modules += [
         CUDAExtension('torch_scatter.scatter_cuda',
-                      ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'])
+                      ['cuda/scatter.cpp', 'cuda/scatter_kernel.cu'],
+                      extra_compile_args=extra_compile_args),
+        CUDAExtension('torch_scatter.segment_cuda',
+                      ['cuda/segment.cpp', 'cuda/segment_kernel.cu'],
+                      extra_compile_args=extra_compile_args),
     ]
 
 __version__ = '1.4.0'
