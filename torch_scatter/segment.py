@@ -11,5 +11,5 @@ def segment_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     if src.size(dim) == 0:  # pragma: no cover
         return out
     assert src.is_cuda
-    torch_scatter.segment_cuda.segment_add(src, index, out, dim)
-    return out
+    out, key = torch_scatter.segment_cuda.segment_add(src, index, out)
+    return out, key
