@@ -1,7 +1,5 @@
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
-#include <ATen/cuda/detail/IndexUtils.cuh>
-#include <ATen/cuda/detail/TensorInfo.cuh>
 
 #include <THC/THCGeneral.h>
 #include <THC/THCThrustAllocator.cuh>
@@ -11,12 +9,13 @@
 #include "compat.cuh"
 
 #define THREADS 256
+#define BLOCKS(TB, N) (TB * N + THREADS - 1) / THREADS
 #define FULL_MASK 0xffffffff
 
 template <typename scalar_t, int TB>
-__global__ void segment_add_kernel(const scalar_t *src_data,
-                                   const int64_t *indptr_data,
-                                   scalar_t *out_data, size_t numel) {
+__global__ void segment_add_csr_kernel(const scalar_t *src_data,
+                                       const int64_t *indptr_data,
+                                       scalar_t *out_data, size_t numel) {
 
   int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
   int warp_idx = thread_idx / TB;
@@ -41,22 +40,41 @@ __global__ void segment_add_kernel(const scalar_t *src_data,
   }
 }
 
-at::Tensor segment_add_cuda(at::Tensor src, at::Tensor indptr, int64_t dim) {
+at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
   auto numel = indptr.numel() - 1;
+  auto avg_length = (float)src.numel() / (float)numel;
+
   auto out = at::empty({numel}, src.options());
 
+  auto indptr_data = indptr.DATA_PTR<int64_t>();
   auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_add_kernel", [&] {
-    auto indptr_data = indptr.DATA_PTR<int64_t>();
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    segment_add_kernel<scalar_t, 32>
-        <<<(32 * numel + THREADS - 1) / THREADS, THREADS, 0, stream>>>(
-            src_data, indptr_data, out_data, numel);
+    if (avg_length <= 4)
+      segment_add_csr_kernel<scalar_t, 4>
+          <<<BLOCKS(4, numel), THREADS, 0, stream>>>(src_data, indptr_data,
+                                                     out_data, numel);
+    else if (avg_length <= 8)
+      segment_add_csr_kernel<scalar_t, 8>
+          <<<BLOCKS(8, numel), THREADS, 0, stream>>>(src_data, indptr_data,
+                                                     out_data, numel);
+    else if (avg_length <= 16)
+      segment_add_csr_kernel<scalar_t, 16>
+          <<<BLOCKS(16, numel), THREADS, 0, stream>>>(src_data, indptr_data,
+                                                      out_data, numel);
+    else
+      segment_add_csr_kernel<scalar_t, 32>
+          <<<BLOCKS(32, numel), THREADS, 0, stream>>>(src_data, indptr_data,
+                                                      out_data, numel);
   });
 
   return out;
+}
+
+at::Tensor segment_add_coo_cuda(at::Tensor src, at::Tensor index) {
+  return src;
 }
 
 void segment_add_thrust_cuda(at::Tensor src, at::Tensor index, at::Tensor out) {

@@ -27,14 +27,14 @@ def test_forward2(dtype, device):
 
     indptr = tensor([[0, 2, 5, 5, 6]], torch.long, device)
 
-    out = segment_add2(src, indptr, dim=0)
+    out = segment_add2(src, indptr)
     print('My', out)
 
 
 @pytest.mark.parametrize('dtype,device', product(dtypes, devices))
 def test_benchmark(dtype, device):
     from torch_geometric.datasets import Planetoid, Reddit  # noqa
-    data = Planetoid('/tmp/Cora', 'Cora')[0].to(device)
+    # data = Planetoid('/tmp/Cora', 'Cora')[0].to(device)
     # data = Planetoid('/tmp/PubMed', 'PubMed')[0].to(device)
     data = Reddit('/tmp/Reddit')[0].to(device)
     row, col = data.edge_index
@@ -69,7 +69,7 @@ def test_benchmark(dtype, device):
     torch.cuda.synchronize()
     t = time.perf_counter()
     for _ in range(100):
-        out3 = segment_add2(x, rowptr, dim=0)
+        out3 = segment_add2(x, rowptr)
     torch.cuda.synchronize()
     print(time.perf_counter() - t)
 

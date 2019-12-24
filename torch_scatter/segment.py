@@ -29,5 +29,5 @@ def segment_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     return out
 
 
-def segment_add2(src, indptr, dim=-1):
-    return torch_scatter.segment_cuda.segment_add(src, indptr, dim)
+def segment_add2(src, indptr):
+    return torch_scatter.segment_cuda.segment_add_csr(src, indptr)
