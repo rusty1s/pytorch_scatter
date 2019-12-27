@@ -3,7 +3,7 @@
 #define CHECK_CUDA(x) AT_ASSERTM(x.type().is_cuda(), #x " must be CUDA tensor")
 
 at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr);
-at::Tensor segment_add_coo_cuda(at::Tensor src, at::Tensor index);
+void segment_add_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out);
 
 void segment_add_thrust_cuda(at::Tensor src, at::Tensor index, at::Tensor out);
 
@@ -13,10 +13,11 @@ at::Tensor segment_add_csr(at::Tensor src, at::Tensor indptr) {
   return segment_add_csr_cuda(src, indptr);
 }
 
-at::Tensor segment_add_coo(at::Tensor src, at::Tensor index) {
+void segment_add_coo(at::Tensor src, at::Tensor index, at::Tensor out) {
   CHECK_CUDA(src);
   CHECK_CUDA(index);
-  return segment_add_coo_cuda(src, index);
+  CHECK_CUDA(out);
+  segment_add_coo_cuda(src, index, out);
 }
 
 void segment_add_thrust(at::Tensor src, at::Tensor index, at::Tensor out) {

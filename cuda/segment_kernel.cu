@@ -6,6 +6,7 @@
 
 #include <thrust/execution_policy.h>
 
+#include "atomics.cuh"
 #include "compat.cuh"
 
 #define THREADS 256
@@ -41,14 +42,14 @@ __global__ void segment_add_csr_kernel(const scalar_t *src_data,
 }
 
 at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
-  auto numel = indptr.numel() - 1;
+  auto numel = indptr.numel() - 1; // TODO
   auto avg_length = (float)src.numel() / (float)numel;
 
   auto out = at::empty({numel}, src.options());
 
   auto indptr_data = indptr.DATA_PTR<int64_t>();
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_add_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_add_csr_kernel", [&] {
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
@@ -73,8 +74,45 @@ at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
   return out;
 }
 
-at::Tensor segment_add_coo_cuda(at::Tensor src, at::Tensor index) {
-  return src;
+template <typename scalar_t>
+__global__ void segment_add_coo_kernel(const scalar_t *src_data,
+                                       const int64_t *index_data,
+                                       scalar_t *out_data, size_t numel) {
+
+  int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
+  int lane_idx = thread_idx & (32 - 1);
+
+  if (thread_idx < numel) {
+    auto idx = __ldg(index_data + thread_idx);
+    scalar_t val = src_data[thread_idx], tmp;
+
+#pragma unroll
+    for (int offset = 1; offset < 32; offset *= 2) {
+      tmp = __shfl_up_sync(FULL_MASK, val, offset);
+      if (lane_idx >= offset &&
+          idx == __ldg(index_data + thread_idx - offset)) {
+        val += tmp;
+      }
+    }
+
+    if (lane_idx == 31 || idx != __ldg(index_data + thread_idx + 1)) {
+      atomAdd(out_data + idx, val);
+    }
+  }
+}
+
+void segment_add_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out) {
+  auto numel = src.numel();
+
+  auto index_data = index.DATA_PTR<int64_t>();
+  auto stream = at::cuda::getCurrentCUDAStream();
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_add_coo_kernel", [&] {
+    auto src_data = src.DATA_PTR<scalar_t>();
+    auto out_data = out.DATA_PTR<scalar_t>();
+
+    segment_add_coo_kernel<scalar_t><<<BLOCKS(1, numel), THREADS, 0, stream>>>(
+        src_data, index_data, out_data, numel);
+  });
 }
 
 void segment_add_thrust_cuda(at::Tensor src, at::Tensor index, at::Tensor out) {
