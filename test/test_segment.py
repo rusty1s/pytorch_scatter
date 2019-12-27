@@ -37,7 +37,7 @@ def test_forward2(dtype, device):
 def test_benchmark(dtype, device):
     from torch_geometric.datasets import Planetoid, Reddit  # noqa
     data = Planetoid('/tmp/Cora', 'Cora')[0].to(device)
-    # data = Planetoid('/tmp/PubMed', 'PubMed')[0].to(device)
+    data = Planetoid('/tmp/PubMed', 'PubMed')[0].to(device)
     # data = Reddit('/tmp/Reddit')[0].to(device)
     row, col = data.edge_index
     x = torch.randn(data.num_edges, device=device)
