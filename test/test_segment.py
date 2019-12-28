@@ -22,9 +22,11 @@ def test_forward(dtype, device):
 
 @pytest.mark.parametrize('dtype,device', product(dtypes, devices))
 def test_forward2(dtype, device):
-    src = tensor([1, 2, 3, 4, 5, 6], dtype, device)
+    src = tensor([[1, 2, 3, 4, 5, 6], [1, 3, 5, 7, 9, 11]], dtype, device)
 
     indptr = tensor([[0, 2, 5, 5, 6]], torch.long, device)
+    indptr = indptr.view(1, -1).expand(2, -1)
+    assert indptr.stride(-1) == 1
     out = segment_add_csr(src, indptr)
     print('CSR', out)
 
@@ -36,9 +38,9 @@ def test_forward2(dtype, device):
 @pytest.mark.parametrize('dtype,device', product(dtypes, devices))
 def test_benchmark(dtype, device):
     from torch_geometric.datasets import Planetoid, Reddit  # noqa
-    data = Planetoid('/tmp/Cora', 'Cora')[0].to(device)
-    data = Planetoid('/tmp/PubMed', 'PubMed')[0].to(device)
-    # data = Reddit('/tmp/Reddit')[0].to(device)
+    # data = Planetoid('/tmp/Cora', 'Cora')[0].to(device)
+    # data = Planetoid('/tmp/PubMed', 'PubMed')[0].to(device)
+    data = Reddit('/tmp/Reddit')[0].to(device)
     row, col = data.edge_index
     x = torch.randn(data.num_edges, device=device)
     print(row.size(0) / data.num_nodes)

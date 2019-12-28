@@ -1,5 +1,7 @@
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
+#include <ATen/cuda/detail/IndexUtils.cuh>
+#include <ATen/cuda/detail/TensorInfo.cuh>
 
 #include <THC/THCGeneral.h>
 #include <THC/THCThrustAllocator.cuh>
@@ -8,32 +10,70 @@
 
 #include "atomics.cuh"
 #include "compat.cuh"
+#include "index.cuh"
 
 #define THREADS 256
 #define BLOCKS(TB, N) (TB * N + THREADS - 1) / THREADS
 #define FULL_MASK 0xffffffff
 
+// template <typename scalar_t, int TB>
+// __global__ void segment_add_csr_broadcast_kernel(const scalar_t *src_data,
+//                                                  const int64_t *indptr_data,
+//                                                  scalar_t *out_data,
+//                                                  size_t numel) {}
+
+// template <typename T, typename I> struct IndexPtrToOffset<T, I> {
+// static inline __host__ __device__ I
+// get(I idx, const at::cuda::detail::TensorInfo<T, I> &info) {
+
+//   return idx;
+// I offset = idx % (info.sizes[info.dims - 1] - 1);
+// idx /= info.sizes[info.dims - 1] - 1;
+// for (int i = info.dims - 2; i >= 0; --i) {
+//   offset += (idx % info.sizes[i]) * info.strides[i];
+//   idx /= info.sizes[i];
+// }
+// return offset;
+// }
+// };
+
+template <typename T, typename I> struct IndexPtrToOffset {
+  static __host__ __device__ I
+  get(I idx, const at::cuda::detail::TensorInfo<T, I> &info) {
+    I offset = idx % (info.sizes[info.dims - 1] - 1);
+    idx /= info.sizes[info.dims - 1] - 1;
+    for (int i = info.dims - 2; i >= 0; --i) {
+      offset += (idx % info.sizes[i]) * info.strides[i];
+      idx /= info.sizes[i];
+    }
+    return offset;
+  }
+};
+
 template <typename scalar_t, int TB>
-__global__ void segment_add_csr_kernel(const scalar_t *src_data,
-                                       const int64_t *indptr_data,
-                                       scalar_t *out_data, size_t numel) {
+__global__ void segment_add_csr_kernel(
+    const scalar_t *src_data,
+    const at::cuda::detail::TensorInfo<int64_t, int> indptr_info,
+    scalar_t *out_data, size_t N, size_t E) {
 
   int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
   int warp_idx = thread_idx / TB;
   int lane_idx = thread_idx & (TB - 1);
 
-  if (warp_idx < numel) {
-    int row_start = __ldg(indptr_data + warp_idx);
-    int row_end = __ldg(indptr_data + warp_idx + 1);
+  if (warp_idx < N) {
+    auto offset = IndexPtrToOffset<int64_t, int>::get(warp_idx, indptr_info);
+    int row_start = __ldg(indptr_info.data + offset);
+    int row_end = __ldg(indptr_info.data + offset + 1);
     scalar_t val = (scalar_t)0;
 
+    offset = (warp_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E;
     for (int src_idx = row_start + lane_idx; src_idx < row_end; src_idx += TB) {
-      val += __ldg(src_data + src_idx);
+      val += src_data[offset + src_idx];
     }
 
 #pragma unroll
-    for (int offset = TB / 2; offset > 0; offset /= 2)
-      val += __shfl_down_sync(FULL_MASK, val, offset); // Parallel reduction.
+    for (int i = TB / 2; i > 0; i /= 2)
+      val += __shfl_down_sync(FULL_MASK, val, i); // Parallel reduction.
 
     if (lane_idx == 0) {
       out_data[warp_idx] = val;
@@ -42,33 +82,40 @@ __global__ void segment_add_csr_kernel(const scalar_t *src_data,
 }
 
 at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
-  auto numel = indptr.numel() - 1; // TODO
-  auto avg_length = (float)src.numel() / (float)numel;
+  src = src.contiguous();
+  AT_ASSERTM(indptr.stride(-1) == 1);
+  AT_ASSERTM(src.dim() >= indptr.dim());
 
-  auto out = at::empty({numel}, src.options());
+  auto reduce_dim = indptr.dim() - 1;
+  auto sizes = src.sizes().vec();
+  sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
+  auto out = at::empty(sizes, src.options());
 
-  auto indptr_data = indptr.DATA_PTR<int64_t>();
+  auto N = (indptr.size(-1) - 1) * (indptr.numel() / indptr.size(-1));
+  auto E = src.size(reduce_dim);
+  auto avg_length = (float)src.size(reduce_dim) / (float)out.size(reduce_dim);
+
+  auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_add_csr_kernel", [&] {
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    if (avg_length <= 4)
-      segment_add_csr_kernel<scalar_t, 4>
-          <<<BLOCKS(4, numel), THREADS, 0, stream>>>(src_data, indptr_data,
-                                                     out_data, numel);
-    else if (avg_length <= 8)
-      segment_add_csr_kernel<scalar_t, 8>
-          <<<BLOCKS(8, numel), THREADS, 0, stream>>>(src_data, indptr_data,
-                                                     out_data, numel);
-    else if (avg_length <= 16)
+    if (avg_length <= 4) {
+      segment_add_csr_kernel<scalar_t, 4><<<BLOCKS(4, N), THREADS, 0, stream>>>(
+          src_data, indptr_info, out_data, N, E);
+    } else if (avg_length <= 8) {
+      segment_add_csr_kernel<scalar_t, 8><<<BLOCKS(8, N), THREADS, 0, stream>>>(
+          src_data, indptr_info, out_data, N, E);
+    } else if (avg_length <= 16) {
       segment_add_csr_kernel<scalar_t, 16>
-          <<<BLOCKS(16, numel), THREADS, 0, stream>>>(src_data, indptr_data,
-                                                      out_data, numel);
-    else
+          <<<BLOCKS(16, N), THREADS, 0, stream>>>(src_data, indptr_info,
+                                                  out_data, N, E);
+    } else {
       segment_add_csr_kernel<scalar_t, 32>
-          <<<BLOCKS(32, numel), THREADS, 0, stream>>>(src_data, indptr_data,
-                                                      out_data, numel);
+          <<<BLOCKS(32, N), THREADS, 0, stream>>>(src_data, indptr_info,
+                                                  out_data, N, E);
+    }
   });
 
   return out;
