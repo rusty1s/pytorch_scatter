@@ -41,6 +41,7 @@ template <typename T, typename I> struct IndexPtrToOffset {
   static __host__ __device__ I
   get(I idx, const at::cuda::detail::TensorInfo<T, I> &info) {
     I offset = idx % (info.sizes[info.dims - 1] - 1);
+    offset *= info.strides[info.dims - 1];
     idx /= info.sizes[info.dims - 1] - 1;
     for (int i = info.dims - 2; i >= 0; --i) {
       offset += (idx % info.sizes[i]) * info.strides[i];
@@ -63,7 +64,8 @@ __global__ void segment_add_csr_kernel(
   if (warp_idx < N) {
     auto offset = IndexPtrToOffset<int64_t, int>::get(warp_idx, indptr_info);
     int row_start = __ldg(indptr_info.data + offset);
-    int row_end = __ldg(indptr_info.data + offset + 1);
+    int row_end = __ldg(indptr_info.data + offset +
+                        indptr_info.strides[indptr_info.dims - 1]);
     scalar_t val = (scalar_t)0;
 
     offset = (warp_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E;
@@ -82,9 +84,8 @@ __global__ void segment_add_csr_kernel(
 }
 
 at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
-  src = src.contiguous();
-  AT_ASSERTM(indptr.stride(-1) == 1);
   AT_ASSERTM(src.dim() >= indptr.dim());
+  src = src.contiguous();
 
   auto reduce_dim = indptr.dim() - 1;
   auto sizes = src.sizes().vec();

@@ -25,8 +25,7 @@ def test_forward2(dtype, device):
     src = tensor([[1, 2, 3, 4, 5, 6], [1, 3, 5, 7, 9, 11]], dtype, device)
 
     indptr = tensor([[0, 2, 5, 5, 6]], torch.long, device)
-    indptr = indptr.view(1, -1).expand(2, -1)
-    assert indptr.stride(-1) == 1
+    indptr = indptr.view(1, -1).expand(2, -1).t().contiguous().t()
     out = segment_add_csr(src, indptr)
     print('CSR', out)
 
