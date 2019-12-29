@@ -151,8 +151,9 @@ __global__ void segment_add_coo_kernel(const scalar_t *src_data,
 #pragma unroll
     for (int offset = 1; offset < TB; offset *= 2) {
       tmp = __shfl_up_sync(FULL_MASK, val, offset);
-      if (lane_idx >= offset &&
-          idx == __ldg(index_data + thread_idx - offset)) {
+      int idx_next = __ldg(index_data + thread_idx - offset);
+      // AT_ASSERTM(lane_idx < offset || idx <= idx_next);
+      if (lane_idx >= offset && idx == idx_next) {
         val += tmp;
       }
     }
