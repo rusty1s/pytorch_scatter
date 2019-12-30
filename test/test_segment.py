@@ -28,7 +28,7 @@ def test_forward2(dtype, device):
     # indptr = indptr.view(1, -1).expand(2, -1).t().contiguous().t()
 
     out = segment_add_csr(src, indptr)
-    # print('CSR', out)
+    print('CSR', out)
 
     # index = tensor([0, 0, 1, 1, 1, 3], torch.long, device)
     # out = segment_add_coo(src, index)
@@ -95,7 +95,7 @@ def test_benchmark(dtype, device):
 
     assert torch.allclose(out1, out4, atol=1e-2)
 
-    x = torch.randn((data.num_edges, 1024), device=device)
+    x = torch.randn((data.num_edges, 32), device=device)
 
     torch.cuda.synchronize()
     t = time.perf_counter()

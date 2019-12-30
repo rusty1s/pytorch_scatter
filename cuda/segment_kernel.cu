@@ -89,6 +89,48 @@ __global__ void segment_add_csr_broadcast_kernel(
   }
 }
 
+template <typename scalar_t, int TB>
+__global__ void segment_add_csr_broadcast_kernel2(
+    const scalar_t *src_data,
+    const at::cuda::detail::TensorInfo<int64_t, int> indptr_info,
+    scalar_t *out_data, size_t N, size_t K, size_t E) {
+
+  int thread_idx = blockIdx.y * blockDim.y + threadIdx.y;
+  int row_idx = thread_idx / TB;
+  int lane_idx = thread_idx & (TB - 1);
+  int col_idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+  __shared__ scalar_t vals[32][32];
+
+  if (row_idx < N) {
+    auto offset = IndexPtrToOffset<int64_t, int>::get(row_idx, indptr_info);
+    int row_start = __ldg(indptr_info.data + offset);
+    int row_end = __ldg(indptr_info.data + offset +
+                        indptr_info.strides[indptr_info.dims - 1]);
+    scalar_t val = (scalar_t)0;
+
+    offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E * K;
+    if (col_idx < K) {
+      for (int i = row_start + lane_idx; i < row_end; i += TB) {
+        val += src_data[offset + K * i + col_idx];
+      }
+    }
+
+    vals[threadIdx.x][threadIdx.y] = val;
+    __syncthreads();
+
+#pragma unroll
+    for (int i = 1; i < TB; i *= 2) {
+      vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y + i];
+      __syncthreads();
+    }
+
+    if (col_idx < K && lane_idx == 0) {
+      out_data[row_idx * K + col_idx] = vals[threadIdx.x][threadIdx.y];
+    }
+  }
+}
+
 at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
   AT_ASSERTM(src.dim() >= indptr.dim());
   for (int i = 0; i < indptr.dim() - 1; i++)
