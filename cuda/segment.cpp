@@ -2,22 +2,25 @@
 
 #define CHECK_CUDA(x) AT_ASSERTM(x.type().is_cuda(), #x " must be CUDA tensor")
 
-at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr);
-void segment_add_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out);
+at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr,
+                                at::optional<at::Tensor> out_opt);
+at::Tensor segment_add_coo_cuda(at::Tensor src, at::Tensor index,
+                                at::Tensor out);
 
-void segment_add_thrust_cuda(at::Tensor src, at::Tensor index, at::Tensor out);
-
-at::Tensor segment_add_csr(at::Tensor src, at::Tensor indptr) {
+at::Tensor segment_add_csr(at::Tensor src, at::Tensor indptr,
+                           at::optional<at::Tensor> out_opt) {
   CHECK_CUDA(src);
   CHECK_CUDA(indptr);
-  return segment_add_csr_cuda(src, indptr);
+  if (out_opt.has_value())
+    CHECK_CUDA(out_opt.value());
+  return segment_add_csr_cuda(src, indptr, out_opt);
 }
 
-void segment_add_coo(at::Tensor src, at::Tensor index, at::Tensor out) {
+at::Tensor segment_add_coo(at::Tensor src, at::Tensor index, at::Tensor out) {
   CHECK_CUDA(src);
   CHECK_CUDA(index);
   CHECK_CUDA(out);
-  segment_add_coo_cuda(src, index, out);
+  return segment_add_coo_cuda(src, index, out);
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {

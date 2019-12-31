@@ -1,6 +1,5 @@
 import torch
 
-from torch_scatter.utils.gen import gen
 from torch_scatter.add import scatter_add
 
 if torch.cuda.is_available():
@@ -11,8 +10,8 @@ def segment_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
     return scatter_add(src, index, dim, out, dim_size, fill_value)
 
 
-def segment_add_csr(src, indptr):
-    return torch_scatter.segment_cuda.segment_add_csr(src, indptr)
+def segment_add_csr(src, indptr, out=None):
+    return torch_scatter.segment_cuda.segment_add_csr(src, indptr, out)
 
 
 def segment_add_coo(src, index, dim_size=None):

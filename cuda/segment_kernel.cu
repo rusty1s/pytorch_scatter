@@ -92,17 +92,28 @@ __global__ void segment_add_csr_broadcast_kernel(
   }
 }
 
-at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr) {
+at::Tensor segment_add_csr_cuda(at::Tensor src, at::Tensor indptr,
+                                at::optional<at::Tensor> out_opt) {
+
   AT_ASSERTM(src.dim() >= indptr.dim());
   for (int i = 0; i < indptr.dim() - 1; i++)
     AT_ASSERTM(src.size(i) == indptr.size(i));
 
   src = src.contiguous();
-
   auto reduce_dim = indptr.dim() - 1;
-  auto sizes = src.sizes().vec();
-  sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
-  auto out = at::empty(sizes, src.options());
+
+  at::Tensor out;
+  if (out_opt.has_value()) {
+    out = out_opt.value();
+    for (int i = 0; i < out.dim(); i++)
+      if (i != reduce_dim)
+        AT_ASSERTM(src.size(i) == out.size(i));
+    AT_ASSERTM(out.size(reduce_dim) == indptr.size(reduce_dim) - 1);
+  } else {
+    auto sizes = src.sizes().vec();
+    sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
+    out = at::empty(sizes, src.options());
+  }
 
   auto N = out.size(reduce_dim) * (indptr.numel() / indptr.size(-1));
   auto K = out.numel() / N;
@@ -164,6 +175,7 @@ __global__ void segment_add_coo_kernel(
     for (int i = 1; i < 32; i *= 2) {
       tmp = __shfl_up_sync(FULL_MASK, val, i);
       next_idx = __shfl_up_sync(FULL_MASK, idx, i);
+      assert(idx >= next_idx);
       if (lane_idx >= i && idx == next_idx)
         val += tmp;
     }
@@ -202,6 +214,7 @@ __global__ void segment_add_coo_broadcast_kernel(
 
       int idx2 = __ldg(index_info.data + offset +
                        i * index_info.strides[index_info.dims - 1]);
+      assert(idx1 <= idx2);
       if (idx1 == idx2) {
         val += src_data[K * (row_start + i) + col_idx];
       } else {
@@ -215,7 +228,8 @@ __global__ void segment_add_coo_broadcast_kernel(
   }
 }
 
-void segment_add_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out) {
+at::Tensor segment_add_coo_cuda(at::Tensor src, at::Tensor index,
+                                at::Tensor out) {
   AT_ASSERTM(src.dim() >= index.dim());
   for (int i = 0; i < index.dim(); i++)
     AT_ASSERTM(src.size(i) == index.size(i));
@@ -257,4 +271,6 @@ void segment_add_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out) {
           <<<dim3(((E + (8 * 32) - 1) / (8 * 32)), (K + 31) / 32), dim3(32, 8),
              0, stream>>>(src_data, index_info, out_data, E, K);
   });
+
+  return out;
 }

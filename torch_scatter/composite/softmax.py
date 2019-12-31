@@ -1,6 +1,7 @@
 import torch
 
 from torch_scatter import scatter_add, scatter_max
+from torch_scatter.utils.gen import broadcast
 
 
 def scatter_softmax(src, index, dim=-1, eps=1e-12):
@@ -31,6 +32,7 @@ def scatter_softmax(src, index, dim=-1, eps=1e-12):
         raise ValueError('`scatter_softmax` can only be computed over tensors '
                          'with floating point data types.')
 
+    src, index = broadcast(src, index, dim)
     max_value_per_index, _ = scatter_max(src, index, dim=dim, fill_value=0)
     max_per_src_element = max_value_per_index.gather(dim, index)
 
@@ -73,6 +75,7 @@ def scatter_log_softmax(src, index, dim=-1, eps=1e-12):
         raise ValueError('`scatter_log_softmax` can only be computed over '
                          'tensors with floating point data types.')
 
+    src, index = broadcast(src, index, dim)
     max_value_per_index, _ = scatter_max(src, index, dim=dim, fill_value=0)
     max_per_src_element = max_value_per_index.gather(dim, index)
 
