@@ -1,23 +1,23 @@
 import torch
 
-from torch_scatter.add import scatter_add
-
 if torch.cuda.is_available():
-    import torch_scatter.segment_cuda
+    from torch_scatter import segment_cuda
 
 
-def segment_add(src, index, dim=-1, out=None, dim_size=None, fill_value=0):
-    return scatter_add(src, index, dim, out, dim_size, fill_value)
+def segment_coo(src, index, out=None, dim_size=None, reduce='add'):
+    assert reduce in ['add', 'mean', 'min', 'max']
+    if out is None:
+        dim_size = index.max().item() + 1 if dim_size is None else dim_size
+        size = list(src.size())
+        size[index.dim() - 1] = dim_size
+        out = src.new_zeros(size)  # TODO: DEPENDENT ON REDUCE
+    assert index.dtype == torch.long and src.dtype == out.dtype
+    out, arg_out = segment_cuda.segment_coo(src, index, out, reduce)
+    return out if arg_out is None else (out, arg_out)
 
 
-def segment_add_csr(src, indptr, out=None):
-    return torch_scatter.segment_cuda.segment_add_csr(src, indptr, out)
-
-
-def segment_add_coo(src, index, dim_size=None):
-    dim_size = index.max().item() + 1 if dim_size is None else dim_size
-    size = list(src.size())
-    size[index.dim() - 1] = dim_size
-    out = src.new_zeros(size)
-    torch_scatter.segment_cuda.segment_add_coo(src, index, out)
-    return out
+def segment_csr(src, indptr, out=None, reduce='add'):
+    assert reduce in ['add', 'mean', 'min', 'max']
+    assert indptr.dtype == torch.long
+    out, arg_out = segment_cuda.segment_csr(src, indptr, out, reduce)
+    return out if arg_out is None else (out, arg_out)

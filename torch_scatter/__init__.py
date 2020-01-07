@@ -8,7 +8,7 @@ from .max import scatter_max
 from .min import scatter_min
 from .logsumexp import scatter_logsumexp
 
-from .segment import segment_add
+from .segment import segment_coo, segment_csr
 
 import torch_scatter.composite
 
@@ -24,7 +24,8 @@ __all__ = [
     'scatter_max',
     'scatter_min',
     'scatter_logsumexp',
-    'segment_add',
+    'segment_coo',
+    'segment_csr',
     'torch_scatter',
     '__version__',
 ]

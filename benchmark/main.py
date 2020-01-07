@@ -7,7 +7,7 @@ from scipy.io import loadmat
 import torch
 
 from torch_scatter import scatter_add
-from torch_scatter.segment import segment_add_csr, segment_add_coo
+from torch_scatter import segment_csr, segment_coo
 
 iters = 20
 device = 'cuda'
@@ -51,8 +51,8 @@ def correctness(dataset):
             x = x.unsqueeze(-1) if size == 1 else x
 
             out1 = scatter_add(x, row, dim=0, dim_size=dim_size)
-            out2 = segment_add_coo(x, row, dim_size=dim_size)
-            out3 = segment_add_csr(x, rowptr)
+            out2 = segment_coo(x, row, dim_size=dim_size)
+            out3 = segment_csr(x, rowptr)
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
@@ -104,7 +104,7 @@ def timing(dataset):
                 torch.cuda.synchronize()
                 t = time.perf_counter()
                 for _ in range(iters):
-                    out = segment_add_coo(x, row, dim_size=dim_size)
+                    out = segment_coo(x, row, dim_size=dim_size)
                     del out
                 torch.cuda.synchronize()
                 t3.append(time.perf_counter() - t)
@@ -116,7 +116,7 @@ def timing(dataset):
                 torch.cuda.synchronize()
                 t = time.perf_counter()
                 for _ in range(iters):
-                    out = segment_add_csr(x, rowptr)
+                    out = segment_csr(x, rowptr)
                     del out
                 torch.cuda.synchronize()
                 t4.append(time.perf_counter() - t)
