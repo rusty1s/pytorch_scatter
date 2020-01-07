@@ -18,18 +18,12 @@ def test_forward(dtype, device):
     src = tensor([1, 2, 3, 4, 5, 6], dtype, device)
 
     indptr = tensor([0, 2, 5, 5, 6], torch.long, device)
-    index = tensor([0, 0, 1, 1, 1, 3], torch.long, device)
-    # out = segment_coo(src, index)
-    # print('COO', out)
-
     out = segment_csr(src, indptr, reduce='add')
     print('CSR', out)
-    out = segment_csr(src, indptr, reduce='mean')
-    print('CSR', out)
-    out = segment_csr(src, indptr, reduce='min')
-    print('CSR', out)
-    out = segment_csr(src, indptr, reduce='max')
-    print('CSR', out)
+
+    index = tensor([0, 0, 1, 1, 1, 3], torch.long, device)
+    out = segment_coo(src, index, reduce='add')
+    print('COO', out)
 
 
 # @pytest.mark.parametrize('dtype,device', product(dtypes, devices))
