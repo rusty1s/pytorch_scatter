@@ -177,7 +177,7 @@ def timing(dataset):
 
     name = f'{group}/{name}'
     print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
-    print('\t'.join(['       '] + [f'{size:>7}' for size in sizes]))
+    print('\t'.join(['       '] + [f'{size:>5}' for size in sizes]))
     print('\t'.join([bold('SCA_ROW')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
     print('\t'.join([bold('SCA_COL')] +
@@ -196,4 +196,3 @@ def timing(dataset):
 for dataset in itertools.chain(short_rows, long_rows):
     correctness(dataset)
     timing(dataset)
-    break
