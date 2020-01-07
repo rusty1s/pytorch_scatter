@@ -68,8 +68,9 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     }
   }
 
-  static inline __device__ void atom_write(scalar_t *address, scalar_t val,
-                                           int64_t *arg_address, int64_t arg) {
+  static inline __device__ void atomic_write(scalar_t *address, scalar_t val,
+                                             int64_t *arg_address,
+                                             int64_t arg) {
     if (REDUCE == ADD) {
       atomAdd(address, val);
     } else if (REDUCE == MEAN) {
@@ -81,6 +82,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     }
 
     if (REDUCE == MIN || REDUCE == MAX) {
+      assert(false); // TODO
       __syncthreads();
       if (*address == val) {
         *arg_address = arg;
@@ -280,8 +282,8 @@ segment_coo_kernel(const scalar_t *src_data,
 
     next_idx = __shfl_down_sync(FULL_MASK, idx, 1);
     if (lane_idx == 32 - 1 || idx != next_idx) {
-      Reducer<scalar_t, REDUCE>::atom_write(out_data + idx, val,
-                                            arg_out_data + idx, arg);
+      Reducer<scalar_t, REDUCE>::atomic_write(out_data + idx, val,
+                                              arg_out_data + idx, arg);
     }
   }
 }
@@ -343,8 +345,10 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
       AT_ASSERTM(src.size(i) == out.size(i));
 
   at::optional<at::Tensor> arg_out = at::nullopt;
+  int64_t *arg_out_data = nullptr;
   if (reduce == "min" || reduce == "max") {
     arg_out = at::full_like(out, src.size(reduce_dim), index.options());
+    arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
   auto E = index.numel();
@@ -357,43 +361,41 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    // Select the right kernel based on average row length (purely heuristic)
-    // and whether we need broadcasting capabilties (K > 1):
-
-    if (K == 1 && reduce == "add") {
-      segment_coo_kernel<scalar_t, ADD><<<BLOCKS(1, E), THREADS, 0, stream>>>(
-          src_data, index_info, out_data, nullptr, E);
-    } else if (K == 1 && reduce == "mean") {
-      segment_coo_kernel<scalar_t, MEAN><<<BLOCKS(1, E), THREADS, 0, stream>>>(
-          src_data, index_info, out_data, nullptr, E);
-    } else if (K == 1 && reduce == "min") {
-      auto arg_out_data = arg_out.value().DATA_PTR<int64_t>();
-      segment_coo_kernel<scalar_t, MIN><<<BLOCKS(1, E), THREADS, 0, stream>>>(
-          src_data, index_info, out_data, arg_out_data, E);
-    } else if (K == 1 && reduce == "max") {
-      auto arg_out_data = arg_out.value().DATA_PTR<int64_t>();
-      segment_coo_kernel<scalar_t, MAX><<<BLOCKS(1, E), THREADS, 0, stream>>>(
-          src_data, index_info, out_data, arg_out_data, E);
-    } else if (avg_len <= 8)
-      segment_coo_broadcast_kernel<scalar_t, ADD, 4>
-          <<<dim3(((E + (8 * 4) - 1) / (8 * 4)), (K + 31) / 32), dim3(32, 8), 0,
-             stream>>>(src_data, index_info, out_data, nullptr, E, K);
-    else if (avg_len <= 16)
-      segment_coo_broadcast_kernel<scalar_t, ADD, 8>
-          <<<dim3(((E + (8 * 8) - 1) / (8 * 8)), (K + 31) / 32), dim3(32, 8), 0,
-             stream>>>(src_data, index_info, out_data, nullptr, E, K);
-    else if (avg_len <= 32)
-      segment_coo_broadcast_kernel<scalar_t, ADD, 16>
-          <<<dim3(((E + (8 * 16) - 1) / (8 * 16)), (K + 31) / 32), dim3(32, 8),
-             0, stream>>>(src_data, index_info, out_data, nullptr, E, K);
-    else
-      segment_coo_broadcast_kernel<scalar_t, ADD, 32>
-          <<<dim3(((E + (8 * 32) - 1) / (8 * 32)), (K + 31) / 32), dim3(32, 8),
-             0, stream>>>(src_data, index_info, out_data, nullptr, E, K);
+    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+      if (K == 1) {
+        segment_coo_kernel<scalar_t, REDUCE>
+            <<<BLOCKS(1, E), THREADS, 0, stream>>>(src_data, index_info,
+                                                   out_data, arg_out_data, E);
+      } else if (avg_len <= 8) {
+        segment_coo_broadcast_kernel<scalar_t, REDUCE, 4>
+            <<<dim3(((E + (8 * 4) - 1) / (8 * 4)), (K + 31) / 32), dim3(32, 8),
+               0, stream>>>(src_data, index_info, out_data, arg_out_data, E, K);
+      } else if (avg_len <= 16) {
+        segment_coo_broadcast_kernel<scalar_t, REDUCE, 8>
+            <<<dim3(((E + (8 * 8) - 1) / (8 * 8)), (K + 31) / 32), dim3(32, 8),
+               0, stream>>>(src_data, index_info, out_data, arg_out_data, E, K);
+      } else if (avg_len <= 32) {
+        segment_coo_broadcast_kernel<scalar_t, REDUCE, 16>
+            <<<dim3(((E + (8 * 16) - 1) / (8 * 16)), (K + 31) / 32),
+               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data,
+                                         arg_out_data, E, K);
+      } else {
+        segment_coo_broadcast_kernel<scalar_t, REDUCE, 32>
+            <<<dim3(((E + (8 * 32) - 1) / (8 * 32)), (K + 31) / 32),
+               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data,
+                                         arg_out_data, E, K);
+      }
+    });
   });
 
   if (reduce == "mean") {
-    AT_ASSERTM(false); // TODO: DIVIDE ENTRIES.
+    auto count = at::empty_like(index, out.options());
+    AT_DISPATCH_ALL_TYPES(out.scalar_type(), "count_kernel", [&] {
+      auto count_data = count.DATA_PTR<scalar_t>();
+      AT_ASSERTM(false); // TODO
+    });
+    out = out / count;
+    arg_out = count;
   }
 
   return std::make_tuple(out, arg_out);
