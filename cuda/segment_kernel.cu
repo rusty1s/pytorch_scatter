@@ -11,7 +11,6 @@
 #define FULL_MASK 0xffffffff
 
 enum ReductionType { ADD, MEAN, MIN, MAX };
-
 #define AT_DISPATCH_REDUCTION_TYPES(reduce, ...)                               \
   [&] {                                                                        \
     if (reduce == "add") {                                                     \
@@ -42,12 +41,12 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
 
   static inline __host__ __device__ void update(scalar_t *val, scalar_t new_val,
                                                 int64_t *arg, int64_t new_arg) {
-    if ((REDUCE == MIN && new_val < *val) ||
-        (REDUCE == MAX && new_val > *val)) {
+    if (REDUCE == ADD || REDUCE == MEAN) {
+      *val = *val + new_val;
+    } else if ((REDUCE == MIN && new_val < *val) ||
+               (REDUCE == MAX && new_val > *val)) {
       *val = new_val;
       *arg = new_arg;
-    } else {
-      *val = *val + new_val;
     }
   }
 
@@ -220,6 +219,22 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
+  if (reduce == "any") {
+    auto index = indptr.narrow(reduce_dim, 0, indptr.size(reduce_dim) - 1);
+    auto index2 = indptr.narrow(reduce_dim, 1, indptr.size(reduce_dim) - 1);
+    auto mask = (index2 - index) == 0;
+
+    for (int i = reduce_dim + 1; i < src.dim(); i++) {
+      index = index.unsqueeze(-1);
+      mask = mask.unsqueeze(-1);
+    }
+
+    at::gather_out(out, src, reduce_dim, index.expand(out.sizes()));
+    out.masked_fill_(mask.expand(out.sizes()), 0);
+
+    return std::make_tuple(out, arg_out);
+  }
+
   auto N = out.size(reduce_dim) * (indptr.numel() / indptr.size(-1));
   auto K = out.numel() / N;
   auto E = src.size(reduce_dim);
@@ -349,6 +364,14 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
   if (reduce == "min" || reduce == "max") {
     arg_out = at::full_like(out, src.size(reduce_dim), index.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
+  }
+
+  if (reduce == "any") {
+    for (int i = reduce_dim + 1; i < src.dim(); i++) {
+      index = index.unsqueeze(-1);
+    }
+    out.scatter_(reduce_dim, index.expand(src.sizes()), src);
+    return std::make_tuple(out, arg_out);
   }
 
   auto E = index.numel();

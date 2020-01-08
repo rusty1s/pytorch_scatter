@@ -7,7 +7,7 @@ if torch.cuda.is_available():
 class SegmentCSR(torch.autograd.Function):
     @staticmethod
     def forward(ctx, src, indptr, out, reduce):
-        assert reduce in ['add', 'mean', 'min', 'max']
+        assert reduce in ['any', 'add', 'mean', 'min', 'max']
         assert indptr.dtype == torch.long
 
         if out is not None:
@@ -30,12 +30,12 @@ class SegmentCSR(torch.autograd.Function):
 
 
 def segment_coo(src, index, out=None, dim_size=None, reduce='add'):
-    assert reduce in ['add', 'mean', 'min', 'max']
+    assert reduce in ['any', 'add', 'mean', 'min', 'max']
     if out is None:
         dim_size = index.max().item() + 1 if dim_size is None else dim_size
         size = list(src.size())
         size[index.dim() - 1] = dim_size
-        out = src.new_zeros(size)  # TODO: DEPENDENT ON REDUCE
+        out = src.new_zeros(size)  # TODO: DEPENDS ON REDUCE
     assert index.dtype == torch.long and src.dtype == out.dtype
     out, arg_out = segment_cuda.segment_coo(src, index, out, reduce)
     return out if arg_out is None else (out, arg_out)
