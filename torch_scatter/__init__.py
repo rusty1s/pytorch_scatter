@@ -9,6 +9,7 @@ from .min import scatter_min
 from .logsumexp import scatter_logsumexp
 
 from .segment import segment_coo, segment_csr
+from .gather import gather_coo, gather_csr
 
 import torch_scatter.composite
 
@@ -26,6 +27,8 @@ __all__ = [
     'scatter_logsumexp',
     'segment_coo',
     'segment_csr',
+    'gather_coo',
+    'gather_csr',
     'torch_scatter',
     '__version__',
 ]

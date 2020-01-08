@@ -3,34 +3,32 @@ import os.path as osp
 import itertools
 
 import wget
-from scipy.io import loadmat
 import torch
+from scipy.io import loadmat
 
-from torch_scatter import scatter_add
-from torch_scatter import segment_csr, segment_coo
+from torch_scatter import scatter_add, segment_csr, segment_coo
 
 iters = 20
 device = 'cuda'
 sizes = [1, 16, 32, 64, 128, 256, 512]
 
-long_rows = [
-    ('Janna', 'StocF-1465'),
-    ('GHS_psdef', 'ldoor'),
-]
 short_rows = [
     ('DIMACS10', 'citationCiteseer'),
     ('SNAP', 'web-Stanford'),
 ]
+long_rows = [
+    ('Janna', 'StocF-1465'),
+    ('GHS_psdef', 'ldoor'),
+]
 
-url = 'https://sparse.tamu.edu/mat/{}/{}.mat'
-for group, name in itertools.chain(long_rows, short_rows):
-    if not osp.exists(f'{name}.mat'):
-        print(f'Downloading {group}/{name}:')
-        wget.download(url.format(group, name))
-        print('')
 
-for _ in range(10):  # Warmup.
-    torch.randn(100, 100, device=device).sum()
+def download(dataset):
+    url = 'https://sparse.tamu.edu/mat/{}/{}.mat'
+    for group, name in itertools.chain(long_rows, short_rows):
+        if not osp.exists(f'{name}.mat'):
+            print(f'Downloading {group}/{name}:')
+            wget.download(url.format(group, name))
+            print('')
 
 
 def bold(text, flag=True):
@@ -193,6 +191,10 @@ def timing(dataset):
     print()
 
 
-for dataset in itertools.chain(short_rows, long_rows):
-    correctness(dataset)
-    timing(dataset)
+if __name__ == '__main__':
+    for _ in range(10):  # Warmup.
+        torch.randn(100, 100, device=device).sum()
+    for dataset in itertools.chain(short_rows, long_rows):
+        download(dataset)
+        correctness(dataset)
+        timing(dataset)

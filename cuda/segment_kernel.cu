@@ -5,6 +5,7 @@
 
 #include "atomics.cuh"
 #include "compat.cuh"
+#include "indptr.cuh"
 
 #define THREADS 256
 #define BLOCKS(TB, N) (TB * N + THREADS - 1) / THREADS
@@ -87,22 +88,6 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
         *arg_address = arg;
       }
     }
-  }
-};
-
-// We need our own `IndexToOffset` implementation since we do not want to
-// access the last element of the `indexptr`.
-template <typename scalar_t> struct IndexPtrToOffset {
-  static inline __host__ __device__ int
-  get(int idx, const at::cuda::detail::TensorInfo<scalar_t, int> &info) {
-    int offset = idx % (info.sizes[info.dims - 1] - 1);
-    offset *= info.strides[info.dims - 1];
-    idx /= info.sizes[info.dims - 1] - 1;
-    for (int i = info.dims - 2; i >= 0; --i) {
-      offset += (idx % info.sizes[i]) * info.strides[i];
-      idx /= info.sizes[i];
-    }
-    return offset;
   }
 };
 
@@ -313,7 +298,7 @@ __global__ void segment_coo_broadcast_kernel(
   // read and write is performed in column-major order. The intermediate
   // results are written via atomics.
 
-  int row_start = (blockIdx.x * blockDim.y + threadIdx.y) * TB;
+  int row_start = blockIdx.x * (blockDim.y + threadIdx.y) * TB;
   int col_idx = blockIdx.y * blockDim.x + threadIdx.x;
 
   if (row_start < E && col_idx < K) {
@@ -375,7 +360,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
   }
 
   auto E = index.numel();
-  auto K = src.numel() / index.numel();
+  auto K = src.numel() / E;
   auto avg_len = (float)src.size(reduce_dim) / (float)out.size(reduce_dim);
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
