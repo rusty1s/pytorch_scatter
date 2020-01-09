@@ -1,5 +1,7 @@
 import torch
 
+from torch_scatter.utils import min_value, max_value
+
 if torch.cuda.is_available():
     from torch_scatter import segment_cuda, gather_cuda
 
@@ -48,12 +50,24 @@ class SegmentCSR(torch.autograd.Function):
 
 def segment_coo(src, index, out=None, dim_size=None, reduce='add'):
     assert reduce in ['any', 'add', 'mean', 'min', 'max']
+
+    fill_value = 0
     if out is None:
         dim_size = index.max().item() + 1 if dim_size is None else dim_size
         size = list(src.size())
         size[index.dim() - 1] = dim_size
-        out = src.new_zeros(size)  # TODO: DEPENDS ON REDUCE
+
+        if reduce == 'min':
+            fill_value = max_value(src.dtype)
+        elif reduce == 'max':
+            fill_value = min_value(src.dtype)
+
+        out = src.new_full(size, fill_value)
     out, arg_out = segment_cuda.segment_coo(src, index, out, reduce)
+
+    if fill_value != 0:
+        out.masked_fill_(out == fill_value, 0)
+
     return out if arg_out is None else (out, arg_out)
 
 
