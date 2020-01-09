@@ -3,8 +3,8 @@
 import time
 import os.path as osp
 import itertools
-import argparse
 
+import argparse
 import wget
 import torch
 from scipy.io import loadmat
@@ -12,12 +12,6 @@ from scipy.io import loadmat
 import torch_scatter
 from torch_scatter import scatter_add, scatter_mean, scatter_min, scatter_max
 from torch_scatter import segment_coo, segment_csr
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--reduce', type=str, required=True)
-parser.add_argument('--device', type=str, default='cuda')
-args = parser.parse_args()
-args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
 
 iters = 20
 sizes = [1, 16, 32, 64, 128, 256, 512]
@@ -94,6 +88,7 @@ def correctness(dataset):
             torch.cuda.empty_cache()
 
 
+@torch.no_grad()
 def time_func(func, x):
     try:
         torch.cuda.synchronize()
@@ -184,6 +179,13 @@ def timing(dataset):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--reduce', type=str, required=True,
+                        choices=['add', 'mean', 'min', 'max'])
+    parser.add_argument('--device', type=str, default='cuda')
+    args = parser.parse_args()
+    args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
+
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
     for dataset in itertools.chain(short_rows, long_rows):
