@@ -6,7 +6,7 @@
 // We need our own `IndexToOffset` implementation since we do not want to
 // access the last element of the `indexptr`.
 template <typename scalar_t> struct IndexPtrToOffset {
-  static inline __host__ __device__ int
+  static inline __device__ int
   get(int idx, const at::cuda::detail::TensorInfo<scalar_t, int> &info) {
     int offset = idx % (info.sizes[info.dims - 1] - 1);
     offset *= info.strides[info.dims - 1];

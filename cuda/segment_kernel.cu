@@ -30,7 +30,7 @@ enum ReductionType { ADD, MEAN, MIN, MAX };
   }()
 
 template <typename scalar_t, ReductionType REDUCE> struct Reducer {
-  static inline __host__ __device__ scalar_t init() {
+  static inline __device__ scalar_t init() {
     if (REDUCE == MIN) {
       return std::numeric_limits<scalar_t>::max();
     } else if (REDUCE == MAX) {
@@ -40,8 +40,8 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     }
   }
 
-  static inline __host__ __device__ void update(scalar_t *val, scalar_t new_val,
-                                                int64_t *arg, int64_t new_arg) {
+  static inline __device__ void update(scalar_t *val, scalar_t new_val,
+                                       int64_t *arg, int64_t new_arg) {
     if (REDUCE == ADD || REDUCE == MEAN) {
       *val = *val + new_val;
     } else if ((REDUCE == MIN && new_val < *val) ||
@@ -51,9 +51,9 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     }
   }
 
-  static inline __host__ __device__ void write(scalar_t *address, scalar_t val,
-                                               int64_t *arg_address,
-                                               int64_t arg, int count) {
+  static inline __device__ void write(scalar_t *address, scalar_t val,
+                                      int64_t *arg_address, int64_t arg,
+                                      int count) {
     if (REDUCE == ADD) {
       *address = val;
     } else if (REDUCE == MEAN) {
@@ -126,7 +126,8 @@ segment_csr_kernel(const scalar_t *src_data,
       if (REDUCE == MIN || REDUCE == MAX) {
         tmp = __shfl_down_sync(FULL_MASK, val, i);
         arg_tmp = __shfl_down_sync(FULL_MASK, arg, i);
-        if (row_start + lane_idx + i < row_end)
+        // Only update valid entries.
+        if (lane_idx < i && row_start + lane_idx + i < row_end)
           Reducer<scalar_t, REDUCE>::update(&val, tmp, &arg, arg_tmp);
       } else {
         Reducer<scalar_t, REDUCE>::update(
