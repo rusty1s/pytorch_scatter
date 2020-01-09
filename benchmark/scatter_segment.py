@@ -1,16 +1,25 @@
+# flake8: noqa
+
 import time
 import os.path as osp
 import itertools
+import argparse
 
 import wget
 import torch
 from scipy.io import loadmat
 
+import torch_scatter
 from torch_scatter import scatter_add, scatter_mean, scatter_min, scatter_max
 from torch_scatter import segment_coo, segment_csr
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--reduce', type=str, required=True)
+parser.add_argument('--device', type=str, default='cuda')
+args = parser.parse_args()
+args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
+
 iters = 20
-device = 'cuda'
 sizes = [1, 16, 32, 64, 128, 256, 512]
 
 short_rows = [
@@ -40,13 +49,13 @@ def bold(text, flag=True):
 def correctness(dataset):
     group, name = dataset
     mat = loadmat(f'{name}.mat')['Problem'][0][0][2].tocsr()
-    rowptr = torch.from_numpy(mat.indptr).to(device, torch.long)
-    row = torch.from_numpy(mat.tocoo().row).to(device, torch.long)
+    rowptr = torch.from_numpy(mat.indptr).to(args.device, torch.long)
+    row = torch.from_numpy(mat.tocoo().row).to(args.device, torch.long)
     dim_size = rowptr.size(0) - 1
 
     for size in sizes:
         try:
-            x = torch.randn((row.size(0), size), device=device)
+            x = torch.randn((row.size(0), size), device=args.device)
             x = x.squeeze(-1) if size == 1 else x
 
             out1 = scatter_add(x, row, dim=0, dim_size=dim_size)
@@ -63,92 +72,71 @@ def correctness(dataset):
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
 
-            # out1, arg_out1 = scatter_max(x, row, dim=0, dim_size=dim_size)
-            # out3, arg_out3 = segment_csr(x, rowptr, reduce='max')
+            x = x.abs_().mul_(-1)
 
-            # print(out1[:5])
-            # print(out3[:5])
+            out1, arg_out1 = scatter_min(x, row, 0, torch.zeros_like(out1))
+            out2, arg_out2 = segment_coo(x, row, reduce='min')
+            out3, arg_out3 = segment_csr(x, rowptr, reduce='min')
 
-            # nnz = (out1 != out3).nonzero().flatten()
+            assert torch.allclose(out1, out2, atol=1e-4)
+            assert torch.allclose(out1, out3, atol=1e-4)
 
-            # nnz1 = nnz[0].item()
-            # print(rowptr[nnz1], rowptr[nnz1 + 1])
+            x = x.abs_()
 
-            # print(x[rowptr[nnz1]:rowptr[nnz1 + 1]])
-            # print(x[rowptr[nnz1]:rowptr[nnz1 + 1]])
+            out1, arg_out1 = scatter_max(x, row, 0, torch.zeros_like(out1))
+            out2, arg_out2 = segment_coo(x, row, reduce='max')
+            out3, arg_out3 = segment_csr(x, rowptr, reduce='max')
 
-            # print(out1[nnz1])
-            # print(out3[nnz1])
+            assert torch.allclose(out1, out2, atol=1e-4)
+            assert torch.allclose(out1, out3, atol=1e-4)
 
-            # assert torch.allclose(out1, out3, atol=1e-4)
-            # assert torch.all(arg_out1 == arg_out3)
         except RuntimeError:
             torch.cuda.empty_cache()
+
+
+def time_func(func, x):
+    try:
+        torch.cuda.synchronize()
+        t = time.perf_counter()
+        for _ in range(iters):
+            func(x)
+        torch.cuda.synchronize()
+        return time.perf_counter() - t
+    except RuntimeError:
+        torch.cuda.empty_cache()
+        return float('inf')
 
 
 @torch.no_grad()
 def timing(dataset):
     group, name = dataset
     mat = loadmat(f'{name}.mat')['Problem'][0][0][2].tocsr()
-    rowptr = torch.from_numpy(mat.indptr).to(device, torch.long)
-    row = torch.from_numpy(mat.tocoo().row).to(device, torch.long)
+    rowptr = torch.from_numpy(mat.indptr).to(args.device, torch.long)
+    row = torch.from_numpy(mat.tocoo().row).to(args.device, torch.long)
     row_perm = row[torch.randperm(row.size(0))]
     dim_size = rowptr.size(0) - 1
     avg_row_len = row.size(0) / dim_size
 
+    sca_row = lambda x: getattr(torch_scatter, f'scatter_{args.reduce}')(
+        x, row, dim=0, dim_size=dim_size)
+    sca_col = lambda x: getattr(torch_scatter, f'scatter_{args.reduce}')(
+        x, row_perm, dim=0, dim_size=dim_size)
+    seg_coo = lambda x: segment_coo(x, row, reduce=args.reduce)
+    seg_csr = lambda x: segment_csr(x, rowptr, reduce=args.reduce)
+    dense1 = lambda x: getattr(torch, args.dense_reduce)(x, dim=-2)
+    dense2 = lambda x: getattr(torch, args.dense_reduce)(x, dim=-1)
+
     t1, t2, t3, t4, t5, t6 = [], [], [], [], [], []
+
     for size in sizes:
         try:
-            x = torch.randn((row.size(0), size), device=device)
+            x = torch.randn((row.size(0), size), device=args.device)
             x = x.squeeze(-1) if size == 1 else x
 
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = scatter_add(x, row, dim=0, dim_size=dim_size)
-                    del out
-                torch.cuda.synchronize()
-                t1.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t1.append(float('inf'))
-
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = scatter_add(x, row_perm, dim=0, dim_size=dim_size)
-                    del out
-                torch.cuda.synchronize()
-                t2.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t2.append(float('inf'))
-
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = segment_coo(x, row, dim_size=dim_size, reduce='any')
-                    del out
-                torch.cuda.synchronize()
-                t3.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t3.append(float('inf'))
-
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = segment_csr(x, rowptr, reduce='any')
-                    del out
-                torch.cuda.synchronize()
-                t4.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t4.append(float('inf'))
+            t1 += [time_func(sca_row, x)]
+            t2 += [time_func(sca_col, x)]
+            t3 += [time_func(seg_coo, x)]
+            t4 += [time_func(seg_csr, x)]
 
             del x
 
@@ -159,35 +147,11 @@ def timing(dataset):
 
         try:
             x = torch.randn((dim_size, int(avg_row_len + 1), size),
-                            device=device)
-            x = x.squeeze(-1) if size == 1 else x
+                            device=args.device)
 
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = x.sum(dim=1)
-                    del out
-                torch.cuda.synchronize()
-                t5.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t5.append(float('inf'))
-
+            t5 += [time_func(dense1, x)]
             x = x.view(dim_size, size, int(avg_row_len + 1))
-            x = x.squeeze(-2) if size == 1 else x
-
-            try:
-                torch.cuda.synchronize()
-                t = time.perf_counter()
-                for _ in range(iters):
-                    out = x.sum(dim=-1)
-                    del out
-                torch.cuda.synchronize()
-                t6.append(time.perf_counter() - t)
-            except RuntimeError:
-                torch.cuda.empty_cache()
-                t6.append(float('inf'))
+            t6 += [time_func(dense2, x)]
 
             del x
 
@@ -221,7 +185,7 @@ def timing(dataset):
 
 if __name__ == '__main__':
     for _ in range(10):  # Warmup.
-        torch.randn(100, 100, device=device).sum()
+        torch.randn(100, 100, device=args.device).sum()
     for dataset in itertools.chain(short_rows, long_rows):
         download(dataset)
         correctness(dataset)
