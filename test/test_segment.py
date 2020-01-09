@@ -3,7 +3,7 @@ from itertools import product
 import pytest
 import torch
 from torch_scatter import segment_coo, segment_csr
-from torch_scatter import scatter_add, scatter_mean, scatter_max, scatter_min
+from torch_scatter import scatter_add, scatter_mean, scatter_min  # noqa
 
 from .utils import tensor
 
@@ -36,5 +36,5 @@ def test_forward(dtype, device):
 
     # out.backward(torch.randn_like(out))
 
-    # out = segment_coo(src, index, reduce='any')
-    # print('COO', out)
+    out = segment_coo(src, index, reduce='any')
+    print('COO', out)
