@@ -111,7 +111,7 @@ segment_csr_kernel(const scalar_t *src_data,
     int row_end = __ldg(indptr_info.data + offset +
                         indptr_info.strides[indptr_info.dims - 1]);
 
-    scalar_t val = Reducer<scalar_t, REDUCE>::init();
+    scalar_t val = Reducer<scalar_t, REDUCE>::init(), tmp;
     int64_t arg, arg_tmp;
 
     offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E;
@@ -124,10 +124,14 @@ segment_csr_kernel(const scalar_t *src_data,
     for (int i = TB / 2; i > 0; i /= 2) {
       // Parallel reduction inside a single warp.
       if (REDUCE == MIN || REDUCE == MAX) {
+        tmp = __shfl_down_sync(FULL_MASK, val, i);
         arg_tmp = __shfl_down_sync(FULL_MASK, arg, i);
+        if (row_start + lane_idx + i < row_end)
+          Reducer<scalar_t, REDUCE>::update(&val, tmp, &arg, arg_tmp);
+      } else {
+        Reducer<scalar_t, REDUCE>::update(
+            &val, __shfl_down_sync(FULL_MASK, val, i), &arg, arg_tmp);
       }
-      Reducer<scalar_t, REDUCE>::update(
-          &val, __shfl_down_sync(FULL_MASK, val, i), &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {
@@ -246,7 +250,7 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
   return std::make_tuple(out, arg_out);
 }
 
-template <typename scalar_t, ReductionType REDUCE>
+template <typename scalar_t, ReductionType REDUCE, bool HAS_VAL>
 __global__ void
 segment_coo_kernel(const scalar_t *src_data,
                    const at::cuda::detail::TensorInfo<int64_t, int> index_info,
@@ -264,8 +268,12 @@ segment_coo_kernel(const scalar_t *src_data,
         row_idx, index_info);
     int idx = index_info.data[offset], next_idx;
 
-    scalar_t val = src_data[row_idx], tmp;
-    int64_t arg = row_idx % index_info.sizes[index_info.dims - 1], arg_tmp;
+    scalar_t val = HAS_VAL ? src_data[row_idx] : (scalar_t)1, tmp;
+    int64_t arg, arg_tmp;
+
+    if (REDUCE == MIN || REDUCE == MAX) {
+      arg = row_idx % index_info.sizes[index_info.dims - 1];
+    }
 
 #pragma unroll
     for (int i = 1; i < 32; i *= 2) {
@@ -298,7 +306,7 @@ __global__ void segment_coo_broadcast_kernel(
   // read and write is performed in column-major order. The intermediate
   // results are written via atomics.
 
-  int row_start = blockIdx.x * (blockDim.y + threadIdx.y) * TB;
+  int row_start = (blockIdx.x * blockDim.y + threadIdx.y) * TB;
   int col_idx = blockIdx.y * blockDim.x + threadIdx.x;
 
   if (row_start < E && col_idx < K) {
@@ -371,7 +379,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
 
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (K == 1) {
-        segment_coo_kernel<scalar_t, REDUCE>
+        segment_coo_kernel<scalar_t, REDUCE, true>
             <<<BLOCKS(1, E), THREADS, 0, stream>>>(src_data, index_info,
                                                    out_data, arg_out_data, E);
       } else if (avg_len <= 8) {
@@ -397,12 +405,19 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 
   if (reduce == "mean") {
-    auto count = at::empty_like(index, out.options());
+    auto sizes = index.sizes().vec();
+    sizes[reduce_dim] = out.size(reduce_dim);
+    auto count = at::zeros(sizes, out.options());
+
     AT_DISPATCH_ALL_TYPES(out.scalar_type(), "count_kernel", [&] {
       auto count_data = count.DATA_PTR<scalar_t>();
-      AT_ASSERTM(false); // TODO
+      segment_coo_kernel<scalar_t, ADD, false>
+          <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
+                                                 count_data, nullptr, E);
     });
-    out = out / count;
+
+    count.clamp_(1);
+    out.div_(count);
     arg_out = count;
   }
 

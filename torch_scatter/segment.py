@@ -1,6 +1,6 @@
 import torch
 
-from torch_scatter.utils import min_value, max_value
+from torch_scatter.helpers import min_value, max_value
 
 if torch.cuda.is_available():
     from torch_scatter import segment_cuda, gather_cuda
@@ -63,12 +63,16 @@ def segment_coo(src, index, out=None, dim_size=None, reduce='add'):
             fill_value = min_value(src.dtype)
 
         out = src.new_full(size, fill_value)
+
     out, arg_out = segment_cuda.segment_coo(src, index, out, reduce)
 
     if fill_value != 0:
         out.masked_fill_(out == fill_value, 0)
 
-    return out if arg_out is None else (out, arg_out)
+    if reduce == 'min' or reduce == 'max':
+        return out, arg_out
+    else:
+        return out
 
 
 def segment_csr(src, indptr, out=None, reduce='add'):

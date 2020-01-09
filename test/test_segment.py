@@ -22,19 +22,20 @@ def test_forward(dtype, device):
     indptr = tensor([0, 2, 5, 5, 6], torch.long, device)
     index = tensor([0, 0, 1, 1, 1, 3], torch.long, device)
 
-    out = scatter_min(src, index, dim=0)[0]
-    grad_out = torch.randn_like(out)
-    print(grad_out)
-    out.backward(grad_out)
-    print(src.grad)
+    # out = scatter_min(src, index, dim=0)[0]
+    # grad_out = torch.randn_like(out)
+    # print(grad_out)
+    # out.backward(grad_out)
+    # print(src.grad)
 
     src.grad = None
-    out = segment_csr(src, indptr, reduce='min')[0]
-    out.backward(grad_out)
-    print(src.grad)
+    out = segment_csr(src, indptr, reduce='mean')
+    print('CSR', out)
+    # out.backward(grad_out)
+    # print(src.grad)
     # out = out[0] if isinstance(out, tuple) else out
 
     # out.backward(torch.randn_like(out))
 
-    out = segment_coo(src, index, reduce='any')
+    out = segment_coo(src, index, reduce='mean')
     print('COO', out)
