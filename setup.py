@@ -12,7 +12,7 @@ if '--cpu' in argv:
     USE_GPU = False
 
 cxx_extra_compile_args = []
-nvcc_extra_compile_args = ['-arch=sm_35']
+nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr']
 if platform.system() != 'Windows':
     cxx_extra_compile_args += ['-Wno-unused-variable']
 TORCH_MAJOR = int(torch.__version__.split('.')[0])
