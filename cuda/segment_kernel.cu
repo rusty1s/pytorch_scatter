@@ -195,8 +195,8 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
     for (int i = 0; i < out.dim(); i++)
       if (i != reduce_dim)
         AT_ASSERTM(src.size(i) == out.size(i), "Input mismatch");
-    AT_ASSERTM(out.size(reduce_dim) == indptr.size(reduce_dim) - 1, "Input
-        mismatch");
+    AT_ASSERTM(out.size(reduce_dim) == indptr.size(reduce_dim) - 1,
+               "Input mismatch");
   } else {
     auto sizes = src.sizes().vec();
     sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
@@ -352,7 +352,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
 
   for (int i = 0; i < out.dim(); i++)
     if (i != reduce_dim)
-      AT_ASSERTM(src.size(i) == out.size(i), , "Input mismatch");
+      AT_ASSERTM(src.size(i) == out.size(i), "Input mismatch");
 
   at::optional<at::Tensor> arg_out = at::nullopt;
   int64_t *arg_out_data = nullptr;
