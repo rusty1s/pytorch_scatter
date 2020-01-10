@@ -4,5 +4,9 @@ source=torch_scatter
 exclude_lines =
     pragma: no cover
     cuda
+    forward
     backward
+    apply
     raise
+    min_value
+    max_value
