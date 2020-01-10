@@ -80,9 +80,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
   }
 
   static inline __device__ void atomic_write(scalar_t *address, scalar_t val) {
-    if (REDUCE == ADD) {
-      atomAdd(address, val);
-    } else if (REDUCE == MEAN) {
+    if (REDUCE == ADD || REDUCE == MEAN) {
       atomAdd(address, val);
     } else if (REDUCE == MIN && val < *address) {
       atomMin(address, val);
@@ -108,15 +106,16 @@ segment_csr_kernel(const scalar_t *src_data,
 
   if (row_idx < N) {
     int offset = IndexPtrToOffset<int64_t>::get(row_idx, indptr_info);
-    int row_start = __ldg(indptr_info.data + offset);
-    int row_end = __ldg(indptr_info.data + offset +
-                        indptr_info.strides[indptr_info.dims - 1]);
+    int64_t row_start = __ldg(indptr_info.data + offset);
+    int64_t row_end = __ldg(indptr_info.data + offset +
+                            indptr_info.strides[indptr_info.dims - 1]);
 
     scalar_t val = Reducer<scalar_t, REDUCE>::init();
     int64_t arg, arg_tmp;
 
     offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E;
-    for (int src_idx = row_start + lane_idx; src_idx < row_end; src_idx += TB) {
+    for (int64_t src_idx = row_start + lane_idx; src_idx < row_end;
+         src_idx += TB) {
       Reducer<scalar_t, REDUCE>::update(&val, src_data[offset + src_idx], &arg,
                                         src_idx);
     }
@@ -154,15 +153,15 @@ __global__ void segment_csr_broadcast_kernel(
 
   if (thread_idx < N * K) {
     int offset = IndexPtrToOffset<int64_t>::get(row_idx, indptr_info);
-    int row_start = __ldg(indptr_info.data + offset);
-    int row_end = __ldg(indptr_info.data + offset +
-                        indptr_info.strides[indptr_info.dims - 1]);
+    int64_t row_start = __ldg(indptr_info.data + offset);
+    int64_t row_end = __ldg(indptr_info.data + offset +
+                            indptr_info.strides[indptr_info.dims - 1]);
 
     scalar_t val = Reducer<scalar_t, REDUCE>::init();
     int64_t arg;
 
     offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E * K;
-    for (int src_idx = row_start; src_idx < row_end; src_idx++) {
+    for (int64_t src_idx = row_start; src_idx < row_end; src_idx++) {
       Reducer<scalar_t, REDUCE>::update(
           &val, src_data[offset + K * src_idx + lane_idx], &arg, src_idx);
     }
@@ -253,7 +252,7 @@ segment_coo_kernel(const scalar_t *src_data,
   if (row_idx < E) {
     int offset = at::cuda::detail::IndexToOffset<int64_t, int, -1>::get(
         row_idx, index_info);
-    int idx = index_info.data[offset], next_idx;
+    int64_t idx = index_info.data[offset], next_idx;
     int out_idx = (row_idx / D) * N + idx;
 
     scalar_t val = HAS_VAL ? src_data[row_idx] : (scalar_t)1, tmp;
@@ -289,7 +288,7 @@ __global__ void segment_coo_arg_kernel(
   if (row_idx < E) {
     int offset = at::cuda::detail::IndexToOffset<int64_t, int, -1>::get(
         row_idx, index_info);
-    int idx = index_info.data[offset];
+    int64_t idx = index_info.data[offset];
     int out_idx = (row_idx / D) * N + idx;
 
     scalar_t val = __ldg(out_data + out_idx);
@@ -310,7 +309,7 @@ __global__ void segment_coo_broadcast_kernel(
 
   int D = index_info.sizes[index_info.dims - 1];
   int E_1 = E / D;
-  int E_2 = D + D % TB;
+  int E_2 = D + TB - (D % TB);
 
   int row_idx = blockIdx.x * blockDim.y + threadIdx.y;
   int col_idx = blockIdx.y * blockDim.x + threadIdx.x;
@@ -319,6 +318,7 @@ __global__ void segment_coo_broadcast_kernel(
   int row_start = (row_idx * TB) % E_2;
 
   if (dim_start < E_1 && col_idx < K) {
+
     int offset = at::cuda::detail::IndexToOffset<int64_t, int, -1>::get(
         dim_start * D + row_start, index_info);
     int idx1 = __ldg(index_info.data + offset), idx2;
@@ -341,6 +341,7 @@ __global__ void segment_coo_broadcast_kernel(
             out_data + (dim_start * N + idx1) * K + col_idx, val);
         val = src_data[K * (dim_start * D + row_start + i) + col_idx];
       }
+
       idx1 = idx2;
     }
 
@@ -405,7 +406,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
   auto E_1 = index.numel() / E_2;
   auto K = src.numel() / E;
   auto N = out.size(reduce_dim);
-  auto avg_len = (float)src.size(reduce_dim) / (float)out.size(reduce_dim);
+  auto avg_len = (float)E_2 / (float)N;
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();

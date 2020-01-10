@@ -64,6 +64,7 @@ class SegmentCOO(torch.autograd.Function):
                     index.dim() - 1, arg_out, grad_out)
                 grad_src = grad_src.narrow(index.dim() - 1, 0,
                                            src_size[index.dim() - 1] - 1)
+
         return grad_src, None, None, None, None
 
 

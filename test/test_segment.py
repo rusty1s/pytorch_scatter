@@ -2,11 +2,13 @@ from itertools import product
 
 import pytest
 import torch
+from torch.autograd import gradcheck
 from torch_scatter import segment_coo, segment_csr
 
 from .utils import tensor
 
 reductions = ['add', 'mean', 'min', 'max']
+grad_reductions = ['add', 'mean']
 
 dtypes = [torch.float]
 devices = [torch.device('cuda')]
@@ -46,15 +48,15 @@ tests = [
         'arg_max': [[1, 4, 6, 5], [2, 4, 5, 6]],
     },
     {
-        'src': [[[1, 3, 5], [2, 4, 6]], [[7, 9, 11], [8, 10, 12]]],
-        'index': [[[0, 0, 1], [0, 2, 2]], [[0, 0, 1], [0, 2, 2]]],
-        'indptr': [[[0, 2, 3, 3], [0, 1, 1, 3]], [[0, 2, 3, 3], [0, 1, 1, 3]]],
-        'add': [[[4, 5, 0], [2, 0, 10]], [[16, 11, 0], [8, 0, 22]]],
-        'mean': [[[2, 5, 0], [2, 0, 5]], [[8, 11, 0], [8, 0, 11]]],
-        'min': [[[1, 5, 0], [2, 0, 4]], [[7, 11, 0], [8, 0, 10]]],
-        'arg_min': [[[0, 2, 3], [0, 3, 1]], [[0, 2, 3], [0, 3, 1]]],
-        'max': [[[3, 5, 0], [2, 0, 6]], [[9, 11, 0], [8, 0, 12]]],
-        'arg_max': [[[1, 2, 3], [0, 3, 2]], [[1, 2, 3], [0, 3, 2]]],
+        'src': [[[1, 2], [3, 4], [5, 6]], [[7, 9], [10, 11], [12, 13]]],
+        'index': [[0, 0, 1], [0, 2, 2]],
+        'indptr': [[0, 2, 3, 3], [0, 1, 1, 3]],
+        'add': [[[4, 6], [5, 6], [0, 0]], [[7, 9], [0, 0], [22, 24]]],
+        'mean': [[[2, 3], [5, 6], [0, 0]], [[7, 9], [0, 0], [11, 12]]],
+        'min': [[[1, 2], [5, 6], [0, 0]], [[7, 9], [0, 0], [10, 11]]],
+        'arg_min': [[[0, 0], [2, 2], [3, 3]], [[0, 0], [3, 3], [1, 1]]],
+        'max': [[[3, 4], [5, 6], [0, 0]], [[7, 9], [0, 0], [12, 13]]],
+        'arg_max': [[[1, 1], [2, 2], [3, 3]], [[0, 0], [3, 3], [2, 2]]],
     },
     {
         'src': [[1, 3], [2, 4]],
@@ -84,7 +86,7 @@ tests = [
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,dtype,device',
                          product(tests, reductions, dtypes, devices))
-def test_segment(test, reduce, dtype, device):
+def test_forward(test, reduce, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)
@@ -106,6 +108,19 @@ def test_segment(test, reduce, dtype, device):
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
+@pytest.mark.parametrize('test,reduce,device',
+                         product(tests, grad_reductions, devices))
+def test_backward(test, reduce, device):
+    src = tensor(test['src'], torch.double, device)
+    src.requires_grad_()
+    index = tensor(test['index'], torch.long, device)
+    indptr = tensor(test['indptr'], torch.long, device)
+
+    assert gradcheck(segment_coo, (src, index, None, None, reduce)) is True
+    assert gradcheck(segment_csr, (src, indptr, None, reduce)) is True
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,dtype,device',
                          product(tests, reductions, dtypes, devices))
 def test_segment_out(test, reduce, dtype, device):
@@ -118,18 +133,12 @@ def test_segment_out(test, reduce, dtype, device):
     size[indptr.dim() - 1] = indptr.size(-1) - 1
     out = src.new_full(size, -2)
 
-    # Pre-defined `out` values shouldn't do anything.
-    out = segment_csr(src, indptr, out, reduce=reduce)
-    if isinstance(out, tuple):
-        out, arg_out = out
-        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
-        assert torch.all(arg_out == arg_expected)
+    segment_csr(src, indptr, out, reduce=reduce)
     assert torch.all(out == expected)
 
     out.fill_(-2)
 
-    out = segment_coo(src, index, out, reduce=reduce)
-    out = out[0] if isinstance(out, tuple) else out
+    segment_coo(src, index, out, reduce=reduce)
 
     if reduce == 'add':
         expected = expected - 2
