@@ -5,12 +5,11 @@ import torch
 from torch.autograd import gradcheck
 from torch_scatter import segment_coo, segment_csr
 
-from .utils import tensor
+from .utils import tensor, dtypes
 
 reductions = ['add', 'mean', 'min', 'max']
 grad_reductions = ['add', 'mean']
 
-dtypes = [torch.float]
 devices = [torch.device('cuda')]
 
 tests = [
