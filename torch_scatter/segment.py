@@ -6,8 +6,13 @@ from torch_scatter.helpers import min_value, max_value
 if torch.cuda.is_available():
     from torch_scatter import segment_cuda, gather_cuda
 
-seg = lambda is_cuda: segment_cuda if is_cuda else segment_cpu  # noqa
-gat = lambda is_cuda: gather_cuda if is_cuda else gather_cpu  # noqa
+
+def seg(is_cuda):
+    return segment_cuda if is_cuda else segment_cpu
+
+
+def gat(is_cuda):
+    return gather_cuda if is_cuda else gather_cpu
 
 
 class SegmentCOO(torch.autograd.Function):

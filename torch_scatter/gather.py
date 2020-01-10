@@ -5,8 +5,13 @@ from torch_scatter import segment_cpu, gather_cpu
 if torch.cuda.is_available():
     from torch_scatter import gather_cuda, segment_cuda
 
-gat = lambda is_cuda: gather_cuda if is_cuda else gather_cpu  # noqa
-seg = lambda is_cuda: segment_cuda if is_cuda else segment_cpu  # noqa
+
+def gat(is_cuda):
+    return gather_cuda if is_cuda else gather_cpu
+
+
+def seg(is_cuda):
+    return segment_cuda if is_cuda else segment_cpu
 
 
 class GatherCOO(torch.autograd.Function):
