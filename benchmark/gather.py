@@ -36,13 +36,21 @@ def correctness(dataset):
             torch.cuda.empty_cache()
 
 
-@torch.no_grad()
 def time_func(func, x):
     try:
         torch.cuda.synchronize()
         t = time.perf_counter()
-        for _ in range(iters):
-            func(x)
+
+        if not args.with_backward:
+            with torch.no_grad():
+                for _ in range(iters):
+                    func(x)
+        else:
+            x = x.requires_grad_()
+            for _ in range(iters):
+                out = func(x)
+                torch.autograd.grad(out, x, out, only_inputs=True)
+
         torch.cuda.synchronize()
         return time.perf_counter() - t
     except RuntimeError:
@@ -50,7 +58,6 @@ def time_func(func, x):
         return float('inf')
 
 
-@torch.no_grad()
 def timing(dataset):
     group, name = dataset
     mat = loadmat(f'{name}.mat')['Problem'][0][0][2].tocsr()
@@ -102,6 +109,7 @@ def timing(dataset):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
 

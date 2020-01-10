@@ -55,6 +55,8 @@ class SegmentCOO(torch.autograd.Function):
                 count = arg_out
                 count = gather_cuda.gather_coo(
                     count, index, count.new_empty(src_size[:index.dim()]))
+                for _ in range(grad_out.dim() - index.dim()):
+                    count = count.unsqueeze(-1)
                 grad_src.div_(count)
             elif ctx.reduce == 'min' or ctx.reduce == 'max':
                 src_size[index.dim() - 1] += 1
@@ -62,7 +64,7 @@ class SegmentCOO(torch.autograd.Function):
                     index.dim() - 1, arg_out, grad_out)
                 grad_src = grad_src.narrow(index.dim() - 1, 0,
                                            src_size[index.dim() - 1] - 1)
-        return grad_src, None, None, None
+        return grad_src, None, None, None, None
 
 
 class SegmentCSR(torch.autograd.Function):
@@ -96,6 +98,8 @@ class SegmentCSR(torch.autograd.Function):
                 count = (indptr2 - indptr1).to(grad_src.dtype)
                 count = gather_cuda.gather_csr(
                     count, indptr, count.new_empty(src_size[:indptr.dim()]))
+                for _ in range(grad_out.dim() - indptr.dim()):
+                    count = count.unsqueeze(-1)
                 grad_src.div_(count)
             elif ctx.reduce == 'min' or ctx.reduce == 'max':
                 src_size[indptr.dim() - 1] += 1

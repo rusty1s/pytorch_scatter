@@ -68,18 +68,18 @@ def correctness(dataset):
 
             x = x.abs_().mul_(-1)
 
-            out1, arg_out1 = scatter_min(x, row, 0, torch.zeros_like(out1))
-            out2, arg_out2 = segment_coo(x, row, reduce='min')
-            out3, arg_out3 = segment_csr(x, rowptr, reduce='min')
+            out1, _ = scatter_min(x, row, 0, torch.zeros_like(out1))
+            out2, _ = segment_coo(x, row, reduce='min')
+            out3, _ = segment_csr(x, rowptr, reduce='min')
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
 
             x = x.abs_()
 
-            out1, arg_out1 = scatter_max(x, row, 0, torch.zeros_like(out1))
-            out2, arg_out2 = segment_coo(x, row, reduce='max')
-            out3, arg_out3 = segment_csr(x, rowptr, reduce='max')
+            out1, _ = scatter_max(x, row, 0, torch.zeros_like(out1))
+            out2, _ = segment_coo(x, row, reduce='max')
+            out3, _ = segment_csr(x, rowptr, reduce='max')
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
@@ -88,13 +88,22 @@ def correctness(dataset):
             torch.cuda.empty_cache()
 
 
-@torch.no_grad()
 def time_func(func, x):
     try:
         torch.cuda.synchronize()
         t = time.perf_counter()
-        for _ in range(iters):
-            func(x)
+
+        if not args.with_backward:
+            with torch.no_grad():
+                for _ in range(iters):
+                    func(x)
+        else:
+            x = x.requires_grad_()
+            for _ in range(iters):
+                out = func(x)
+                out = out[0] if isinstance(out, tuple) else out
+                torch.autograd.grad(out, x, out, only_inputs=True)
+
         torch.cuda.synchronize()
         return time.perf_counter() - t
     except RuntimeError:
@@ -102,7 +111,6 @@ def time_func(func, x):
         return float('inf')
 
 
-@torch.no_grad()
 def timing(dataset):
     group, name = dataset
     mat = loadmat(f'{name}.mat')['Problem'][0][0][2].tocsr()
@@ -182,6 +190,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--reduce', type=str, required=True,
                         choices=['add', 'mean', 'min', 'max'])
+    parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
     args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
