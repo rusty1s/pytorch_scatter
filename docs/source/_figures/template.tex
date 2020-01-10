@@ -25,7 +25,7 @@
   \draw[edge] (index\i) -- (input\i);
 }
 
-\node[title] at (-0.8, 0.0) {output};
+\node[title] at (-0.8, 0.0) {out};
 \foreach \i in {0,...,\numberOutputs} {
   \pgfmathparse{\outputs[\i]}\let\out\pgfmathresult
   \pgfmathparse{\colors[\i]}\let\co\pgfmathresult

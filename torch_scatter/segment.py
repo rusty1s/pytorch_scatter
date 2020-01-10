@@ -112,9 +112,164 @@ class SegmentCSR(torch.autograd.Function):
         return grad_src, None, None, None
 
 
-def segment_coo(src, index, out=None, dim_size=None, reduce='add'):
+def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
+    r"""
+    |
+
+    .. image:: https://raw.githubusercontent.com/rusty1s/pytorch_scatter/
+            master/docs/source/_figures/segment_coo.svg?sanitize=true
+        :align: center
+        :width: 400px
+
+    |
+
+    Reduces all values from the :attr:`src` tensor into :attr:`out` at the
+    indices specified in the :attr:`index` tensor along the last dimension of
+    :attr:`index`.
+    For each value in :attr:`src`, its output index is specified by its index
+    in :attr:`src` for dimensions outside of :obj:`index.dim() - 1` and by the
+    corresponding value in :attr:`index` for dimension :obj:`index.dim() - 1`.
+    The applied reduction is defined via the :attr:`reduce` argument.
+
+    Formally, if :attr:`src` and :attr:`index` are :math:`n`-dimensional and
+    :math:`m`-dimensional tensors with
+    size :math:`(x_0, ..., x_{m-1}, x_m, x_{m+1}, ..., x_{n-1})` and
+    :math:`(x_0, ..., x_{m-1}, x_m)`, respectively, then :attr:`out` must be an
+    :math:`n`-dimensional tensor with size
+    :math:`(x_0, ..., x_{m-1}, y, x_{m+1}, ..., x_{n-1})`.
+    Moreover, the values of :attr:`index` must be between :math:`0` and
+    :math:`y - 1` in ascending order.
+    The :attr:`index` tensor supports broadcasting in case its dimensions do
+    not match with :attr:`src`.
+    For one-dimensional tensors with :obj:`reduce="add"`, the operation
+    computes
+
+    .. math::
+        \mathrm{out}_i = \mathrm{out}_i + \sum_j~\mathrm{src}_j
+
+    where :math:`\sum_j` is over :math:`j` such that
+    :math:`\mathrm{index}_j = i`.
+
+    In contrast to :meth:`scatter`, this method expects values in :attr:`index`
+    **to be sorted** along dimension :obj:`index.dim() - 1`.
+    Due to the use of sorted indices, :meth:`segment_coo` is usually faster
+    than the more general :meth:`scatter` operation.
+
+    For reductions :obj:`"min"` and :obj:`"max"`, this operation returns a
+    second tensor representing the :obj:`argmin` and :obj:`argmax`,
+    respectively.
+
+    .. note::
+
+        This operation is implemented via atomic operations on the GPU and is
+        therefore **non-deterministic** since the order of parallel operations
+        to the same value is undetermined.
+        For floating-point variables, this results in a source of variance in
+        the result.
+
+    Args:
+        src (Tensor): The source tensor.
+        index (LongTensor): The sorted indices of elements to segment.
+            The number of dimensions of :attr:`index` needs to be less than or
+            equal to :attr:`src`.
+        out (Tensor, optional): The destination tensor. (default: :obj:`None`)
+        dim_size (int, optional): If :attr:`out` is not given, automatically
+            create output with size :attr:`dim_size` at dimension
+            :obj:`index.dim() - 1`.
+            If :attr:`dim_size` is not given, a minimal sized output tensor
+            according to :obj:`index.max() + 1` is returned.
+            (default: :obj:`None`)
+        reduce (string, optional): The reduce operation (:obj:`"add"`,
+            :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
+            (default: :obj:`"add"`)
+
+    :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
+
+    .. code-block:: python
+
+        from torch_scatter import segment_coo
+
+        src = torch.randn(10, 6, 64)
+        index = torch.tensor([0, 0, 1, 1, 1, 2])
+        index = index.view(1, -1)  # Broadcasting in the first and last dim.
+
+        out = segment_coo(src, index, reduce="add")
+
+        print(out.size())
+
+    .. code-block::
+
+        torch.Size([10, 3, 64])
+    """
     return SegmentCOO.apply(src, index, out, dim_size, reduce)
 
 
-def segment_csr(src, indptr, out=None, reduce='add'):
+def segment_csr(src, indptr, out=None, reduce="add"):
+    r"""
+    Reduces all values from the :attr:`src` tensor into :attr:`out` within the
+    ranges specified in the :attr:`indptr` tensor along the last dimension of
+    :attr:`indptr`.
+    For each value in :attr:`src`, its output index is specified by its index
+    in :attr:`src` for dimensions outside of :obj:`indptr.dim() - 1` and by the
+    corresponding range index in :attr:`indptr` for dimension
+    :obj:`indptr.dim() - 1`.
+    The applied reduction is defined via the :attr:`reduce` argument.
+
+    Formally, if :attr:`src` and :attr:`indptr` are :math:`n`-dimensional and
+    :math:`m`-dimensional tensors with
+    size :math:`(x_0, ..., x_{m-1}, x_m, x_{m+1}, ..., x_{n-1})` and
+    :math:`(x_0, ..., x_{m-1}, y)`, respectively, then :attr:`out` must be an
+    :math:`n`-dimensional tensor with size
+    :math:`(x_0, ..., x_{m-1}, y - 1, x_{m+1}, ..., x_{n-1})`.
+    Moreover, the values of :attr:`indptr` must be between :math:`0` and
+    :math:`x_m` in ascending order.
+    The :attr:`indptr` tensor supports broadcasting in case its dimensions do
+    not match with :attr:`src`.
+    For one-dimensional tensors with :obj:`reduce="add"`, the operation
+    computes
+
+    .. math::
+        \mathrm{out}_i =
+        \sum_{j = \mathrm{indptr}[i]}^{\mathrm{indptr}[i+i]}~\mathrm{src}_j.
+
+    Due to the use of index pointers, :meth:`segment_csr` is the fastest
+    method to apply for grouped reductions.
+
+    For reductions :obj:`"min"` and :obj:`"max"`, this operation returns a
+    second tensor representing the :obj:`argmin` and :obj:`argmax`,
+    respectively.
+
+    .. note::
+
+        In contrast to :meth:`scatter()` and :meth:`segment_coo`, this
+        operation is **fully-deterministic**.
+
+    Args:
+        src (Tensor): The source tensor.
+        indptr (LongTensor): The index pointers between elements to segment.
+            The number of dimensions of :attr:`index` needs to be less than or
+            equal to :attr:`src`.
+        out (Tensor, optional): The destination tensor. (default: :obj:`None`)
+        reduce (string, optional): The reduce operation (:obj:`"add"`,
+            :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
+            (default: :obj:`"add"`)
+
+    :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
+
+    .. code-block:: python
+
+        from torch_scatter import segment_csr
+
+        src = torch.randn(10, 6, 64)
+        indptr = torch.tensor([0, 2, 5, 6])
+        indptr = indptr.view(1, -1)  # Broadcasting in the first and last dim.
+
+        out = segment_csr(src, indptr, reduce="add")
+
+        print(out.size())
+
+    .. code-block::
+
+        torch.Size([10, 3, 64])
+    """
     return SegmentCSR.apply(src, indptr, out, reduce)
