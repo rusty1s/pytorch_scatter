@@ -1,5 +1,3 @@
-# flake8: noqa
-
 import time
 import os.path as osp
 import itertools
@@ -120,14 +118,25 @@ def timing(dataset):
     dim_size = rowptr.size(0) - 1
     avg_row_len = row.size(0) / dim_size
 
-    sca_row = lambda x: getattr(torch_scatter, f'scatter_{args.reduce}')(
-        x, row, dim=0, dim_size=dim_size)
-    sca_col = lambda x: getattr(torch_scatter, f'scatter_{args.reduce}')(
-        x, row_perm, dim=0, dim_size=dim_size)
-    seg_coo = lambda x: segment_coo(x, row, reduce=args.reduce)
-    seg_csr = lambda x: segment_csr(x, rowptr, reduce=args.reduce)
-    dense1 = lambda x: getattr(torch, args.dense_reduce)(x, dim=-2)
-    dense2 = lambda x: getattr(torch, args.dense_reduce)(x, dim=-1)
+    def sca_row(x):
+        op = getattr(torch_scatter, f'scatter_{args.reduce}')
+        return op(x, row, dim=0, dim_size=dim_size)
+
+    def sca_col(x):
+        op = getattr(torch_scatter, f'scatter_{args.reduce}')
+        return op(x, row_perm, dim=0, dim_size=dim_size)
+
+    def seg_coo(x):
+        return segment_coo(x, row, reduce=args.reduce)
+
+    def seg_csr(x):
+        return segment_csr(x, rowptr, reduce=args.reduce)
+
+    def dense1(x):
+        return getattr(torch, args.dense_reduce)(x, dim=-2)
+
+    def dense2(x):
+        return getattr(torch, args.dense_reduce)(x, dim=-1)
 
     t1, t2, t3, t4, t5, t6 = [], [], [], [], [], []
 

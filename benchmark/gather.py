@@ -1,5 +1,3 @@
-# flake8: noqa
-
 import time
 import itertools
 
@@ -66,10 +64,17 @@ def timing(dataset):
     dim_size = rowptr.size(0) - 1
     avg_row_len = row.size(0) / dim_size
 
-    select = lambda x: x.index_select(0, row)
-    gather = lambda x: x.gather(0, row.view(-1, 1).expand(-1, x.size(1)))
-    gat_coo = lambda x: gather_coo(x, row)
-    gat_csr = lambda x: gather_csr(x, rowptr)
+    def select(x):
+        return x.index_select(0, row)
+
+    def gather(x):
+        return x.gather(0, row.view(-1, 1).expand(-1, x.size(1)))
+
+    def gat_coo(x):
+        return gather_coo(x, row)
+
+    def gat_csr(x):
+        return gather_csr(x, rowptr)
 
     t1, t2, t3, t4 = [], [], [], []
     for size in sizes:
