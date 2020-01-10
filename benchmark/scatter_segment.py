@@ -82,13 +82,16 @@ def correctness(dataset):
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
 
-        except RuntimeError:
+        except RuntimeError as e:
+            if 'out of memory' not in str(e):
+                raise RuntimeError(e)
             torch.cuda.empty_cache()
 
 
 def time_func(func, x):
     try:
-        torch.cuda.synchronize()
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
         t = time.perf_counter()
 
         if not args.with_backward:
@@ -102,9 +105,12 @@ def time_func(func, x):
                 out = out[0] if isinstance(out, tuple) else out
                 torch.autograd.grad(out, x, out, only_inputs=True)
 
-        torch.cuda.synchronize()
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
         return time.perf_counter() - t
-    except RuntimeError:
+    except RuntimeError as e:
+        if 'out of memory' not in str(e):
+            raise RuntimeError(e)
         torch.cuda.empty_cache()
         return float('inf')
 
@@ -152,7 +158,9 @@ def timing(dataset):
 
             del x
 
-        except RuntimeError:
+        except RuntimeError as e:
+            if 'out of memory' not in str(e):
+                raise RuntimeError(e)
             torch.cuda.empty_cache()
             for t in (t1, t2, t3, t4):
                 t.append(float('inf'))
@@ -167,7 +175,9 @@ def timing(dataset):
 
             del x
 
-        except RuntimeError:
+        except RuntimeError as e:
+            if 'out of memory' not in str(e):
+                raise RuntimeError(e)
             torch.cuda.empty_cache()
             for t in (t5, t6):
                 t.append(float('inf'))
@@ -197,8 +207,11 @@ def timing(dataset):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--reduce', type=str, required=True,
-                        choices=['add', 'mean', 'min', 'max'])
+    parser.add_argument(
+        '--reduce',
+        type=str,
+        required=True,
+        choices=['add', 'mean', 'min', 'max'])
     parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()

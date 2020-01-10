@@ -25,8 +25,9 @@ cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 ext_modules = []
 exts = [e.split(osp.sep)[-1][:-4] for e in glob(osp.join('cpu', '*.cpp'))]
 ext_modules += [
-    CppExtension(f'torch_scatter.{ext}_cpu', [f'cpu/{ext}.cpp'],
-                 extra_compile_args=cxx_extra_compile_args) for ext in exts
+    CppExtension(
+        f'torch_scatter.{ext}_cpu', [f'cpu/{ext}.cpp'],
+        extra_compile_args=cxx_extra_compile_args) for ext in exts
 ]
 
 if CUDA_HOME is not None and USE_GPU:
@@ -34,7 +35,8 @@ if CUDA_HOME is not None and USE_GPU:
     ext_modules += [
         CUDAExtension(
             f'torch_scatter.{ext}_cuda',
-            [f'cuda/{ext}.cpp', f'cuda/{ext}_kernel.cu'], extra_compile_args={
+            [f'cuda/{ext}.cpp', f'cuda/{ext}_kernel.cu'],
+            extra_compile_args={
                 'cxx': cxx_extra_compile_args,
                 'nvcc': nvcc_extra_compile_args,
             }) for ext in exts

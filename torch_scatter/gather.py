@@ -1,7 +1,12 @@
 import torch
 
+from torch_scatter import segment_cpu, gather_cpu
+
 if torch.cuda.is_available():
     from torch_scatter import gather_cuda, segment_cuda
+
+gat = lambda is_cuda: gather_cuda if is_cuda else gather_cpu  # noqa
+seg = lambda is_cuda: segment_cuda if is_cuda else segment_cpu  # noqa
 
 
 class GatherCOO(torch.autograd.Function):
@@ -12,7 +17,7 @@ class GatherCOO(torch.autograd.Function):
         ctx.src_size = list(src.size())
         ctx.save_for_backward(index)
 
-        return gather_cuda.gather_coo(src, index, out)
+        return gat(src.is_cuda).gather_coo(src, index, out)
 
     @staticmethod
     def backward(ctx, grad_out):
@@ -20,7 +25,7 @@ class GatherCOO(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            grad_src, _ = segment_cuda.segment_coo(
+            grad_src, _ = seg(grad_out.is_cuda).segment_coo(
                 grad_out, index, grad_out.new_zeros(src_size), 'add')
 
         return grad_src, None, None
@@ -34,7 +39,7 @@ class GatherCSR(torch.autograd.Function):
         ctx.src_size = list(src.size())
         ctx.save_for_backward(indptr)
 
-        return gather_cuda.gather_csr(src, indptr, out)
+        return gat(src.is_cuda).gather_csr(src, indptr, out)
 
     @staticmethod
     def backward(ctx, grad_out):
@@ -42,7 +47,7 @@ class GatherCSR(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            grad_src, _ = segment_cuda.segment_csr(
+            grad_src, _ = seg(grad_out.is_cuda).segment_csr(
                 grad_out, indptr, grad_out.new_empty(src_size), 'add')
 
         return grad_src, None, None

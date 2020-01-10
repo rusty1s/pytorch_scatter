@@ -1,9 +1,13 @@
 import torch
 
+from torch_scatter import segment_cpu, gather_cpu
 from torch_scatter.helpers import min_value, max_value
 
 if torch.cuda.is_available():
     from torch_scatter import segment_cuda, gather_cuda
+
+seg = lambda is_cuda: segment_cuda if is_cuda else segment_cpu  # noqa
+gat = lambda is_cuda: gather_cuda if is_cuda else gather_cpu  # noqa
 
 
 class SegmentCOO(torch.autograd.Function):
@@ -28,7 +32,7 @@ class SegmentCOO(torch.autograd.Function):
 
             out = src.new_full(size, fill_value)
 
-        out, arg_out = segment_cuda.segment_coo(src, index, out, reduce)
+        out, arg_out = seg(src.is_cuda).segment_coo(src, index, out, reduce)
 
         if fill_value != 0:
             out.masked_fill_(out == fill_value, 0)
@@ -47,13 +51,13 @@ class SegmentCOO(torch.autograd.Function):
         grad_src = None
         if ctx.needs_input_grad[0]:
             if ctx.reduce == 'add':
-                grad_src = gather_cuda.gather_coo(grad_out, index,
-                                                  grad_out.new_empty(src_size))
+                grad_src = gat(grad_out).gather_coo(
+                    grad_out, index, grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
-                grad_src = gather_cuda.gather_coo(grad_out, index,
-                                                  grad_out.new_empty(src_size))
+                grad_src = gat(grad_out).gather_coo(
+                    grad_out, index, grad_out.new_empty(src_size))
                 count = arg_out
-                count = gather_cuda.gather_coo(
+                count = gat(grad_out.is_cuda).gather_coo(
                     count, index, count.new_empty(src_size[:index.dim()]))
                 for _ in range(grad_out.dim() - index.dim()):
                     count = count.unsqueeze(-1)
@@ -78,7 +82,7 @@ class SegmentCSR(torch.autograd.Function):
         ctx.reduce = reduce
         ctx.src_size = list(src.size())
 
-        out, arg_out = segment_cuda.segment_csr(src, indptr, out, reduce)
+        out, arg_out = seg(src.is_cuda).segment_csr(src, indptr, out, reduce)
         ctx.save_for_backward(indptr, arg_out)
         return out if arg_out is None else (out, arg_out)
 
@@ -89,15 +93,15 @@ class SegmentCSR(torch.autograd.Function):
         grad_src = None
         if ctx.needs_input_grad[0]:
             if ctx.reduce == 'add':
-                grad_src = gather_cuda.gather_csr(grad_out, indptr,
-                                                  grad_out.new_empty(src_size))
+                grad_src = gat(grad_out.is_cuda).gather_csr(
+                    grad_out, indptr, grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
-                grad_src = gather_cuda.gather_csr(grad_out, indptr,
-                                                  grad_out.new_empty(src_size))
+                grad_src = gat(grad_out.is_cuda).gather_csr(
+                    grad_out, indptr, grad_out.new_empty(src_size))
                 indptr1 = indptr.narrow(-1, 0, indptr.size(-1) - 1)
                 indptr2 = indptr.narrow(-1, 1, indptr.size(-1) - 1)
                 count = (indptr2 - indptr1).to(grad_src.dtype)
-                count = gather_cuda.gather_csr(
+                count = gat(grad_out.is_cuda).gather_csr(
                     count, indptr, count.new_empty(src_size[:indptr.dim()]))
                 for _ in range(grad_out.dim() - indptr.dim()):
                     count = count.unsqueeze(-1)
