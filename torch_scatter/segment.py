@@ -9,7 +9,7 @@ if torch.cuda.is_available():
 class SegmentCOO(torch.autograd.Function):
     @staticmethod
     def forward(ctx, src, index, out, dim_size, reduce):
-        assert reduce in ['any', 'add', 'mean', 'min', 'max']
+        assert reduce in ['add', 'mean', 'min', 'max']
         if out is not None:
             ctx.mark_dirty(out)
         ctx.reduce = reduce
@@ -46,7 +46,7 @@ class SegmentCOO(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            if ctx.reduce == 'any' or ctx.reduce == 'add':
+            if ctx.reduce == 'add':
                 grad_src = gather_cuda.gather_coo(grad_out, index,
                                                   grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
@@ -70,7 +70,7 @@ class SegmentCOO(torch.autograd.Function):
 class SegmentCSR(torch.autograd.Function):
     @staticmethod
     def forward(ctx, src, indptr, out, reduce):
-        assert reduce in ['any', 'add', 'mean', 'min', 'max']
+        assert reduce in ['add', 'mean', 'min', 'max']
 
         if out is not None:
             ctx.mark_dirty(out)
@@ -87,7 +87,7 @@ class SegmentCSR(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            if ctx.reduce == 'any' or ctx.reduce == 'add':
+            if ctx.reduce == 'add':
                 grad_src = gather_cuda.gather_csr(grad_out, indptr,
                                                   grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
