@@ -178,8 +178,13 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
                  at::optional<at::Tensor> out_opt, std::string reduce) {
 
   AT_ASSERTM(src.dim() >= indptr.dim(), "Input mismatch");
-  for (int i = 0; i < indptr.dim() - 1; i++)
-    AT_ASSERTM(src.size(i) == indptr.size(i), "Input mismatch");
+
+  // Broadcasting across `index` via `expand`.
+  auto sizes = indptr.sizes().vec();
+  for (int i = 0; i < indptr.dim() - 1; i++) {
+    sizes[i] = src.size(i);
+  }
+  indptr = indptr.expand(sizes);
 
   src = src.contiguous();
   auto reduce_dim = indptr.dim() - 1;
@@ -193,7 +198,7 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
     AT_ASSERTM(out.size(reduce_dim) == indptr.size(reduce_dim) - 1,
                "Input mismatch");
   } else {
-    auto sizes = src.sizes().vec();
+    sizes = src.sizes().vec();
     sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
     out = at::empty(sizes, src.options());
   }
@@ -370,9 +375,15 @@ __global__ void segment_coo_arg_broadcast_kernel(
 std::tuple<at::Tensor, at::optional<at::Tensor>>
 segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                  std::string reduce) {
+
   AT_ASSERTM(src.dim() >= index.dim(), "Input mismatch");
-  for (int i = 0; i < index.dim(); i++)
-    AT_ASSERTM(src.size(i) == index.size(i), "Input mismatch");
+
+  // Broadcasting across `index` via `expand`.
+  auto sizes = index.sizes().vec();
+  for (int i = 0; i < index.dim(); i++) {
+    sizes[i] = src.size(i);
+  }
+  index = index.expand(sizes);
 
   src = src.contiguous();
   out = out.contiguous();
