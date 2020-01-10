@@ -20,5 +20,5 @@ def test_logsumexp(dtype, device):
     out3 = torch.tensor(torch.finfo(dtype).min, dtype=dtype)
     out4 = torch.tensor(-1, dtype=dtype)
 
-    expected = torch.stack([out0, out1, out2, out3, out4], dim=0)
+    expected = torch.stack([out0, out1, out2, out3, out4], dim=0).to(device)
     assert torch.allclose(out, expected)

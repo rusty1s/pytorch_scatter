@@ -22,9 +22,19 @@ def test_softmax(dtype, device):
 
     expected = torch.stack([
         out0[0], out1[0], out0[1], out1[1], out1[2], out2[0], out4[0], out4[1]
-    ], dim=0)
+    ], dim=0).to(device)
 
     assert torch.allclose(out, expected)
+
+
+@pytest.mark.parametrize('dtype,device', product(grad_dtypes, devices))
+def test_softmax_broadcasting(dtype, device):
+    src = torch.randn(10, 5, dtype=dtype, device=device)
+    index = tensor([0, 0, 1, 1, 2, 2, 3, 3, 4, 4], torch.long, device)
+
+    out = scatter_softmax(src, index, dim=0).view(5, 2, 5)
+    out = out.sum(dim=1)
+    assert torch.allclose(out, torch.ones_like(out))
 
 
 @pytest.mark.parametrize('dtype,device', product(grad_dtypes, devices))
@@ -42,6 +52,6 @@ def test_log_softmax(dtype, device):
 
     expected = torch.stack([
         out0[0], out1[0], out0[1], out1[1], out1[2], out2[0], out4[0], out4[1]
-    ], dim=0)
+    ], dim=0).to(device)
 
     assert torch.allclose(out, expected)
