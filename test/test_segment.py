@@ -10,7 +10,7 @@ from .utils import tensor, dtypes
 reductions = ['add', 'mean', 'min', 'max']
 grad_reductions = ['add', 'mean']
 
-devices = [torch.device('cuda')]
+devices = [torch.device('cpu')]
 
 tests = [
     {
@@ -82,7 +82,6 @@ tests = [
 ]
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,dtype,device',
                          product(tests, reductions, dtypes, devices))
 def test_forward(test, reduce, dtype, device):
@@ -119,7 +118,6 @@ def test_backward(test, reduce, device):
     assert gradcheck(segment_csr, (src, indptr, None, reduce)) is True
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,dtype,device',
                          product(tests, reductions, dtypes, devices))
 def test_segment_out(test, reduce, dtype, device):
@@ -153,7 +151,6 @@ def test_segment_out(test, reduce, dtype, device):
     assert torch.all(out == expected)
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,dtype,device',
                          product(tests, reductions, dtypes, devices))
 def test_non_contiguous_segment(test, reduce, dtype, device):

@@ -178,7 +178,7 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
 
   AT_ASSERTM(src.dim() >= indptr.dim(), "Input mismatch");
 
-  // Broadcasting across `index` via `expand`.
+  // Broadcasting `indptr` via `expand`.
   auto sizes = indptr.sizes().vec();
   for (int i = 0; i < indptr.dim() - 1; i++) {
     sizes[i] = src.size(i);
@@ -379,7 +379,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
 
   AT_ASSERTM(src.dim() >= index.dim(), "Input mismatch");
 
-  // Broadcasting across `index` via `expand`.
+  // Broadcasting `index` via `expand`.
   auto sizes = index.sizes().vec();
   for (int i = 0; i < index.dim(); i++) {
     sizes[i] = src.size(i);

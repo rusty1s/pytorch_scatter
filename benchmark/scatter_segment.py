@@ -11,9 +11,6 @@ import torch_scatter
 from torch_scatter import scatter_add, scatter_mean, scatter_min, scatter_max
 from torch_scatter import segment_coo, segment_csr
 
-iters = 20
-sizes = [1, 16, 32, 64, 128, 256, 512]
-
 short_rows = [
     ('DIMACS10', 'citationCiteseer'),
     ('SNAP', 'web-Stanford'),
@@ -216,6 +213,9 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
     args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
+    iters = 1 if args.device == 'cpu' else 20
+    sizes = [1, 16, 32, 64, 128, 256, 512]
+    sizes = sizes[:3] if args.device == 'cpu' else sizes
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
