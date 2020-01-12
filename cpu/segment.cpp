@@ -184,7 +184,6 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
-  auto E = index.numel();
   auto E_1 = index.numel() / src.size(reduce_dim);
   auto E_2 = src.size(reduce_dim);
   auto K = src.numel() / index.numel();
@@ -202,12 +201,12 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
       for (int e_1 = 0; e_1 < E_1; e_1++) {
         int offset = IndexToOffset<int64_t>::get(e_1 * E_2, index_info);
         idx = index_info.data[offset];
-        row_start = 0;
 
         for (int k = 0; k < K; k++) {
           vals[k] = out_data[e_1 * N * K + k];
         }
 
+        row_start = 0;
         for (int e_2 = 0; e_2 < E_2; e_2++) {
 
           for (int k = 0; k < K; k++) {
@@ -224,6 +223,7 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
             }
           } else {
             next_idx = index_info.data[offset + (e_2 + 1) * stride];
+            assert(idx <= next_idx);
 
             if (idx != next_idx) {
               for (int k = 0; k < K; k++) {

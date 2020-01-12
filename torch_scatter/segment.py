@@ -56,12 +56,20 @@ class SegmentCOO(torch.autograd.Function):
         grad_src = None
         if ctx.needs_input_grad[0]:
             if ctx.reduce == 'add':
-                grad_src = gat(grad_out).gather_coo(
+                grad_src = gat(grad_out.is_cuda).gather_coo(
                     grad_out, index, grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
-                grad_src = gat(grad_out).gather_coo(
+                grad_src = gat(grad_out.is_cuda).gather_coo(
                     grad_out, index, grad_out.new_empty(src_size))
-                count = arg_out
+
+                count = arg_out  # Gets pre-computed on GPU but not on CPU.
+                if count is None:
+                    size = list(index.size())
+                    size[-1] = grad_out.size(index.dim() - 1)
+                    count = segment_cpu.segment_coo(
+                        torch.ones_like(index, dtype=grad_out.dtype), index,
+                        grad_out.new_zeros(size), 'add')[0].clamp_(min=1)
+
                 count = gat(grad_out.is_cuda).gather_coo(
                     count, index, count.new_empty(src_size[:index.dim()]))
                 for _ in range(grad_out.dim() - index.dim()):

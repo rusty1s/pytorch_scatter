@@ -5,10 +5,7 @@ import torch
 from torch.autograd import gradcheck
 from torch_scatter import gather_coo, gather_csr
 
-from .utils import tensor
-
-dtypes = [torch.float]
-devices = [torch.device('cuda')]
+from .utils import tensor, dtypes, devices
 
 tests = [
     {
@@ -50,7 +47,6 @@ tests = [
 ]
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_forward(test, dtype, device):
     src = tensor(test['src'], dtype, device)
@@ -65,7 +61,6 @@ def test_forward(test, dtype, device):
     assert torch.all(out == expected)
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,device', product(tests, devices))
 def test_backward(test, device):
     src = tensor(test['src'], torch.double, device)
@@ -77,9 +72,8 @@ def test_backward(test, device):
     assert gradcheck(gather_csr, (src, indptr, None)) is True
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
-def test_segment_out(test, dtype, device):
+def test_gather_out(test, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)
@@ -98,7 +92,6 @@ def test_segment_out(test, dtype, device):
     assert torch.all(out == expected)
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_non_contiguous_segment(test, dtype, device):
     src = tensor(test['src'], dtype, device)

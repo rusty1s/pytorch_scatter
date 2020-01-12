@@ -7,7 +7,6 @@ from scipy.io import loadmat
 
 from torch_scatter import gather_coo, gather_csr
 
-from scatter_segment import iters, sizes
 from scatter_segment import short_rows, long_rows, download, bold
 
 
@@ -125,6 +124,9 @@ if __name__ == '__main__':
     parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
+    iters = 1 if args.device == 'cpu' else 20
+    sizes = [1, 16, 32, 64, 128, 256, 512]
+    sizes = sizes[:3] if args.device == 'cpu' else sizes
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()

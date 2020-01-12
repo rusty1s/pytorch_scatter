@@ -5,12 +5,10 @@ import torch
 from torch.autograd import gradcheck
 from torch_scatter import segment_coo, segment_csr
 
-from .utils import tensor, dtypes
+from .utils import tensor, dtypes, devices
 
 reductions = ['add', 'mean', 'min', 'max']
 grad_reductions = ['add', 'mean']
-
-devices = [torch.device('cpu')]
 
 tests = [
     {
@@ -105,7 +103,6 @@ def test_forward(test, reduce, dtype, device):
     assert torch.all(out == expected)
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA not available')
 @pytest.mark.parametrize('test,reduce,device',
                          product(tests, grad_reductions, devices))
 def test_backward(test, reduce, device):
