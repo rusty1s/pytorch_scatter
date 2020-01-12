@@ -7,10 +7,6 @@ from sys import argv
 import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
-USE_GPU = True
-if '--cpu' in argv:
-    USE_GPU = False
-
 cxx_extra_compile_args = []
 nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr']
 if platform.system() != 'Windows':
@@ -30,7 +26,7 @@ ext_modules += [
         extra_compile_args=cxx_extra_compile_args) for ext in exts
 ]
 
-if CUDA_HOME is not None and USE_GPU:
+if CUDA_HOME is not None and '--cpu' not in argv:
     exts = [e.split(osp.sep)[-1][:-4] for e in glob(osp.join('cuda', '*.cpp'))]
     ext_modules += [
         CUDAExtension(
