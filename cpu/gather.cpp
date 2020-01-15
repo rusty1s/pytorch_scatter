@@ -3,6 +3,8 @@
 #include "compat.h"
 #include "index_info.h"
 
+#include <vector>
+
 #define CHECK_CPU(x) AT_ASSERTM(!x.type().is_cuda(), #x " must be CPU tensor")
 
 at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
@@ -43,7 +45,7 @@ at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    scalar_t vals[K];
+    std::vector<scalar_t> vals(K);
     int64_t row_start, row_end;
     for (int n = 0; n < N; n++) {
       int offset = IndexPtrToOffset<int64_t>::get(n, indptr_info);
@@ -104,7 +106,7 @@ at::Tensor gather_coo(at::Tensor src, at::Tensor index,
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    scalar_t vals[K];
+    std::vector<scalar_t> vals(K);
     int64_t idx, next_idx;
     for (int e_1 = 0; e_1 < E_1; e_1++) {
       int offset = IndexToOffset<int64_t>::get(e_1 * E_2, index_info);

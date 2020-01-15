@@ -3,6 +3,8 @@
 #include "compat.h"
 #include "index_info.h"
 
+#include <vector>
+
 #define CHECK_CPU(x) AT_ASSERTM(!x.type().is_cuda(), #x " must be CPU tensor")
 
 enum ReductionType { ADD, MEAN, MIN, MAX };
@@ -123,8 +125,9 @@ segment_csr(at::Tensor src, at::Tensor indptr, at::optional<at::Tensor> out_opt,
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    scalar_t vals[K];
-    int64_t row_start, row_end, args[K];
+    std::vector<scalar_t> vals(K);
+    int64_t row_start, row_end;
+    std::vector<int64_t> args(K);
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       for (int n = 0; n < N; n++) {
         int offset = IndexPtrToOffset<int64_t>::get(n, indptr_info);
@@ -195,8 +198,9 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
     auto src_data = src.DATA_PTR<scalar_t>();
     auto out_data = out.DATA_PTR<scalar_t>();
 
-    scalar_t vals[K];
-    int64_t idx, next_idx, row_start, args[K];
+    std::vector<scalar_t> vals(K);
+    int64_t idx, next_idx, row_start;
+    std::vector<int64_t> args(K);
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       for (int e_1 = 0; e_1 < E_1; e_1++) {
         int offset = IndexToOffset<int64_t>::get(e_1 * E_2, index_info);
