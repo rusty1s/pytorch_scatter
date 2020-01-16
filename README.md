@@ -64,6 +64,11 @@ When running in a docker container without nvidia driver, PyTorch needs to evalu
 export TORCH_CUDA_ARCH_LIST = "6.0 6.1 7.2+PTX 7.5+PTX"
 ```
 
+### Windows
+
+If you are installing this on Windows specifically, **you will need to point the setup to your Visual Studio installation** for some neccessary libraries and header files.
+To do this, add the include and library paths of your installation to the path lists in setup.py as described in the respective comments in the code.
+
 If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_scatter/issues).
 Be sure to import `torch` first before using this package to resolve symbols the dynamic linker must see.
 

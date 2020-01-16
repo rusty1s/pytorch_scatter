@@ -7,8 +7,19 @@ from sys import argv
 import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
+
+# Windows users: Edit both of these to contain your Visual Studio include path, i.e.
+# cxx_extra_compile_args = ['-I{VISUAL_STUDIO_DIR}\\include']
+# nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr', '-I{VISUAL_STUDIO_DIR}\\include']
 cxx_extra_compile_args = []
 nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr']
+
+# Windows users: Edit both of these to contain your Visual Studio library path, i.e.
+# cxx_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
+# nvcc_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
+cxx_extra_link_args = []
+nvcc_extra_link_args = []
+
 if platform.system() != 'Windows':
     cxx_extra_compile_args += ['-Wno-unused-variable']
 TORCH_MAJOR = int(torch.__version__.split('.')[0])
@@ -23,7 +34,8 @@ exts = [e.split(osp.sep)[-1][:-4] for e in glob(osp.join('cpu', '*.cpp'))]
 ext_modules += [
     CppExtension(
         f'torch_scatter.{ext}_cpu', [f'cpu/{ext}.cpp'],
-        extra_compile_args=cxx_extra_compile_args) for ext in exts
+        extra_compile_args=cxx_extra_compile_args,
+        extra_link_args=cxx_extra_link_args) for ext in exts
 ]
 
 if CUDA_HOME is not None and '--cpu' not in argv:
@@ -35,7 +47,8 @@ if CUDA_HOME is not None and '--cpu' not in argv:
             extra_compile_args={
                 'cxx': cxx_extra_compile_args,
                 'nvcc': nvcc_extra_compile_args,
-            }) for ext in exts
+            },
+            extra_link_args=nvcc_extra_link_args) for ext in exts
     ]
 
 __version__ = '1.5.0'
