@@ -8,13 +8,13 @@ import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
 
-# Windows users: Edit both of these to contain your Visual Studio include path, i.e.
+# Windows users: Edit both of these to contain your VS include path, i.e.
 # cxx_extra_compile_args = ['-I{VISUAL_STUDIO_DIR}\\include']
-# nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr', '-I{VISUAL_STUDIO_DIR}\\include']
+# nvcc_extra_compile_args = [..., '-I{VISUAL_STUDIO_DIR}\\include']
 cxx_extra_compile_args = []
 nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr']
 
-# Windows users: Edit both of these to contain your Visual Studio library path, i.e.
+# Windows users: Edit both of these to contain your VS library path, i.e.
 # cxx_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
 # nvcc_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
 cxx_extra_link_args = []
