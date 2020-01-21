@@ -111,8 +111,8 @@ def test_backward(test, reduce, device):
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)
 
-    assert gradcheck(segment_coo, (src, index, None, None, reduce)) is True
-    assert gradcheck(segment_csr, (src, indptr, None, reduce)) is True
+    assert gradcheck(segment_coo, (src, index, None, None, reduce))
+    assert gradcheck(segment_csr, (src, indptr, None, reduce))
 
 
 @pytest.mark.parametrize('test,reduce,dtype,device',
