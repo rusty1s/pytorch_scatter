@@ -18,7 +18,7 @@ def gat(is_cuda):
 class SegmentCOO(torch.autograd.Function):
     @staticmethod
     def forward(ctx, src, index, out, dim_size, reduce):
-        assert reduce in ['add', 'mean', 'min', 'max']
+        assert reduce in ['sum', 'add', 'mean', 'min', 'max']
         if out is not None:
             ctx.mark_dirty(out)
         ctx.reduce = reduce
@@ -55,7 +55,7 @@ class SegmentCOO(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            if ctx.reduce == 'add':
+            if ctx.reduce == 'sum' or ctx.reduce == 'add':
                 grad_src = gat(grad_out.is_cuda).gather_coo(
                     grad_out, index, grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
@@ -68,7 +68,7 @@ class SegmentCOO(torch.autograd.Function):
                     size[-1] = grad_out.size(index.dim() - 1)
                     count = segment_cpu.segment_coo(
                         torch.ones_like(index, dtype=grad_out.dtype), index,
-                        grad_out.new_zeros(size), 'add')[0].clamp_(min=1)
+                        grad_out.new_zeros(size), 'sum')[0].clamp_(min=1)
 
                 count = gat(grad_out.is_cuda).gather_coo(
                     count, index, count.new_empty(src_size[:index.dim()]))
@@ -88,7 +88,7 @@ class SegmentCOO(torch.autograd.Function):
 class SegmentCSR(torch.autograd.Function):
     @staticmethod
     def forward(ctx, src, indptr, out, reduce):
-        assert reduce in ['add', 'mean', 'min', 'max']
+        assert reduce in ['sum', 'add', 'mean', 'min', 'max']
 
         if out is not None:
             ctx.mark_dirty(out)
@@ -105,7 +105,7 @@ class SegmentCSR(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            if ctx.reduce == 'add':
+            if ctx.reduce == 'sum' or ctx.reduce == 'add':
                 grad_src = gat(grad_out.is_cuda).gather_csr(
                     grad_out, indptr, grad_out.new_empty(src_size))
             elif ctx.reduce == 'mean':
@@ -129,7 +129,7 @@ class SegmentCSR(torch.autograd.Function):
         return grad_src, None, None, None
 
 
-def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
+def segment_coo(src, index, out=None, dim_size=None, reduce="sum"):
     r"""
     |
 
@@ -158,7 +158,7 @@ def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
     :math:`y - 1` in ascending order.
     The :attr:`index` tensor supports broadcasting in case its dimensions do
     not match with :attr:`src`.
-    For one-dimensional tensors with :obj:`reduce="add"`, the operation
+    For one-dimensional tensors with :obj:`reduce="sum"`, the operation
     computes
 
     .. math::
@@ -196,9 +196,9 @@ def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
             If :attr:`dim_size` is not given, a minimal sized output tensor
             according to :obj:`index.max() + 1` is returned.
             (default: :obj:`None`)
-        reduce (string, optional): The reduce operation (:obj:`"add"`,
+        reduce (string, optional): The reduce operation (:obj:`"sum"`,
             :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
-            (default: :obj:`"add"`)
+            (default: :obj:`"sum"`)
 
     :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
 
@@ -210,7 +210,7 @@ def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
         index = torch.tensor([0, 0, 1, 1, 1, 2])
         index = index.view(1, -1)  # Broadcasting in the first and last dim.
 
-        out = segment_coo(src, index, reduce="add")
+        out = segment_coo(src, index, reduce="sum")
 
         print(out.size())
 
@@ -221,7 +221,7 @@ def segment_coo(src, index, out=None, dim_size=None, reduce="add"):
     return SegmentCOO.apply(src, index, out, dim_size, reduce)
 
 
-def segment_csr(src, indptr, out=None, reduce="add"):
+def segment_csr(src, indptr, out=None, reduce="sum"):
     r"""
     Reduces all values from the :attr:`src` tensor into :attr:`out` within the
     ranges specified in the :attr:`indptr` tensor along the last dimension of
@@ -242,7 +242,7 @@ def segment_csr(src, indptr, out=None, reduce="add"):
     :math:`x_m` in ascending order.
     The :attr:`indptr` tensor supports broadcasting in case its dimensions do
     not match with :attr:`src`.
-    For one-dimensional tensors with :obj:`reduce="add"`, the operation
+    For one-dimensional tensors with :obj:`reduce="sum"`, the operation
     computes
 
     .. math::
@@ -267,9 +267,9 @@ def segment_csr(src, indptr, out=None, reduce="add"):
             The number of dimensions of :attr:`index` needs to be less than or
             equal to :attr:`src`.
         out (Tensor, optional): The destination tensor. (default: :obj:`None`)
-        reduce (string, optional): The reduce operation (:obj:`"add"`,
+        reduce (string, optional): The reduce operation (:obj:`"sum"`,
             :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
-            (default: :obj:`"add"`)
+            (default: :obj:`"sum"`)
 
     :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
 
@@ -281,7 +281,7 @@ def segment_csr(src, indptr, out=None, reduce="add"):
         indptr = torch.tensor([0, 2, 5, 6])
         indptr = indptr.view(1, -1)  # Broadcasting in the first and last dim.
 
-        out = segment_csr(src, indptr, reduce="add")
+        out = segment_csr(src, indptr, reduce="sum")
 
         print(out.size())
 

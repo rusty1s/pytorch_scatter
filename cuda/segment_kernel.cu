@@ -11,22 +11,31 @@
 #define BLOCKS(TB, N) (TB * N + THREADS - 1) / THREADS
 #define FULL_MASK 0xffffffff
 
-enum ReductionType { ADD, MEAN, MIN, MAX };
+enum ReductionType { SUM, MEAN, MIN, MAX };
+
+const std::map<std::string, ReductionType> reduce2REDUCE = {
+    {"sum", SUM}, {"add", SUM}, {"mean", MEAN}, {"min", MIN}, {"max", MAX},
+};
 
 #define AT_DISPATCH_REDUCTION_TYPES(reduce, ...)                               \
   [&] {                                                                        \
-    if (reduce == "add") {                                                     \
-      const ReductionType REDUCE = ADD;                                        \
+    switch (reduce2REDUCE.at(reduce)) {                                        \
+    case SUM: {                                                                \
+      const ReductionType REDUCE = SUM;                                        \
       return __VA_ARGS__();                                                    \
-    } else if (reduce == "mean") {                                             \
+    }                                                                          \
+    case MEAN: {                                                               \
       const ReductionType REDUCE = MEAN;                                       \
       return __VA_ARGS__();                                                    \
-    } else if (reduce == "min") {                                              \
+    }                                                                          \
+    case MIN: {                                                                \
       const ReductionType REDUCE = MIN;                                        \
       return __VA_ARGS__();                                                    \
-    } else if (reduce == "max") {                                              \
+    }                                                                          \
+    case MAX: {                                                                \
       const ReductionType REDUCE = MAX;                                        \
       return __VA_ARGS__();                                                    \
+    }                                                                          \
     }                                                                          \
   }()
 
@@ -43,7 +52,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
 
   static inline __host__ __device__ void update(scalar_t *val,
                                                 scalar_t new_val) {
-    if (REDUCE == ADD || REDUCE == MEAN) {
+    if (REDUCE == SUM || REDUCE == MEAN) {
       *val = *val + new_val;
     } else if ((REDUCE == MIN && new_val < *val) ||
                (REDUCE == MAX && new_val > *val)) {
@@ -53,7 +62,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
 
   static inline __host__ __device__ void update(scalar_t *val, scalar_t new_val,
                                                 int64_t *arg, int64_t new_arg) {
-    if (REDUCE == ADD || REDUCE == MEAN) {
+    if (REDUCE == SUM || REDUCE == MEAN) {
       *val = *val + new_val;
     } else if ((REDUCE == MIN && new_val < *val) ||
                (REDUCE == MAX && new_val > *val)) {
@@ -65,7 +74,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
   static inline __host__ __device__ void write(scalar_t *address, scalar_t val,
                                                int64_t *arg_address,
                                                int64_t arg, int count) {
-    if (REDUCE == ADD) {
+    if (REDUCE == SUM) {
       *address = val;
     } else if (REDUCE == MEAN) {
       *address = val / (scalar_t)max(count, 1);
@@ -80,7 +89,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
   }
 
   static inline __device__ void atomic_write(scalar_t *address, scalar_t val) {
-    if (REDUCE == ADD || REDUCE == MEAN) {
+    if (REDUCE == SUM || REDUCE == MEAN) {
       atomAdd(address, val);
     } else if (REDUCE == MIN && val < *address) {
       atomMin(address, val);
@@ -204,7 +213,7 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
 
   at::optional<at::Tensor> arg_out = at::nullopt;
   int64_t *arg_out_data = nullptr;
-  if (reduce == "min" || reduce == "max") {
+  if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = at::full_like(out, src.size(reduce_dim), indptr.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
@@ -396,7 +405,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
 
   at::optional<at::Tensor> arg_out = at::nullopt;
   int64_t *arg_out_data = nullptr;
-  if (reduce == "min" || reduce == "max") {
+  if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = at::full_like(out, src.size(reduce_dim), index.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
@@ -455,14 +464,14 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
     });
   });
 
-  if (reduce == "mean") {
+  if (reduce2REDUCE.at(reduce) == MEAN) {
     auto sizes = index.sizes().vec();
     sizes[reduce_dim] = out.size(reduce_dim);
     auto count = at::zeros(sizes, out.options());
 
     AT_DISPATCH_ALL_TYPES(out.scalar_type(), "count_kernel", [&] {
       auto count_data = count.DATA_PTR<scalar_t>();
-      segment_coo_kernel<scalar_t, ADD, false>
+      segment_coo_kernel<scalar_t, SUM, false>
           <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
                                                  count_data, E, N);
     });

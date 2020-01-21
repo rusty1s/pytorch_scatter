@@ -122,11 +122,11 @@ def timing(dataset):
     avg_row_len = row.size(0) / dim_size
 
     def sca_row(x):
-        op = getattr(torch_scatter, f'scatter_{args.reduce}')
+        op = getattr(torch_scatter, f'scatter_{args.scatter_reduce}')
         return op(x, row, dim=0, dim_size=dim_size)
 
     def sca_col(x):
-        op = getattr(torch_scatter, f'scatter_{args.reduce}')
+        op = getattr(torch_scatter, f'scatter_{args.scatter_reduce}')
         return op(x, row_perm, dim=0, dim_size=dim_size)
 
     def seg_coo(x):
@@ -136,10 +136,10 @@ def timing(dataset):
         return segment_csr(x, rowptr, reduce=args.reduce)
 
     def dense1(x):
-        return getattr(torch, args.dense_reduce)(x, dim=-2)
+        return getattr(torch, args.reduce)(x, dim=-2)
 
     def dense2(x):
-        return getattr(torch, args.dense_reduce)(x, dim=-1)
+        return getattr(torch, args.reduce)(x, dim=-1)
 
     t1, t2, t3, t4, t5, t6 = [], [], [], [], [], []
 
@@ -204,15 +204,12 @@ def timing(dataset):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--reduce',
-        type=str,
-        required=True,
-        choices=['add', 'mean', 'min', 'max'])
+    parser.add_argument('--reduce', type=str, required=True,
+                        choices=['sum', 'mean', 'min', 'max'])
     parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
-    args.dense_reduce = 'sum' if args.reduce == 'add' else args.reduce
+    args.scatter_reduce = 'add' if args.reduce == 'sum' else args.reduce
     iters = 1 if args.device == 'cpu' else 20
     sizes = [1, 16, 32, 64, 128, 256, 512]
     sizes = sizes[:3] if args.device == 'cpu' else sizes

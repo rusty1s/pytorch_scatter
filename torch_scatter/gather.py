@@ -31,7 +31,7 @@ class GatherCOO(torch.autograd.Function):
         grad_src = None
         if ctx.needs_input_grad[0]:
             grad_src, _ = seg(grad_out.is_cuda).segment_coo(
-                grad_out, index, grad_out.new_zeros(src_size), 'add')
+                grad_out, index, grad_out.new_zeros(src_size), 'sum')
 
         return grad_src, None, None
 
@@ -53,7 +53,7 @@ class GatherCSR(torch.autograd.Function):
         grad_src = None
         if ctx.needs_input_grad[0]:
             grad_src, _ = seg(grad_out.is_cuda).segment_csr(
-                grad_out, indptr, grad_out.new_empty(src_size), 'add')
+                grad_out, indptr, grad_out.new_empty(src_size), 'sum')
 
         return grad_src, None, None
 
