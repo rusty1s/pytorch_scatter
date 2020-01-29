@@ -16,13 +16,13 @@ from .gather import gather_coo, gather_csr
 import torch_scatter.composite
 
 torch.ops.load_library('torch_scatter/scatter_cpu.so')
-torch.ops.load_library('torch_scatter/segment_cpu.so')
-torch.ops.load_library('torch_scatter/gather_cpu.so')
+torch.ops.load_library('torch_scatter/segment_csr_cpu.so')
+torch.ops.load_library('torch_scatter/segment_coo_cpu.so')
 
 try:
     torch.ops.load_library('torch_scatter/scatter_cuda.so')
-    torch.ops.load_library('torch_scatter/segment_cuda.so')
-    torch.ops.load_library('torch_scatter/gather_cuda.so')
+    # torch.ops.load_library('torch_scatter/segment_csr_cuda.so')
+    # torch.ops.load_library('torch_scatter/segment_coo_cuda.so')
 except OSError as e:
     if torch.cuda.is_available():
         raise e

@@ -1,0 +1,146 @@
+#pragma once
+
+#include <torch/extension.h>
+
+#include "compat.h"
+#include "index_info.h"
+#include "reducer.h"
+#include "utils.h"
+
+std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+segment_csr(torch::Tensor src, torch::Tensor indptr,
+            torch::optional<torch::Tensor> optional_out, std::string reduce) {
+  CHECK_CPU(src);
+  CHECK_CPU(indptr);
+  if (optional_out.has_value())
+    CHECK_CPU(optional_out.value());
+
+  CHECK_INPUT(src.dim() >= indptr.dim());
+
+  auto sizes = indptr.sizes().vec();
+  for (auto i = 0; i < indptr.dim() - 1; i++)
+    sizes[i] = src.size(i);
+  indptr = indptr.expand(sizes);
+
+  auto dim = indptr.dim() - 1;
+
+  src = src.contiguous();
+
+  torch::Tensor out;
+  if (optional_out.has_value()) {
+    out = optional_out.value().contiguous();
+    for (int i = 0; i < out.dim(); i++)
+      if (i != dim)
+        CHECK_INPUT(src.size(i) == out.size(i));
+    CHECK_INPUT(out.size(dim) == indptr.size(dim) - 1);
+  } else {
+    sizes = src.sizes().vec();
+    sizes[dim] = indptr.size(dim) - 1;
+    out = torch::empty(sizes, src.options());
+  }
+
+  torch::optional<torch::Tensor> arg_out = torch::nullopt;
+  int64_t *arg_out_data = nullptr;
+  if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
+    arg_out = torch::full(out.sizes(), src.size(dim), indptr.options());
+    arg_out_data = arg_out.value().DATA_PTR<int64_t>();
+  }
+
+  auto N = out.size(dim) * (indptr.numel() / indptr.size(-1));
+  auto K = out.numel() / N;
+  auto E = src.size(dim);
+
+  auto indptr_info = getTensorInfo<int64_t>(indptr);
+  auto stride = indptr_info.strides[indptr_info.dims - 1];
+  std::vector<int64_t> args(K);
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_csr", [&] {
+    auto src_data = src.DATA_PTR<scalar_t>();
+    auto out_data = out.DATA_PTR<scalar_t>();
+
+    std::vector<scalar_t> vals(K);
+    int64_t row_start, row_end;
+    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+      for (auto n = 0; n < N; n++) {
+        auto offset = IndexPtrToOffset<int64_t>::get(n, indptr_info);
+        row_start = indptr_info.data[offset];
+        row_end = indptr_info.data[offset + stride];
+
+        offset = (n / (indptr.size(-1) - 1)) * E * K;
+        for (auto k = 0; k < K; k++)
+          vals[k] = Reducer<scalar_t, REDUCE>::init();
+
+        for (auto e = row_start; e < row_end; e++) {
+          CHECK_INPUT(e < E);
+          for (auto k = 0; k < K; k++)
+            Reducer<scalar_t, REDUCE>::update(
+                &vals[k], src_data[offset + e * K + k], &args[k], e);
+        }
+
+        for (auto k = 0; k < K; k++)
+          Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, vals[k],
+                                           arg_out_data + n * K + k, args[k],
+                                           row_end - row_start);
+      }
+    });
+  });
+
+  return std::make_tuple(out, arg_out);
+}
+
+torch::Tensor gather_csr(torch::Tensor src, torch::Tensor indptr,
+                         torch::optional<torch::Tensor> optional_out) {
+  CHECK_CPU(src);
+  CHECK_CPU(indptr);
+  if (optional_out.has_value())
+    CHECK_CPU(optional_out.value());
+
+  CHECK_INPUT(src.dim() >= indptr.dim());
+  for (auto i = 0; i < indptr.dim() - 1; i++)
+    CHECK_INPUT(src.size(i) == indptr.size(i));
+
+  auto dim = indptr.dim() - 1;
+  CHECK_INPUT(src.size(dim) == indptr.size(dim) - 1);
+
+  src = src.contiguous();
+
+  torch::Tensor out;
+  if (optional_out.has_value()) {
+    out = optional_out.value().contiguous();
+    for (auto i = 0; i < out.dim(); i++)
+      if (i != dim)
+        CHECK_INPUT(src.size(i) == out.size(i));
+  } else {
+    auto sizes = src.sizes().vec();
+    sizes[dim] = *indptr.flatten()[-1].DATA_PTR<int64_t>();
+    out = torch::empty(sizes, src.options());
+  }
+
+  auto N = src.size(dim) * (indptr.numel() / indptr.size(-1));
+  auto K = src.numel() / N;
+  auto E = out.size(dim);
+
+  auto indptr_info = getTensorInfo<int64_t>(indptr);
+  auto stride = indptr_info.strides[indptr_info.dims - 1];
+  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_csr", [&] {
+    auto src_data = src.DATA_PTR<scalar_t>();
+    auto out_data = out.DATA_PTR<scalar_t>();
+
+    std::vector<scalar_t> vals(K);
+    int64_t row_start, row_end;
+    for (int n = 0; n < N; n++) {
+      auto offset = IndexPtrToOffset<int64_t>::get(n, indptr_info);
+      row_start = indptr_info.data[offset];
+      row_end = indptr_info.data[offset + stride];
+
+      for (auto k = 0; k < K; k++)
+        vals[k] = src_data[n * K + k];
+
+      offset = (n / (indptr.size(-1) - 1)) * E * K;
+      for (auto e = row_start; e < row_end; e++)
+        for (auto k = 0; k < K; k++)
+          out_data[offset + e * K + k] = vals[k];
+    }
+  });
+
+  return out;
+}
