@@ -1,15 +1,13 @@
-#pragma once
+#include "segment_coo_cpu.h"
 
-#include <torch/extension.h>
-
-#include "compat.h"
 #include "index_info.h"
 #include "reducer.h"
 #include "utils.h"
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
-segment_coo(torch::Tensor src, torch::Tensor index,
-            torch::optional<torch::Tensor> optional_out, std::string reduce) {
+segment_coo_cpu(torch::Tensor src, torch::Tensor index,
+                torch::optional<torch::Tensor> optional_out,
+                torch::optional<int64_t> dim_size, std::string reduce) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   if (optional_out.has_value())
@@ -17,7 +15,6 @@ segment_coo(torch::Tensor src, torch::Tensor index,
 
   CHECK_INPUT(src.dim() >= index.dim());
 
-  // Broadcasting `index` via `expand`.
   auto sizes = index.sizes().vec();
   for (int i = 0; i < index.dim(); i++)
     sizes[i] = src.size(i);
@@ -35,7 +32,10 @@ segment_coo(torch::Tensor src, torch::Tensor index,
         CHECK_INPUT(src.size(i) == out.size(i));
   } else {
     sizes = src.sizes().vec();
-    sizes[dim] = *index.max().DATA_PTR<int64_t>();
+    if (dim_size.has_value())
+      sizes[dim] = dim_size.value();
+    else
+      sizes[dim] = 1 + *index.max().data_ptr<int64_t>();
     out = torch::empty(sizes, src.options());
   }
 
@@ -43,7 +43,14 @@ segment_coo(torch::Tensor src, torch::Tensor index,
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full_like(out, src.size(dim), index.options());
-    arg_out_data = arg_out.value().DATA_PTR<int64_t>();
+    arg_out_data = arg_out.value().data_ptr<int64_t>();
+  }
+
+  torch::optional<torch::Tensor> count = torch::nullopt;
+  if (reduce2REDUCE.at(reduce) == MEAN) {
+    auto sizes = index.sizes().vec();
+    sizes[dim] = out.size(dim);
+    count = torch::zeros(sizes, out.options());
   }
 
   auto B = index.numel() / src.size(dim);
@@ -55,14 +62,17 @@ segment_coo(torch::Tensor src, torch::Tensor index,
   auto stride = index_info.strides[index_info.dims - 1];
   std::vector<int64_t> args(K);
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_coo", [&] {
-    auto src_data = src.DATA_PTR<scalar_t>();
-    auto out_data = out.DATA_PTR<scalar_t>();
+    auto src_data = src.data_ptr<scalar_t>();
+    auto out_data = out.data_ptr<scalar_t>();
+    scalar_t *count_data = nullptr;
 
     std::vector<scalar_t> vals(K);
     int64_t idx, next_idx, row_start;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (!optional_out.has_value())
         out.fill_(Reducer<scalar_t, REDUCE>::init());
+      if (REDUCE == MEAN)
+        count_data = count.value().data_ptr<scalar_t>();
 
       for (auto b = 0; b < B; b++) {
         auto offset = IndexToOffset<int64_t>::get(b * E, index_info);
@@ -84,6 +94,8 @@ segment_coo(torch::Tensor src, torch::Tensor index,
                   out_data + b * N * K + idx * K + k, vals[k],
                   arg_out_data + b * N * K + idx * K + k, args[k],
                   e + 1 - row_start);
+            if (REDUCE == MEAN)
+              count_data[b * N + idx] = (scalar_t)(e + 1 - row_start);
           } else {
             next_idx = index_info.data[offset + (e + 1) * stride];
             assert(idx <= next_idx);
@@ -97,6 +109,8 @@ segment_coo(torch::Tensor src, torch::Tensor index,
 
                 vals[k] = out_data[b * N * K + next_idx * K + k];
               }
+              if (REDUCE == MEAN)
+                count_data[b * N + idx] = (scalar_t)(e + 1 - row_start);
               row_start = e + 1;
             }
 
@@ -104,17 +118,19 @@ segment_coo(torch::Tensor src, torch::Tensor index,
           }
         }
       }
-      if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX)) {
+      if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
         out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
-      }
+
+      if (REDUCE == MEAN)
+        arg_out = count;
     });
   });
 
   return std::make_tuple(out, arg_out);
 }
 
-torch::Tensor gather_coo(torch::Tensor src, torch::Tensor index,
-                         torch::optional<torch::Tensor> optional_out) {
+torch::Tensor gather_coo_cpu(torch::Tensor src, torch::Tensor index,
+                             torch::optional<torch::Tensor> optional_out) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   if (optional_out.has_value())
@@ -148,8 +164,8 @@ torch::Tensor gather_coo(torch::Tensor src, torch::Tensor index,
   auto index_info = getTensorInfo<int64_t>(index);
   auto stride = index_info.strides[index_info.dims - 1];
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_coo", [&] {
-    auto src_data = src.DATA_PTR<scalar_t>();
-    auto out_data = out.DATA_PTR<scalar_t>();
+    auto src_data = src.data_ptr<scalar_t>();
+    auto out_data = out.data_ptr<scalar_t>();
 
     std::vector<scalar_t> vals(K);
     int64_t idx, next_idx;

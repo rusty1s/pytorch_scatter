@@ -2,8 +2,6 @@ from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library('torch_scatter/_C.so')
-
 
 @torch.jit.script
 def segment_sum_csr(src: torch.Tensor, indptr: torch.Tensor,

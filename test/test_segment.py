@@ -3,12 +3,12 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_scatter import segment_csr
+import torch_scatter
 
 from .utils import tensor, dtypes, devices
 
 reductions = ['sum', 'mean', 'min', 'max']
-grad_reductions = ['sum', 'mean']
+devices = ['cpu']
 
 tests = [
     {
@@ -88,14 +88,14 @@ def test_forward(test, reduce, dtype, device):
     indptr = tensor(test['indptr'], torch.long, device)
     expected = tensor(test[reduce], dtype, device)
 
-    # out = segment_coo(src, index, reduce=reduce)
-    # if isinstance(out, tuple):
-    #     out, arg_out = out
-    #     arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
-    #     assert torch.all(arg_out == arg_expected)
-    # assert torch.all(out == expected)
+    out = getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr)
+    if isinstance(out, tuple):
+        out, arg_out = out
+        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        assert torch.all(arg_out == arg_expected)
+    assert torch.all(out == expected)
 
-    out = segment_csr(src, indptr, reduce=reduce)
+    out = getattr(torch_scatter, f'segment_{reduce}_coo')(src, index)
     if isinstance(out, tuple):
         out, arg_out = out
         arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
@@ -104,15 +104,16 @@ def test_forward(test, reduce, dtype, device):
 
 
 @pytest.mark.parametrize('test,reduce,device',
-                         product(tests, grad_reductions, devices))
+                         product(tests, reductions, devices))
 def test_backward(test, reduce, device):
     src = tensor(test['src'], torch.double, device)
     src.requires_grad_()
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)
 
-    # assert gradcheck(segment_coo, (src, index, None, None, reduce))
-    assert gradcheck(segment_csr, (src, indptr, None, reduce))
+    assert gradcheck(torch_scatter.segment_csr, (src, indptr, None, reduce))
+    assert gradcheck(torch_scatter.segment_coo,
+                     (src, index, None, None, reduce))
 
 
 @pytest.mark.parametrize('test,reduce,dtype,device',
@@ -127,25 +128,25 @@ def test_segment_out(test, reduce, dtype, device):
     size[indptr.dim() - 1] = indptr.size(-1) - 1
     out = src.new_full(size, -2)
 
-    segment_csr(src, indptr, out, reduce=reduce)
+    getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr, out)
     assert torch.all(out == expected)
 
-    # out.fill_(-2)
+    out.fill_(-2)
 
-    # segment_coo(src, index, out, reduce=reduce)
+    getattr(torch_scatter, f'segment_{reduce}_coo')(src, index, out)
 
-    # if reduce == 'sum':
-    #     expected = expected - 2
-    # elif reduce == 'mean':
-    #     expected = out  # We can not really test this here.
-    # elif reduce == 'min':
-    #     expected = expected.fill_(-2)
-    # elif reduce == 'max':
-    #     expected[expected == 0] = -2
-    # else:
-    #     raise ValueError
+    if reduce == 'sum':
+        expected = expected - 2
+    elif reduce == 'mean':
+        expected = out  # We can not really test this here.
+    elif reduce == 'min':
+        expected = expected.fill_(-2)
+    elif reduce == 'max':
+        expected[expected == 0] = -2
+    else:
+        raise ValueError
 
-    # assert torch.all(out == expected)
+    assert torch.all(out == expected)
 
 
 @pytest.mark.parametrize('test,reduce,dtype,device',
@@ -163,14 +164,14 @@ def test_non_contiguous_segment(test, reduce, dtype, device):
     if indptr.dim() > 1:
         indptr = indptr.transpose(0, 1).contiguous().transpose(0, 1)
 
-    # out = segment_coo(src, index, reduce=reduce)
-    # if isinstance(out, tuple):
-    #     out, arg_out = out
-    #     arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
-    #     assert torch.all(arg_out == arg_expected)
-    # assert torch.all(out == expected)
+    out = getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr)
+    if isinstance(out, tuple):
+        out, arg_out = out
+        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        assert torch.all(arg_out == arg_expected)
+    assert torch.all(out == expected)
 
-    out = segment_csr(src, indptr, reduce=reduce)
+    out = getattr(torch_scatter, f'segment_{reduce}_coo')(src, index)
     if isinstance(out, tuple):
         out, arg_out = out
         arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)

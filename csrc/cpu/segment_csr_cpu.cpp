@@ -67,12 +67,10 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
         for (auto k = 0; k < K; k++)
           vals[k] = Reducer<scalar_t, REDUCE>::init();
 
-        for (auto e = row_start; e < row_end; e++) {
-          CHECK_INPUT(e < E);
+        for (auto e = row_start; e < row_end; e++)
           for (auto k = 0; k < K; k++)
             Reducer<scalar_t, REDUCE>::update(
                 &vals[k], src_data[offset + e * K + k], &args[k], e);
-        }
 
         for (auto k = 0; k < K; k++)
           Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, vals[k],
