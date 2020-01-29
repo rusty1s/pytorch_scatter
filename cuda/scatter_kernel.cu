@@ -147,8 +147,8 @@ scatter_min_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
   }
 }
 
-void scatter_min_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
-                      at::Tensor arg, int64_t dim) {
+void scatter_min_cuda(torch::Tensor src, torch::Tensor index, torch::Tensor out,
+                      torch::Tensor arg, int64_t dim) {
   cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_min_kernel", [&] {
     auto src_info = at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src);
