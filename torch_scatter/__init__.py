@@ -1,6 +1,8 @@
+import os.path as osp
+
 import torch
 
-torch.ops.load_library('torch_scatter/_C.so')
+torch.ops.load_library(osp.join(osp.dirname(osp.abspath(__file__)), '_C.so'))
 
 from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
                           segment_min_csr, segment_max_csr, segment_csr,
