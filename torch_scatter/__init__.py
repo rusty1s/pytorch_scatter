@@ -1,17 +1,5 @@
 import torch
 
-torch.ops.load_library('torch_scatter/scatter_cpu.so')
-torch.ops.load_library('torch_scatter/segment_cpu.so')
-torch.ops.load_library('torch_scatter/gather_cpu.so')
-
-try:
-    torch.ops.load_library('torch_scatter/scatter_cuda.so')
-    torch.ops.load_library('torch_scatter/segment_cuda.so')
-    torch.ops.load_library('torch_scatter/gather_cuda.so')
-except OSError as e:
-    if torch.cuda.is_available():
-        raise e
-
 from .add import scatter_add
 from .sub import scatter_sub
 from .mul import scatter_mul
@@ -26,6 +14,18 @@ from .segment import segment_coo, segment_csr
 from .gather import gather_coo, gather_csr
 
 import torch_scatter.composite
+
+torch.ops.load_library('torch_scatter/scatter_cpu.so')
+torch.ops.load_library('torch_scatter/segment_cpu.so')
+torch.ops.load_library('torch_scatter/gather_cpu.so')
+
+try:
+    torch.ops.load_library('torch_scatter/scatter_cuda.so')
+    torch.ops.load_library('torch_scatter/segment_cuda.so')
+    torch.ops.load_library('torch_scatter/gather_cuda.so')
+except OSError as e:
+    if torch.cuda.is_available():
+        raise e
 
 __version__ = '1.4.0'
 
