@@ -1,14 +1,14 @@
-from torch.autograd import Function
-
-from torch_scatter.utils.ext import get_func
+import torch
 from torch_scatter.utils.gen import gen
 
 
-class ScatterDiv(Function):
+class ScatterDiv(torch.autograd.Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
-        func = get_func('scatter_div', src)
-        func(src, index, out, dim)
+        if src.is_cuda:
+            torch.ops.torch_scatter_cuda.scatter_div(src, index, out, dim)
+        else:
+            torch.ops.torch_scatter_cpu.scatter_div(src, index, out, dim)
 
         ctx.mark_dirty(out)
         ctx.save_for_backward(out, src, index)

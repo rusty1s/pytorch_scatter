@@ -26,7 +26,7 @@ template <typename scalar_t> struct TensorInfo {
 };
 
 template <typename scalar_t>
-TensorInfo<scalar_t> getTensorInfo(const at::Tensor &tensor) {
+TensorInfo<scalar_t> getTensorInfo(const torch::Tensor &tensor) {
   int sizes[MAX_TENSORINFO_DIMS];
   int strides[MAX_TENSORINFO_DIMS];
 

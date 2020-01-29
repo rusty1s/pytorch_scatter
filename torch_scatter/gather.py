@@ -1,18 +1,5 @@
 import torch
 
-from torch_scatter import segment_cpu, gather_cpu
-
-if torch.cuda.is_available():
-    from torch_scatter import gather_cuda, segment_cuda
-
-
-def gat(is_cuda):
-    return gather_cuda if is_cuda else gather_cpu
-
-
-def seg(is_cuda):
-    return segment_cuda if is_cuda else segment_cpu
-
 
 class GatherCOO(torch.autograd.Function):
     @staticmethod
@@ -22,7 +9,10 @@ class GatherCOO(torch.autograd.Function):
         ctx.src_size = list(src.size())
         ctx.save_for_backward(index)
 
-        return gat(src.is_cuda).gather_coo(src, index, out)
+        if src.is_cuda:
+            return torch.ops.torch_scatter_cuda.gather_coo(src, index, out)
+        else:
+            return torch.ops.torch_scatter_cpu.gather_coo(src, index, out)
 
     @staticmethod
     def backward(ctx, grad_out):
@@ -30,8 +20,12 @@ class GatherCOO(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            grad_src, _ = seg(grad_out.is_cuda).segment_coo(
-                grad_out, index, grad_out.new_zeros(src_size), 'sum')
+            if grad_out.is_cuda:
+                grad_src, _ = torch.ops.torch_scatter_cuda.segment_coo(
+                    grad_out, index, grad_out.new_zeros(src_size), 'sum')
+            else:
+                grad_src, _ = torch.ops.torch_scatter_cpu.segment_coo(
+                    grad_out, index, grad_out.new_zeros(src_size), 'sum')
 
         return grad_src, None, None
 
@@ -44,7 +38,10 @@ class GatherCSR(torch.autograd.Function):
         ctx.src_size = list(src.size())
         ctx.save_for_backward(indptr)
 
-        return gat(src.is_cuda).gather_csr(src, indptr, out)
+        if src.is_cuda:
+            return torch.ops.torch_scatter_cuda.gather_csr(src, indptr, out)
+        else:
+            return torch.ops.torch_scatter_cpu.gather_csr(src, indptr, out)
 
     @staticmethod
     def backward(ctx, grad_out):
@@ -52,8 +49,12 @@ class GatherCSR(torch.autograd.Function):
 
         grad_src = None
         if ctx.needs_input_grad[0]:
-            grad_src, _ = seg(grad_out.is_cuda).segment_csr(
-                grad_out, indptr, grad_out.new_empty(src_size), 'sum')
+            if grad_out.is_cuda:
+                grad_src, _ = torch.ops.torch_scatter_cuda.segment_csr(
+                    grad_out, indptr, grad_out.new_empty(src_size), 'sum')
+            else:
+                grad_src, _ = torch.ops.torch_scatter_cpu.segment_csr(
+                    grad_out, indptr, grad_out.new_empty(src_size), 'sum')
 
         return grad_src, None, None
 

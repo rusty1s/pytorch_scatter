@@ -1,11 +1,11 @@
-#include <torch/extension.h>
+#include <torch/script.h>
 
 #include "compat.h"
 #include "index_info.h"
 
 #include <vector>
 
-#define CHECK_CPU(x) AT_ASSERTM(!x.type().is_cuda(), #x " must be CPU tensor")
+#define CHECK_CPU(x) AT_ASSERTM(x.device().is_cpu(), #x " must be CPU tensor")
 
 enum ReductionType { SUM, MEAN, MIN, MAX };
 
@@ -74,9 +74,9 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
   }
 };
 
-std::tuple<at::Tensor, at::optional<at::Tensor>>
-segment_csr(at::Tensor src, at::Tensor indptr, at::optional<at::Tensor> out_opt,
-            std::string reduce) {
+std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+segment_csr(torch::Tensor src, torch::Tensor indptr,
+            torch::optional<torch::Tensor> out_opt, std::string reduce) {
   CHECK_CPU(src);
   CHECK_CPU(indptr);
   if (out_opt.has_value())
@@ -94,7 +94,7 @@ segment_csr(at::Tensor src, at::Tensor indptr, at::optional<at::Tensor> out_opt,
   src = src.contiguous();
   auto reduce_dim = indptr.dim() - 1;
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < out.dim(); i++)
@@ -105,13 +105,13 @@ segment_csr(at::Tensor src, at::Tensor indptr, at::optional<at::Tensor> out_opt,
   } else {
     sizes = src.sizes().vec();
     sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
-    out = at::empty(sizes, src.options());
+    out = torch::empty(sizes, src.options());
   }
 
-  at::optional<at::Tensor> arg_out = at::nullopt;
+  torch::optional<torch::Tensor> arg_out = torch::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
-    arg_out = at::full_like(out, src.size(reduce_dim), indptr.options());
+    arg_out = torch::full_like(out, src.size(reduce_dim), indptr.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
@@ -156,8 +156,8 @@ segment_csr(at::Tensor src, at::Tensor indptr, at::optional<at::Tensor> out_opt,
   return std::make_tuple(out, arg_out);
 }
 
-std::tuple<at::Tensor, at::optional<at::Tensor>>
-segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
+std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+segment_coo(torch::Tensor src, torch::Tensor index, torch::Tensor out,
             std::string reduce) {
   CHECK_CPU(src);
   CHECK_CPU(index);
@@ -180,10 +180,10 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
     if (i != reduce_dim)
       AT_ASSERTM(src.size(i) == out.size(i), "Input mismatch");
 
-  at::optional<at::Tensor> arg_out = at::nullopt;
+  torch::optional<torch::Tensor> arg_out = torch::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
-    arg_out = at::full_like(out, src.size(reduce_dim), index.options());
+    arg_out = torch::full_like(out, src.size(reduce_dim), index.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
@@ -251,7 +251,6 @@ segment_coo(at::Tensor src, at::Tensor index, at::Tensor out,
   return std::make_tuple(out, arg_out);
 }
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("segment_csr", &segment_csr, "Segment CSR (CPU)");
-  m.def("segment_coo", &segment_coo, "Segment COO (CPU)");
-}
+static auto registry =
+    torch::RegisterOperators("torch_scatter_cpu::segment_csr", &segment_csr)
+        .op("torch_scatter_cpu::segment_coo", &segment_coo);

@@ -1,7 +1,7 @@
-#include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <torch/extension.h>
 
 #include "atomics.cuh"
 #include "compat.cuh"
@@ -181,9 +181,11 @@ __global__ void segment_csr_broadcast_kernel(
   }
 }
 
-std::tuple<at::Tensor, at::optional<at::Tensor>>
-segment_csr_cuda(at::Tensor src, at::Tensor indptr,
-                 at::optional<at::Tensor> out_opt, std::string reduce) {
+std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
+                 torch::optional<torch::Tensor> out_opt, std::string reduce) {
+
+  cudaSetDevice(src.get_device());
 
   AT_ASSERTM(src.dim() >= indptr.dim(), "Input mismatch");
 
@@ -197,7 +199,7 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
   src = src.contiguous();
   auto reduce_dim = indptr.dim() - 1;
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < out.dim(); i++)
@@ -208,13 +210,13 @@ segment_csr_cuda(at::Tensor src, at::Tensor indptr,
   } else {
     sizes = src.sizes().vec();
     sizes[reduce_dim] = indptr.size(reduce_dim) - 1;
-    out = at::empty(sizes, src.options());
+    out = torch::empty(sizes, src.options());
   }
 
-  at::optional<at::Tensor> arg_out = at::nullopt;
+  torch::optional<torch::Tensor> arg_out = torch::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
-    arg_out = at::full_like(out, src.size(reduce_dim), indptr.options());
+    arg_out = torch::full_like(out, src.size(reduce_dim), indptr.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
@@ -382,9 +384,11 @@ __global__ void segment_coo_arg_broadcast_kernel(
   }
 }
 
-std::tuple<at::Tensor, at::optional<at::Tensor>>
-segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
+std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+segment_coo_cuda(torch::Tensor src, torch::Tensor index, torch::Tensor out,
                  std::string reduce) {
+
+  cudaSetDevice(src.get_device());
 
   AT_ASSERTM(src.dim() >= index.dim(), "Input mismatch");
 
@@ -403,10 +407,10 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
     if (i != reduce_dim)
       AT_ASSERTM(src.size(i) == out.size(i), "Input mismatch");
 
-  at::optional<at::Tensor> arg_out = at::nullopt;
+  torch::optional<torch::Tensor> arg_out = torch::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
-    arg_out = at::full_like(out, src.size(reduce_dim), index.options());
+    arg_out = torch::full_like(out, src.size(reduce_dim), index.options());
     arg_out_data = arg_out.value().DATA_PTR<int64_t>();
   }
 
@@ -467,7 +471,7 @@ segment_coo_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
   if (reduce2REDUCE.at(reduce) == MEAN) {
     auto sizes = index.sizes().vec();
     sizes[reduce_dim] = out.size(reduce_dim);
-    auto count = at::zeros(sizes, out.options());
+    auto count = torch::zeros(sizes, out.options());
 
     AT_DISPATCH_ALL_TYPES(out.scalar_type(), "count_kernel", [&] {
       auto count_data = count.DATA_PTR<scalar_t>();

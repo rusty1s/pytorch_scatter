@@ -1,10 +1,10 @@
-#include <torch/extension.h>
+#include <torch/script.h>
 
 #include "dim_apply.h"
 
-#define CHECK_CPU(x) AT_ASSERTM(!x.type().is_cuda(), #x " must be CPU tensor")
+#define CHECK_CPU(x) AT_ASSERTM(x.device().is_cpu(), #x " must be CPU tensor")
 
-void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
+void scatter_mul(torch::Tensor src, torch::Tensor index, torch::Tensor out,
                  int64_t dim) {
   CHECK_CPU(src);
   CHECK_CPU(index);
@@ -20,7 +20,7 @@ void scatter_mul(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 }
 
-void scatter_div(at::Tensor src, at::Tensor index, at::Tensor out,
+void scatter_div(torch::Tensor src, torch::Tensor index, torch::Tensor out,
                  int64_t dim) {
   CHECK_CPU(src);
   CHECK_CPU(index);
@@ -36,8 +36,8 @@ void scatter_div(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 }
 
-void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
-                 at::Tensor arg, int64_t dim) {
+void scatter_max(torch::Tensor src, torch::Tensor index, torch::Tensor out,
+                 torch::Tensor arg, int64_t dim) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   CHECK_CPU(out);
@@ -56,8 +56,8 @@ void scatter_max(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 }
 
-void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
-                 at::Tensor arg, int64_t dim) {
+void scatter_min(torch::Tensor src, torch::Tensor index, torch::Tensor out,
+                 torch::Tensor arg, int64_t dim) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   CHECK_CPU(out);
@@ -77,9 +77,8 @@ void scatter_min(at::Tensor src, at::Tensor index, at::Tensor out,
   });
 }
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("scatter_mul", &scatter_mul, "Scatter Mul (CPU)");
-  m.def("scatter_div", &scatter_div, "Scatter Div (CPU)");
-  m.def("scatter_max", &scatter_max, "Scatter Max (CPU)");
-  m.def("scatter_min", &scatter_min, "Scatter Min (CPU)");
-}
+static auto registry =
+    torch::RegisterOperators("torch_scatter_cpu::scatter_mul", &scatter_mul)
+        .op("torch_scatter_cpu::scatter_div", &scatter_div)
+        .op("torch_scatter_cpu::scatter_max", &scatter_max)
+        .op("torch_scatter_cpu::scatter_min", &scatter_min);

@@ -1,15 +1,13 @@
-#include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <torch/extension.h>
 
 #include "atomics.cuh"
 #include "index.cuh"
 
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
-
-auto stream = at::cuda::getCurrentCUDAStream();
 
 #define KERNEL_RUN(NAME, DIMS, N, ...)                                         \
   [&] {                                                                        \
@@ -45,8 +43,9 @@ scatter_mul_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
   }
 }
 
-void scatter_mul_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
+void scatter_mul_cuda(torch::Tensor src, torch::Tensor index, torch::Tensor out,
                       int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_mul_kernel", [&] {
     KERNEL_RUN(scatter_mul_kernel, index.dim(), index.numel(),
                at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src),
@@ -71,8 +70,9 @@ scatter_div_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
   }
 }
 
-void scatter_div_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
+void scatter_div_cuda(torch::Tensor src, torch::Tensor index, torch::Tensor out,
                       int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_div_kernel", [&] {
     KERNEL_RUN(scatter_div_kernel, index.dim(), index.numel(),
                at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src),
@@ -116,8 +116,9 @@ scatter_max_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
   }
 }
 
-void scatter_max_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
-                      at::Tensor arg, int64_t dim) {
+void scatter_max_cuda(torch::Tensor src, torch::Tensor index, torch::Tensor out,
+                      torch::Tensor arg, int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_max_kernel", [&] {
     auto src_info = at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src);
     auto index_info = at::cuda::detail::getTensorInfo<int64_t, int64_t>(index);
@@ -148,6 +149,7 @@ scatter_min_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> src,
 
 void scatter_min_cuda(at::Tensor src, at::Tensor index, at::Tensor out,
                       at::Tensor arg, int64_t dim) {
+  cudaSetDevice(src.get_device());
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "scatter_min_kernel", [&] {
     auto src_info = at::cuda::detail::getTensorInfo<scalar_t, int64_t>(src);
     auto index_info = at::cuda::detail::getTensorInfo<int64_t, int64_t>(index);

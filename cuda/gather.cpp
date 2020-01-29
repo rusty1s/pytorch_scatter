@@ -1,14 +1,15 @@
-#include <torch/extension.h>
+#include <torch/script.h>
 
-#define CHECK_CUDA(x) AT_ASSERTM(x.type().is_cuda(), #x " must be CUDA tensor")
+#define CHECK_CUDA(x)                                                          \
+  AT_ASSERTM(x.device().is_cuda(), #x " must be CUDA tensor")
 
-at::Tensor gather_csr_cuda(at::Tensor src, at::Tensor indptr,
-                           at::optional<at::Tensor> out_opt);
-at::Tensor gather_coo_cuda(at::Tensor src, at::Tensor index,
-                           at::optional<at::Tensor> out_opt);
+torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
+                              torch::optional<torch::Tensor> out_opt);
+torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
+                              torch::optional<torch::Tensor> out_opt);
 
-at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
-                      at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_csr(torch::Tensor src, torch::Tensor indptr,
+                         torch::optional<torch::Tensor> out_opt) {
   CHECK_CUDA(src);
   CHECK_CUDA(indptr);
   if (out_opt.has_value())
@@ -16,8 +17,8 @@ at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
   return gather_csr_cuda(src, indptr, out_opt);
 }
 
-at::Tensor gather_coo(at::Tensor src, at::Tensor index,
-                      at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_coo(torch::Tensor src, torch::Tensor index,
+                         torch::optional<torch::Tensor> out_opt) {
   CHECK_CUDA(src);
   CHECK_CUDA(index);
   if (out_opt.has_value())
@@ -25,7 +26,6 @@ at::Tensor gather_coo(at::Tensor src, at::Tensor index,
   return gather_coo_cuda(src, index, out_opt);
 }
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("gather_csr", &gather_csr, "Gather CSR (CUDA)");
-  m.def("gather_coo", &gather_coo, "Gather COO (CUDA)");
-}
+static auto registry =
+    torch::RegisterOperators("torch_scatter_cuda::gather_csr", &gather_csr)
+        .op("torch_scatter_cuda::gather_coo", &gather_coo);

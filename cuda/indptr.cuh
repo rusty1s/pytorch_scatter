@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ATen/ATen.h>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <torch/extension.h>
 
 // We need our own `IndexToOffset` implementation since we do not want to
 // access the last element of the `indexptr`.

@@ -1,14 +1,14 @@
-#include <torch/extension.h>
+#include <torch/script.h>
 
 #include "compat.h"
 #include "index_info.h"
 
 #include <vector>
 
-#define CHECK_CPU(x) AT_ASSERTM(!x.type().is_cuda(), #x " must be CPU tensor")
+#define CHECK_CPU(x) AT_ASSERTM(x.device().is_cpu(), #x " must be CPU tensor")
 
-at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
-                      at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_csr(torch::Tensor src, torch::Tensor indptr,
+                         torch::optional<torch::Tensor> out_opt) {
   CHECK_CPU(src);
   CHECK_CPU(indptr);
   if (out_opt.has_value())
@@ -23,7 +23,7 @@ at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
   AT_ASSERTM(src.size(gather_dim) == indptr.size(gather_dim) - 1,
              "Input mismatch");
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < out.dim(); i++)
@@ -32,7 +32,7 @@ at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
   } else {
     auto sizes = src.sizes().vec();
     sizes[gather_dim] = *indptr.flatten()[-1].DATA_PTR<int64_t>();
-    out = at::empty(sizes, src.options());
+    out = torch::empty(sizes, src.options());
   }
 
   auto N = src.size(gather_dim) * (indptr.numel() / indptr.size(-1));
@@ -68,8 +68,8 @@ at::Tensor gather_csr(at::Tensor src, at::Tensor indptr,
   return out;
 }
 
-at::Tensor gather_coo(at::Tensor src, at::Tensor index,
-                      at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_coo(torch::Tensor src, torch::Tensor index,
+                         torch::optional<torch::Tensor> out_opt) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   if (out_opt.has_value())
@@ -82,7 +82,7 @@ at::Tensor gather_coo(at::Tensor src, at::Tensor index,
   src = src.contiguous();
   auto gather_dim = index.dim() - 1;
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < index.dim(); i++)
@@ -92,7 +92,7 @@ at::Tensor gather_coo(at::Tensor src, at::Tensor index,
   } else {
     auto sizes = src.sizes().vec();
     sizes[gather_dim] = index.size(gather_dim);
-    out = at::empty(sizes, src.options());
+    out = torch::empty(sizes, src.options());
   }
 
   auto E_1 = index.numel() / out.size(gather_dim);
@@ -139,7 +139,6 @@ at::Tensor gather_coo(at::Tensor src, at::Tensor index,
   return out;
 }
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("gather_csr", &gather_csr, "Gather CSR (CPU)");
-  m.def("gather_coo", &gather_coo, "Gather COO (CPU)");
-}
+static auto registry =
+    torch::RegisterOperators("torch_scatter_cpu::gather_csr", &gather_csr)
+        .op("torch_scatter_cpu::gather_coo", &gather_coo);

@@ -1,16 +1,17 @@
 import torch
-from torch.autograd import Function
 
-from torch_scatter.utils.ext import get_func
 from torch_scatter.utils.gen import gen
 
 
-class ScatterMin(Function):
+class ScatterMin(torch.autograd.Function):
     @staticmethod
     def forward(ctx, out, src, index, dim):
         arg = index.new_full(out.size(), -1)
-        func = get_func('scatter_min', src)
-        func(src, index, out, arg, dim)
+
+        if src.is_cuda:
+            torch.ops.torch_scatter_cuda.scatter_min(src, index, out, arg, dim)
+        else:
+            torch.ops.torch_scatter_cpu.scatter_min(src, index, out, arg, dim)
 
         ctx.mark_dirty(out)
         ctx.dim = dim

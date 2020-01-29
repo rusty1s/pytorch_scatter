@@ -1,7 +1,7 @@
-#include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <torch/extension.h>
 
 #include "compat.cuh"
 #include "indptr.cuh"
@@ -58,9 +58,10 @@ __global__ void gather_csr_broadcast_kernel(
   }
 }
 
-at::Tensor gather_csr_cuda(at::Tensor src, at::Tensor indptr,
-                           at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
+                              torch::optional<torch::Tensor> out_opt) {
 
+  cudaSetDevice(src.get_device());
   AT_ASSERTM(src.dim() >= indptr.dim(), "Input mismatch");
   for (int i = 0; i < indptr.dim() - 1; i++)
     AT_ASSERTM(src.size(i) == indptr.size(i), "Input mismatch");
@@ -70,7 +71,7 @@ at::Tensor gather_csr_cuda(at::Tensor src, at::Tensor indptr,
   AT_ASSERTM(src.size(gather_dim) == indptr.size(gather_dim) - 1,
              "Input mismatch");
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < out.dim(); i++)
@@ -152,8 +153,10 @@ __global__ void gather_coo_broadcast_kernel(
   }
 }
 
-at::Tensor gather_coo_cuda(at::Tensor src, at::Tensor index,
-                           at::optional<at::Tensor> out_opt) {
+torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
+                              torch::optional<torch::Tensor> out_opt) {
+
+  cudaSetDevice(src.get_device());
 
   AT_ASSERTM(src.dim() >= index.dim(), "Input mismatch");
   for (int i = 0; i < index.dim() - 1; i++)
@@ -162,7 +165,7 @@ at::Tensor gather_coo_cuda(at::Tensor src, at::Tensor index,
   src = src.contiguous();
   auto gather_dim = index.dim() - 1;
 
-  at::Tensor out;
+  torch::Tensor out;
   if (out_opt.has_value()) {
     out = out_opt.value().contiguous();
     for (int i = 0; i < index.dim(); i++)
@@ -172,7 +175,7 @@ at::Tensor gather_coo_cuda(at::Tensor src, at::Tensor index,
   } else {
     auto sizes = src.sizes().vec();
     sizes[gather_dim] = index.size(gather_dim);
-    out = at::empty(sizes, src.options());
+    out = torch::empty(sizes, src.options());
   }
 
   auto E = index.numel();

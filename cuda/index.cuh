@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ATen/ATen.h>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <torch/extension.h>
 
 template <typename scalar1, typename scalar2, int64_t Dims>
 struct IndexToScatterOffsets3 {

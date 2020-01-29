@@ -1,3 +1,17 @@
+import torch
+
+torch.ops.load_library('torch_scatter/scatter_cpu.so')
+torch.ops.load_library('torch_scatter/segment_cpu.so')
+torch.ops.load_library('torch_scatter/gather_cpu.so')
+
+try:
+    torch.ops.load_library('torch_scatter/scatter_cuda.so')
+    torch.ops.load_library('torch_scatter/segment_cuda.so')
+    torch.ops.load_library('torch_scatter/gather_cuda.so')
+except OSError as e:
+    if torch.cuda.is_available():
+        raise e
+
 from .add import scatter_add
 from .sub import scatter_sub
 from .mul import scatter_mul
