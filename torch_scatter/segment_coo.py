@@ -1,6 +1,10 @@
+import os.path as osp
 from typing import Optional, Tuple
 
 import torch
+
+torch.ops.load_library(
+    osp.join(osp.dirname(osp.abspath(__file__)), '_segment_coo.so'))
 
 
 @torch.jit.script

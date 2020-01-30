@@ -7,8 +7,6 @@ from torch_scatter import gather_csr, gather_coo
 
 from .utils import tensor, dtypes, devices
 
-devices = ['cpu']
-
 tests = [
     {
         'src': [1, 2, 3, 4],

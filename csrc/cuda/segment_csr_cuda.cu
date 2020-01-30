@@ -237,13 +237,11 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
       if (i != dim)
         CHECK_INPUT(src.size(i) == out.size(i));
   } else {
-    auto d_gather_size = indptr.flatten()[-1].data_ptr<int64_t>();
-    auto h_gather_size = (int64_t *)malloc(sizeof(int64_t));
-    cudaMemcpy(h_gather_size, d_gather_size, sizeof(int64_t),
-               cudaMemcpyDeviceToHost);
-
+    auto d_size = indptr.flatten()[-1].data_ptr<int64_t>();
+    auto h_size = (int64_t *)malloc(sizeof(int64_t));
+    cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
     auto sizes = src.sizes().vec();
-    sizes[dim] = *h_gather_size;
+    sizes[dim] = *h_size;
     out = torch::empty(sizes, src.options());
   }
 

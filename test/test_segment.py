@@ -8,7 +8,6 @@ import torch_scatter
 from .utils import tensor, dtypes, devices
 
 reductions = ['sum', 'mean', 'min', 'max']
-devices = ['cpu']
 
 tests = [
     {
