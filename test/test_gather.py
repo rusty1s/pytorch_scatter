@@ -73,7 +73,7 @@ def test_backward(test, device):
 
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
-def test_gather_out(test, dtype, device):
+def test_out(test, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)
@@ -93,7 +93,7 @@ def test_gather_out(test, dtype, device):
 
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
-def test_non_contiguous_segment(test, dtype, device):
+def test_non_contiguous(test, dtype, device):
     src = tensor(test['src'], dtype, device)
     index = tensor(test['index'], torch.long, device)
     indptr = tensor(test['indptr'], torch.long, device)

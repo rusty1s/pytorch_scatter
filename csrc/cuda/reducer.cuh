@@ -106,9 +106,9 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
       atomMul(address, val);
     else if (REDUCE == DIV)
       atomDiv(address, val);
-    else if (REDUCE == MIN && val < *address)
+    else if (REDUCE == MIN)
       atomMin(address, val);
-    else if (REDUCE == MAX && val > *address)
+    else if (REDUCE == MAX)
       atomMax(address, val);
   }
 };

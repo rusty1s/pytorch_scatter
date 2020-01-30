@@ -16,7 +16,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
   CHECK_INPUT(src.dim() >= index.dim());
 
   auto sizes = index.sizes().vec();
-  for (int i = 0; i < index.dim(); i++)
+  for (auto i = 0; i < index.dim(); i++)
     sizes[i] = src.size(i);
   index = index.expand(sizes);
 
@@ -27,7 +27,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
   torch::Tensor out;
   if (optional_out.has_value()) {
     out = optional_out.value().contiguous();
-    for (int i = 0; i < out.dim(); i++)
+    for (auto i = 0; i < out.dim(); i++)
       if (i != dim)
         CHECK_INPUT(src.size(i) == out.size(i));
   } else {

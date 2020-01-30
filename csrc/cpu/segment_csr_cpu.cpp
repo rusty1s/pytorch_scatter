@@ -27,7 +27,7 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
   torch::Tensor out;
   if (optional_out.has_value()) {
     out = optional_out.value().contiguous();
-    for (int i = 0; i < out.dim(); i++)
+    for (auto i = 0; i < out.dim(); i++)
       if (i != dim)
         CHECK_INPUT(src.size(i) == out.size(i));
     CHECK_INPUT(out.size(dim) == indptr.size(dim) - 1);
@@ -126,7 +126,7 @@ torch::Tensor gather_csr_cpu(torch::Tensor src, torch::Tensor indptr,
 
     std::vector<scalar_t> vals(K);
     int64_t row_start, row_end;
-    for (int n = 0; n < N; n++) {
+    for (auto n = 0; n < N; n++) {
       auto offset = IndexPtrToOffset<int64_t>::get(n, indptr_info);
       row_start = indptr_info.data[offset];
       row_end = indptr_info.data[offset + stride];
