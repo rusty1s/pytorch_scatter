@@ -22,26 +22,22 @@
 
 **[Documentation](https://pytorch-scatter.readthedocs.io)**
 
-This package consists of a small extension library of highly optimized sparse update (scatter) operations for the use in [PyTorch](http://pytorch.org/), which are missing in the main package.
-Scatter operations can be roughly described as reduce operations based on a given "group-index" tensor.
+This package consists of a small extension library of highly optimized sparse update (scatter/segment) operations for the use in [PyTorch](http://pytorch.org/), which are missing in the main package.
+Scatter and segment operations can be roughly described as reduce operations based on a given "group-index" tensor.
 The package consists of the following operations:
 
-* [**Scatter Add**](https://pytorch-scatter.readthedocs.io/en/latest/functions/add.html)
-* [**Scatter Sub**](https://pytorch-scatter.readthedocs.io/en/latest/functions/sub.html)
-* [**Scatter Mul**](https://pytorch-scatter.readthedocs.io/en/latest/functions/mul.html)
-* [**Scatter Div**](https://pytorch-scatter.readthedocs.io/en/latest/functions/div.html)
-* [**Scatter Mean**](https://pytorch-scatter.readthedocs.io/en/latest/functions/mean.html)
-* [**Scatter Std**](https://pytorch-scatter.readthedocs.io/en/latest/functions/std.html)
-* [**Scatter Min**](https://pytorch-scatter.readthedocs.io/en/latest/functions/min.html)
-* [**Scatter Max**](https://pytorch-scatter.readthedocs.io/en/latest/functions/max.html)
-* [**Scatter LogSumExp**](https://pytorch-scatter.readthedocs.io/en/latest/functions/logsumexp.html)
+* [**Scatter**](https://pytorch-scatter.readthedocs.io/en/latest/functions/add.html)
+* [**SegmentCOO**](https://pytorch-scatter.readthedocs.io/en/latest/functions/add.html)
+* [**SegmentCSR**](https://pytorch-scatter.readthedocs.io/en/latest/functions/add.html)
 
 In addition, we provide composite functions which make use of `scatter_*` operations under the hood:
 
+* [**Scatter Std**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_std)
+* [**Scatter LogSumExp**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_logsumexp)
 * [**Scatter Softmax**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_softmax)
 * [**Scatter LogSoftmax**](https://pytorch-scatter.readthedocs.io/en/latest/composite/softmax.html#torch_scatter.composite.scatter_log_softmax)
 
-All included operations are broadcastable, work on varying data types, and are implemented both for CPU and GPU with corresponding backward implementations.
+All included operations are broadcastable, work on varying data types, are implemented both for CPU and GPU with corresponding backward implementations, and are fully traceable via `@torch.jit.script`.
 
 ## Installation
 
@@ -81,17 +77,17 @@ from torch_scatter import scatter_max
 src = torch.tensor([[2, 0, 1, 4, 3], [0, 2, 1, 3, 4]])
 index = torch.tensor([[4, 5, 4, 2, 3], [0, 0, 2, 2, 1]])
 
-out, argmax = scatter_max(src, index, fill_value=0)
+out, argmax = scatter_max(src, index, dim=-1)
 ```
 
 ```
 print(out)
-tensor([[ 0,  0,  4,  3,  2,  0],
-        [ 2,  4,  3,  0,  0,  0]])
+tensor([[0, 0, 4, 3, 2, 0],
+        [2, 4, 3, 0, 0, 0]])
 
 print(argmax)
-tensor([[-1, -1,  3,  4,  0,  1]
-        [ 1,  4,  3, -1, -1, -1]])
+tensor([[5, 5, 3, 4, 0, 1]
+        [1, 4, 3, 5, 5, 5]])
 ```
 
 ## Running tests
