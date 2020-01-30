@@ -5,3 +5,4 @@ exclude_lines =
     pragma: no cover
     torch.jit.script
     raise
+    except
