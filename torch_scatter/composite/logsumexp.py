@@ -21,7 +21,7 @@ def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         dim_size = out.size(dim)
     else:
         if dim_size is None:
-            dim_size = int(index.max().item() + 1)
+            dim_size = int(index.max()) + 1
 
     size = src.size()
     size[dim] = dim_size

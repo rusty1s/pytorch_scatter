@@ -10,20 +10,23 @@ try:
 except OSError:
     warnings.warn('Failed to load `scatter` binaries.')
 
-    def placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
-                    out: Optional[torch.Tensor],
-                    dim_size: Optional[int]) -> torch.Tensor:
+    def scatter_placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
+                            out: Optional[torch.Tensor],
+                            dim_size: Optional[int]) -> torch.Tensor:
         raise ImportError
+        return src
 
-    def arg_placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
-                        out: Optional[torch.Tensor], dim_size: Optional[int]
-                        ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def scatter_with_arg_placeholder(src: torch.Tensor, index: torch.Tensor,
+                                     dim: int, out: Optional[torch.Tensor],
+                                     dim_size: Optional[int]
+                                     ) -> Tuple[torch.Tensor, torch.Tensor]:
         raise ImportError
+        return src, index
 
-    torch.ops.torch_scatter.scatter_sum = placeholder
-    torch.ops.torch_scatter.scatter_mean = placeholder
-    torch.ops.torch_scatter.scatter_min = arg_placeholder
-    torch.ops.torch_scatter.scatter_max = arg_placeholder
+    torch.ops.torch_scatter.scatter_sum = scatter_placeholder
+    torch.ops.torch_scatter.scatter_mean = scatter_placeholder
+    torch.ops.torch_scatter.scatter_min = scatter_with_arg_placeholder
+    torch.ops.torch_scatter.scatter_max = scatter_with_arg_placeholder
 
 
 @torch.jit.script

@@ -13,15 +13,18 @@ except OSError:
     def segment_csr_placeholder(src: torch.Tensor, indptr: torch.Tensor,
                                 out: Optional[torch.Tensor]) -> torch.Tensor:
         raise ImportError
+        return src
 
     def segment_csr_with_arg_placeholder(
             src: torch.Tensor, indptr: torch.Tensor,
             out: Optional[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         raise ImportError
+        return src, indptr
 
     def gather_csr_placeholder(src: torch.Tensor, indptr: torch.Tensor,
                                out: Optional[torch.Tensor]) -> torch.Tensor:
         raise ImportError
+        return src
 
     torch.ops.torch_scatter.segment_sum_csr = segment_csr_placeholder
     torch.ops.torch_scatter.segment_mean_csr = segment_csr_placeholder
