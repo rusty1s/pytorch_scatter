@@ -1,10 +1,29 @@
+import warnings
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library(
-    osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
+try:
+    torch.ops.load_library(
+        osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
+except OSError:
+    warnings.warn('Failed to load `scatter` binaries.')
+
+    def placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
+                    out: Optional[torch.Tensor],
+                    dim_size: Optional[int]) -> torch.Tensor:
+        raise ImportError
+
+    def arg_placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
+                        out: Optional[torch.Tensor], dim_size: Optional[int]
+                        ) -> Tuple[torch.Tensor, torch.Tensor]:
+        raise ImportError
+
+    torch.ops.torch_scatter.scatter_sum = placeholder
+    torch.ops.torch_scatter.scatter_mean = placeholder
+    torch.ops.torch_scatter.scatter_min = arg_placeholder
+    torch.ops.torch_scatter.scatter_max = arg_placeholder
 
 
 @torch.jit.script

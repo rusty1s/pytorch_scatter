@@ -1,10 +1,33 @@
+import warnings
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library(
-    osp.join(osp.dirname(osp.abspath(__file__)), '_segment_csr.so'))
+try:
+    torch.ops.load_library(
+        osp.join(osp.dirname(osp.abspath(__file__)), '_segment_csr.so'))
+except OSError:
+    warnings.warn('Failed to load `segment_csr` binaries.')
+
+    def segment_csr_placeholder(src: torch.Tensor, indptr: torch.Tensor,
+                                out: Optional[torch.Tensor]) -> torch.Tensor:
+        raise ImportError
+
+    def segment_csr_with_arg_placeholder(
+            src: torch.Tensor, indptr: torch.Tensor,
+            out: Optional[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+        raise ImportError
+
+    def gather_csr_placeholder(src: torch.Tensor, indptr: torch.Tensor,
+                               out: Optional[torch.Tensor]) -> torch.Tensor:
+        raise ImportError
+
+    torch.ops.torch_scatter.segment_sum_csr = segment_csr_placeholder
+    torch.ops.torch_scatter.segment_mean_csr = segment_csr_placeholder
+    torch.ops.torch_scatter.segment_min_csr = segment_csr_with_arg_placeholder
+    torch.ops.torch_scatter.segment_max_csr = segment_csr_with_arg_placeholder
+    torch.ops.torch_scatter.gather_csr = gather_csr_placeholder
 
 
 @torch.jit.script

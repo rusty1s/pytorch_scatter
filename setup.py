@@ -14,6 +14,8 @@ if os.getenv('FORCE_CUDA', '0') == '1':
 if os.getenv('FORCE_NON_CUDA', '0') == '1':
     WITH_CUDA = False
 
+BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
+
 
 def get_extensions():
     Extension = CppExtension
@@ -74,7 +76,7 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    ext_modules=get_extensions(),
+    ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
         'build_ext': BuildExtension.with_options(no_python_abi_suffix=True)
     },
