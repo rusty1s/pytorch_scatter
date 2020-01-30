@@ -5,9 +5,7 @@ import torch
 from torch.autograd import gradcheck
 import torch_scatter
 
-from .utils import tensor, dtypes, devices
-
-reductions = ['sum', 'add', 'mean', 'min', 'max']
+from .utils import reductions, tensor, dtypes, devices
 
 tests = [
     {
