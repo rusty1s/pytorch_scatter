@@ -39,7 +39,6 @@ def segment_max_csr(src: torch.Tensor, indptr: torch.Tensor,
     return torch.ops.torch_scatter.segment_max_csr(src, indptr, out)
 
 
-@torch.jit.script
 def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
                 out: Optional[torch.Tensor] = None,
                 reduce: str = "sum") -> torch.Tensor:
@@ -63,6 +62,7 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
     :math:`x_m` in ascending order.
     The :attr:`indptr` tensor supports broadcasting in case its dimensions do
     not match with :attr:`src`.
+
     For one-dimensional tensors with :obj:`reduce="sum"`, the operation
     computes
 
@@ -73,26 +73,20 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
     Due to the use of index pointers, :meth:`segment_csr` is the fastest
     method to apply for grouped reductions.
 
-    For reductions :obj:`"min"` and :obj:`"max"`, this operation returns a
-    second tensor representing the :obj:`argmin` and :obj:`argmax`,
-    respectively.
-
     .. note::
 
         In contrast to :meth:`scatter()` and :meth:`segment_coo`, this
         operation is **fully-deterministic**.
 
-    Args:
-        src (Tensor): The source tensor.
-        indptr (LongTensor): The index pointers between elements to segment.
-            The number of dimensions of :attr:`index` needs to be less than or
-            equal to :attr:`src`.
-        out (Tensor, optional): The destination tensor. (default: :obj:`None`)
-        reduce (string, optional): The reduce operation (:obj:`"sum"`,
-            :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
-            (default: :obj:`"sum"`)
+    :param src: The source tensor.
+    :param indptr: The index pointers between elements to segment.
+        The number of dimensions of :attr:`index` needs to be less than or
+        equal to :attr:`src`.
+    :param out: The destination tensor.
+    :param reduce: The reduce operation (:obj:`"sum"`, :obj:`"mean"`,
+        :obj:`"min"` or :obj:`"max"`). (default: :obj:`"sum"`)
 
-    :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
+    :rtype: :class:`Tensor`
 
     .. code-block:: python
 

@@ -44,7 +44,6 @@ def segment_max_coo(src: torch.Tensor, index: torch.Tensor,
     return torch.ops.torch_scatter.segment_max_coo(src, index, out, dim_size)
 
 
-@torch.jit.script
 def segment_coo(src: torch.Tensor, index: torch.Tensor,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None,
@@ -77,6 +76,7 @@ def segment_coo(src: torch.Tensor, index: torch.Tensor,
     :math:`y - 1` in ascending order.
     The :attr:`index` tensor supports broadcasting in case its dimensions do
     not match with :attr:`src`.
+
     For one-dimensional tensors with :obj:`reduce="sum"`, the operation
     computes
 
@@ -91,10 +91,6 @@ def segment_coo(src: torch.Tensor, index: torch.Tensor,
     Due to the use of sorted indices, :meth:`segment_coo` is usually faster
     than the more general :meth:`scatter` operation.
 
-    For reductions :obj:`"min"` and :obj:`"max"`, this operation returns a
-    second tensor representing the :obj:`argmin` and :obj:`argmax`,
-    respectively.
-
     .. note::
 
         This operation is implemented via atomic operations on the GPU and is
@@ -103,23 +99,19 @@ def segment_coo(src: torch.Tensor, index: torch.Tensor,
         For floating-point variables, this results in a source of variance in
         the result.
 
-    Args:
-        src (Tensor): The source tensor.
-        index (LongTensor): The sorted indices of elements to segment.
-            The number of dimensions of :attr:`index` needs to be less than or
-            equal to :attr:`src`.
-        out (Tensor, optional): The destination tensor. (default: :obj:`None`)
-        dim_size (int, optional): If :attr:`out` is not given, automatically
-            create output with size :attr:`dim_size` at dimension
-            :obj:`index.dim() - 1`.
-            If :attr:`dim_size` is not given, a minimal sized output tensor
-            according to :obj:`index.max() + 1` is returned.
-            (default: :obj:`None`)
-        reduce (string, optional): The reduce operation (:obj:`"sum"`,
-            :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`).
-            (default: :obj:`"sum"`)
+    :param src: The source tensor.
+    :param index: The sorted indices of elements to segment.
+        The number of dimensions of :attr:`index` needs to be less than or
+        equal to :attr:`src`.
+    :param out: The destination tensor.
+    :param dim_size: If :attr:`out` is not given, automatically create output
+        with size :attr:`dim_size` at dimension :obj:`index.dim() - 1`.
+        If :attr:`dim_size` is not given, a minimal sized output tensor
+        according to :obj:`index.max() + 1` is returned.
+    :param reduce: The reduce operation (:obj:`"sum"`, :obj:`"mean"`,
+        :obj:`"min"` or :obj:`"max"`). (default: :obj:`"sum"`)
 
-    :rtype: :class:`Tensor`, :class:`LongTensor` *(optional)*
+    :rtype: :class:`Tensor`
 
     .. code-block:: python
 
