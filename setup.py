@@ -1,59 +1,62 @@
-import platform
+import os
 import os.path as osp
-from glob import glob
+import sys
+import glob
 from setuptools import setup, find_packages
-from sys import argv
 
 import torch
 from torch.utils.cpp_extension import BuildExtension
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
-# Windows users: Edit both of these to contain your VS include path, i.e.:
-# cxx_extra_compile_args = ['-I{VISUAL_STUDIO_DIR}\\include']
-# nvcc_extra_compile_args = [..., '-I{VISUAL_STUDIO_DIR}\\include']
-cxx_extra_compile_args = []
-nvcc_extra_compile_args = ['-arch=sm_35', '--expt-relaxed-constexpr']
+WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
+if os.getenv('FORCE_CUDA', '0') == '1':
+    WITH_CUDA = True
+if os.getenv('FORCE_NON_CUDA', '0') == '1':
+    WITH_CUDA = False
 
-# Windows users: Edit both of these to contain your VS library path, i.e.:
-# cxx_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
-# nvcc_extra_link_args = ['/LIBPATH:{VISUAL_STUDIO_DIR}\\lib\\{x86|x64}']
-cxx_extra_link_args = []
-nvcc_extra_link_args = []
 
-if platform.system() != 'Windows':
-    cxx_extra_compile_args += ['-Wno-unused-variable']
-TORCH_MAJOR = int(torch.__version__.split('.')[0])
-TORCH_MINOR = int(torch.__version__.split('.')[1])
-if (TORCH_MAJOR > 1) or (TORCH_MAJOR == 1 and TORCH_MINOR > 2):
-    cxx_extra_compile_args += ['-DVERSION_GE_1_3']
-    nvcc_extra_compile_args += ['-DVERSION_GE_1_3']
-cmdclass = {
-    'build_ext': BuildExtension.with_options(no_python_abi_suffix=True)
-}
+def get_extensions():
+    Extension = CppExtension
+    define_macros = []
+    extra_compile_args = {'cxx': [], 'nvcc': []}
 
-ext_modules = []
-exts = [e.split(osp.sep)[-1][:-4] for e in glob(osp.join('cpu', '*.cpp'))]
-ext_modules += [
-    CppExtension(f'torch_scatter.{ext}_cpu', [f'cpu/{ext}.cpp'],
-                 extra_compile_args=cxx_extra_compile_args,
-                 extra_link_args=cxx_extra_link_args) for ext in exts
-]
+    # Windows users: Edit both of these to contain your VS include path, i.e.:
+    # extra_compile_args['cxx'] += ['-I{VISUAL_STUDIO_DIR}\\include']
+    # extra_compile_args['nvcc'] += ['-I{VISUAL_STUDIO_DIR}\\include']
 
-if CUDA_HOME is not None and '--cpu' not in argv:
-    exts = [e.split(osp.sep)[-1][:-4] for e in glob(osp.join('cuda', '*.cpp'))]
-    ext_modules += [
-        CUDAExtension(
-            f'torch_scatter.{ext}_cuda',
-            [f'cuda/{ext}.cpp', f'cuda/{ext}_kernel.cu'], extra_compile_args={
-                'cxx': cxx_extra_compile_args,
-                'nvcc': nvcc_extra_compile_args,
-            }, extra_link_args=nvcc_extra_link_args) for ext in exts
-    ]
-if '--cpu' in argv:
-    argv.remove('--cpu')
+    if WITH_CUDA:
+        Extension = CUDAExtension
+        define_macros += [('WITH_CUDA', None)]
+        nvcc_flags = os.getenv('NVCC_FLAGS', '')
+        nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
+        nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
+        extra_compile_args['cxx'] += ['-O0']
+        extra_compile_args['nvcc'] += nvcc_flags
 
-__version__ = '1.5.0'
-url = 'https://github.com/rusty1s/pytorch_scatter'
+    if sys.platform == 'win32':
+        extra_compile_args['cxx'] += ['/MP']
+
+    extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
+    main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
+    extensions = []
+    for main in main_files:
+        name = main.split(os.sep)[-1][:-4]
+
+        sources = [main, osp.join(extensions_dir, 'cpu', f'{name}_cpu.cpp')]
+        if WITH_CUDA:
+            sources += [osp.join(extensions_dir, 'cuda', f'{name}_cuda.cu')]
+
+        extension = Extension(
+            f'torch_scatter._{name}',
+            sources,
+            include_dirs=[extensions_dir],
+            define_macros=define_macros,
+            extra_compile_args=extra_compile_args,
+        )
+        extensions += [extension]
+
+    return extensions
+
 
 install_requires = []
 setup_requires = ['pytest-runner']
@@ -61,17 +64,19 @@ tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_scatter',
-    version=__version__,
-    description='PyTorch Extension Library of Optimized Scatter Operations',
+    version='2.0.0',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
-    url=url,
-    download_url='{}/archive/{}.tar.gz'.format(url, __version__),
-    keywords=['pytorch', 'scatter', 'segment'],
+    url='https://github.com/rusty1s/pytorch_scatter',
+    description='PyTorch Extension Library of Optimized Scatter Operations',
+    keywords=['pytorch', 'scatter', 'segment', 'gather'],
+    license='MIT',
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    ext_modules=ext_modules,
-    cmdclass=cmdclass,
+    ext_modules=get_extensions(),
+    cmdclass={
+        'build_ext': BuildExtension.with_options(no_python_abi_suffix=True)
+    },
     packages=find_packages(),
 )

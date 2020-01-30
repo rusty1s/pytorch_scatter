@@ -39,6 +39,7 @@ install:
   - pip install codecov
   - pip install sphinx
   - pip install sphinx_rtd_theme
+  - pip install sphinx-autodoc-typehints
 script:
   - python -c "import torch; print(torch.__version__)"
   - pycodestyle .

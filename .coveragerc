@@ -3,10 +3,5 @@ source=torch_scatter
 [report]
 exclude_lines =
     pragma: no cover
-    cuda
-    forward
-    backward
-    apply
+    torch.jit.script
     raise
-    min_value
-    max_value

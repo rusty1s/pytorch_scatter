@@ -14,16 +14,6 @@ def test_broadcasting(device):
     out = scatter_add(src, index, dim=2, dim_size=H)
     assert out.size() == (B, C, H, W)
 
-    src = torch.randn((B, 1, H, W), device=device)
-    index = torch.randint(0, H, (B, C, H, W)).to(device, torch.long)
-    out = scatter_add(src, index, dim=2, dim_size=H)
-    assert out.size() == (B, C, H, W)
-
-    src = torch.randn((B, 1, H, W), device=device)
-    index = torch.randint(0, H, (B, 1, H, W)).to(device, torch.long)
-    out = scatter_add(src, index, dim=2, dim_size=H)
-    assert out.size() == (B, 1, H, W)
-
     src = torch.randn((B, C, H, W), device=device)
     index = torch.randint(0, H, (H, )).to(device, torch.long)
     out = scatter_add(src, index, dim=2, dim_size=H)

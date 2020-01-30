@@ -1,48 +1,41 @@
-import torch
+from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
+                      scatter_max, scatter)
+from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
+                          segment_min_csr, segment_max_csr, segment_csr,
+                          gather_csr)
+from .segment_coo import (segment_sum_coo, segment_add_coo, segment_mean_coo,
+                          segment_min_coo, segment_max_coo, segment_coo,
+                          gather_coo)
+from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
+                        scatter_log_softmax)
 
-from .add import scatter_add
-from .sub import scatter_sub
-from .mul import scatter_mul
-from .div import scatter_div
-from .mean import scatter_mean
-from .std import scatter_std
-from .max import scatter_max
-from .min import scatter_min
-from .logsumexp import scatter_logsumexp
-
-from .segment import segment_coo, segment_csr
-from .gather import gather_coo, gather_csr
-
-import torch_scatter.composite
-
-torch.ops.load_library('torch_scatter/scatter_cpu.so')
-torch.ops.load_library('torch_scatter/segment_cpu.so')
-torch.ops.load_library('torch_scatter/gather_cpu.so')
-
-try:
-    torch.ops.load_library('torch_scatter/scatter_cuda.so')
-    torch.ops.load_library('torch_scatter/segment_cuda.so')
-    torch.ops.load_library('torch_scatter/gather_cuda.so')
-except OSError as e:
-    if torch.cuda.is_available():
-        raise e
-
-__version__ = '1.4.0'
+__version__ = '2.0.0'
 
 __all__ = [
+    'scatter_sum',
     'scatter_add',
-    'scatter_sub',
-    'scatter_mul',
-    'scatter_div',
     'scatter_mean',
-    'scatter_std',
-    'scatter_max',
     'scatter_min',
-    'scatter_logsumexp',
-    'segment_coo',
+    'scatter_max',
+    'scatter',
+    'segment_sum_csr',
+    'segment_add_csr',
+    'segment_mean_csr',
+    'segment_min_csr',
+    'segment_max_csr',
     'segment_csr',
-    'gather_coo',
     'gather_csr',
+    'segment_sum_coo',
+    'segment_add_coo',
+    'segment_mean_coo',
+    'segment_min_coo',
+    'segment_max_coo',
+    'segment_coo',
+    'gather_coo',
+    'scatter_std',
+    'scatter_logsumexp',
+    'scatter_softmax',
+    'scatter_log_softmax',
     'torch_scatter',
     '__version__',
 ]

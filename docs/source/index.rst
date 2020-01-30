@@ -7,7 +7,7 @@ This package consists of a small extension library of highly optimized sparse up
 Scatter and segment operations can be roughly described as reduce operations based on a given "group-index" tensor.
 Segment operations require the "group-index" tensor to be sorted, whereas scatter operations are not subject to these requirements.
 
-All included operations are broadcastable, work on varying data types, and are implemented both for CPU and GPU with corresponding backward implementations.
+All included operations are broadcastable, work on varying data types, are implemented both for CPU and GPU with corresponding backward implementations, and are fully traceable.
 
 .. toctree::
    :glob:
@@ -15,7 +15,6 @@ All included operations are broadcastable, work on varying data types, and are i
    :caption: Package reference
 
    functions/*
-   composite/*
 
 Indices and tables
 ==================

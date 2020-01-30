@@ -1,5 +1,7 @@
 import torch
 
+reductions = ['sum', 'add', 'mean', 'min', 'max']
+
 dtypes = [torch.float, torch.double, torch.int, torch.long]
 grad_dtypes = [torch.float, torch.double]
 

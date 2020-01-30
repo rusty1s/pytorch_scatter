@@ -1,7 +1,7 @@
-Scatter Add
-===========
+Scatter
+=======
 
 .. automodule:: torch_scatter
    :noindex:
 
-.. autofunction:: scatter_add
+.. autofunction:: scatter
