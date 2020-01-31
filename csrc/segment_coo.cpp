@@ -1,6 +1,7 @@
 #include <torch/script.h>
 
 #include "cpu/segment_coo_cpu.h"
+#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/segment_coo_cuda.h"
@@ -57,7 +58,7 @@ public:
     auto grad_out = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::empty(src_shape, grad_out.options());
     gather_coo_fw(grad_out, index, grad_in);
     return {grad_in, Variable(), Variable(), Variable()};
@@ -85,7 +86,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
     auto count = saved[1];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::empty(src_shape, grad_out.options());
     gather_coo_fw(grad_out, index, grad_in);
     count = gather_coo_fw(count, index, torch::nullopt);
@@ -118,7 +119,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
     auto arg_out = saved[1];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[index.dim() - 1] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(index.dim() - 1, arg_out, grad_out);
@@ -150,7 +151,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
     auto arg_out = saved[1];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[index.dim() - 1] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(index.dim() - 1, arg_out, grad_out);
@@ -177,7 +178,7 @@ public:
     auto grad_out = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
 
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     segment_coo_fw(grad_out, index, grad_in, torch::nullopt, "sum");

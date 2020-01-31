@@ -1,6 +1,7 @@
 #include <torch/script.h>
 
 #include "cpu/scatter_cpu.h"
+#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/scatter_cuda.h"
@@ -58,7 +59,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto index = saved[0];
     auto dim = ctx->saved_data["dim"].toInt();
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::gather(grad_out, dim, index, false);
     return {grad_in, Variable(), Variable(), Variable(), Variable()};
   }
@@ -100,7 +101,7 @@ public:
     auto index = saved[0];
     auto count = saved[1];
     auto dim = ctx->saved_data["dim"].toInt();
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     count = torch::gather(count, dim, index, false);
     auto grad_in = torch::gather(grad_out, dim, index, false);
     grad_in.div_(count);
@@ -134,7 +135,7 @@ public:
     auto index = saved[0];
     auto arg_out = saved[1];
     auto dim = ctx->saved_data["dim"].toInt();
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[dim] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(dim, arg_out, grad_out);
@@ -169,7 +170,7 @@ public:
     auto index = saved[0];
     auto arg_out = saved[1];
     auto dim = ctx->saved_data["dim"].toInt();
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[dim] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(dim, arg_out, grad_out);

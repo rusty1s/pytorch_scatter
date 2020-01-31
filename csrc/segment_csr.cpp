@@ -1,6 +1,7 @@
 #include <torch/script.h>
 
 #include "cpu/segment_csr_cpu.h"
+#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/segment_csr_cuda.h"
@@ -55,7 +56,7 @@ public:
     auto grad_out = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto indptr = saved[0];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::empty(src_shape, grad_out.options());
     gather_csr_fw(grad_out, indptr, grad_in);
     return {grad_in, Variable(), Variable()};
@@ -79,7 +80,7 @@ public:
     auto grad_out = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto indptr = saved[0];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::empty(src_shape, grad_out.options());
     gather_csr_fw(grad_out, indptr, grad_in);
     auto indptr1 = indptr.narrow(-1, 0, indptr.size(-1) - 1);
@@ -114,7 +115,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto indptr = saved[0];
     auto arg_out = saved[1];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[indptr.dim() - 1] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(indptr.dim() - 1, arg_out, grad_out);
@@ -145,7 +146,7 @@ public:
     auto saved = ctx->get_saved_variables();
     auto indptr = saved[0];
     auto arg_out = saved[1];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     src_shape[indptr.dim() - 1] += 1;
     auto grad_in = torch::zeros(src_shape, grad_out.options());
     grad_in.scatter_(indptr.dim() - 1, arg_out, grad_out);
@@ -172,7 +173,7 @@ public:
     auto grad_out = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto indptr = saved[0];
-    auto src_shape = ctx->saved_data["src_shape"].toIntVector();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
 
     auto grad_in = torch::empty(src_shape, grad_out.options());
     segment_csr_fw(grad_out, indptr, grad_in, "sum");
