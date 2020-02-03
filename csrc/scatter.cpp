@@ -8,8 +8,6 @@
 #endif
 
 torch::Tensor broadcast(torch::Tensor src, torch::Tensor other, int64_t dim) {
-  if (dim < 0)
-    dim = other.dim() + dim;
   if (src.dim() == 1)
     for (auto i = 0; i < dim; i++)
       src = src.unsqueeze(0);
@@ -43,6 +41,7 @@ public:
                                Variable index, int64_t dim,
                                torch::optional<Variable> optional_out,
                                torch::optional<int64_t> dim_size) {
+    dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
     index = broadcast(index, src, dim);
@@ -116,6 +115,7 @@ public:
                                Variable index, int64_t dim,
                                torch::optional<Variable> optional_out,
                                torch::optional<int64_t> dim_size) {
+    dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
 
@@ -151,6 +151,7 @@ public:
                                Variable index, int64_t dim,
                                torch::optional<Variable> optional_out,
                                torch::optional<int64_t> dim_size) {
+    dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
 

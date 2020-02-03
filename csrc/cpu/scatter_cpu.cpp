@@ -17,9 +17,6 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
   for (auto i = 0; i < index.dim() - 1; i++)
     CHECK_INPUT(src.size(i) >= index.size(i));
 
-  if (dim < 0)
-    dim = src.dim() + dim;
-
   src = src.contiguous();
 
   torch::Tensor out;
