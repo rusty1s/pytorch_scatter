@@ -1,8 +1,7 @@
 import torch
 
 from torch_scatter import scatter_sum, scatter_max
-
-from .utils import broadcast
+from torch_scatter.utils import broadcast
 
 
 @torch.jit.script

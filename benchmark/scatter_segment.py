@@ -217,7 +217,7 @@ if __name__ == '__main__':
     parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
     args = parser.parse_args()
-    iters = 1 if args.device == 'cpu' else 50
+    iters = 1 if args.device == 'cpu' else 20
     sizes = [1, 16, 32, 64, 128, 256, 512]
     sizes = sizes[:3] if args.device == 'cpu' else sizes
 

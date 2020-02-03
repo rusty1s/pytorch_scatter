@@ -2,8 +2,7 @@ from typing import Optional
 
 import torch
 from torch_scatter import scatter_sum
-
-from .utils import broadcast
+from torch_scatter.utils import broadcast
 
 
 @torch.jit.script

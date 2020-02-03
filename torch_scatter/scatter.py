@@ -4,6 +4,8 @@ from typing import Optional, Tuple
 
 import torch
 
+from .utils import broadcast
+
 try:
     torch.ops.load_library(
         osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
@@ -23,7 +25,6 @@ except OSError:
         raise ImportError
         return src, index
 
-    torch.ops.torch_scatter.scatter_sum = scatter_placeholder
     torch.ops.torch_scatter.scatter_mean = scatter_placeholder
     torch.ops.torch_scatter.scatter_min = scatter_with_arg_placeholder
     torch.ops.torch_scatter.scatter_max = scatter_with_arg_placeholder
@@ -33,14 +34,24 @@ except OSError:
 def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.scatter_sum(src, index, dim, out, dim_size)
+    index = broadcast(index, src, dim)
+    if out is None:
+        size = src.size()
+        if dim_size is None:
+            size[dim] = int(index.max()) + 1
+        else:
+            size[dim] = dim_size
+        out = src.new_zeros(size)
+        return out.scatter_add_(dim, index, src)
+    else:
+        return out.scatter_add_(dim, index, src)
 
 
 @torch.jit.script
 def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.scatter_sum(src, index, dim, out, dim_size)
+    return scatter_sum(src, index, dim, out, dim_size)
 
 
 @torch.jit.script
