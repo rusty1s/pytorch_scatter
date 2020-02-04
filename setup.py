@@ -66,7 +66,7 @@ tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_scatter',
-    version='2.0.0',
+    version='2.0.1',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url='https://github.com/rusty1s/pytorch_scatter',
