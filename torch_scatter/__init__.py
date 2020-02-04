@@ -9,7 +9,7 @@ from .segment_coo import (segment_sum_coo, segment_add_coo, segment_mean_coo,
 from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
                         scatter_log_softmax)
 
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 
 __all__ = [
     'scatter_sum',
