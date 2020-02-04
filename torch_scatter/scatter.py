@@ -60,7 +60,7 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     index_dim = dim
     if index_dim < 0:
         index_dim = index_dim + src.dim()
-    if index.dim() <= dim:
+    if index.dim() <= index_dim:
         index_dim = index.dim() - 1
 
     ones = torch.ones(index.size(), dtype=src.dtype, device=src.device)
