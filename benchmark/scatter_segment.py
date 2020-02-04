@@ -190,22 +190,22 @@ def timing(dataset):
 
     name = f'{group}/{name}'
     print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
-    print('\t'.join(['       '] + [f'{size:>5}' for size in sizes]))
-    print('\t'.join([bold('SCA1_R ')] +
+    print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]))
+    print('\t'.join([bold('SCA1_ROW')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
-    print('\t'.join([bold('SCA1_C ')] +
+    print('\t'.join([bold('SCA1_COL')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t2, winner[1])]))
-    print('\t'.join([bold('SCA2_R ')] +
+    print('\t'.join([bold('SCA2_ROW')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
-    print('\t'.join([bold('SCA2_C ')] +
+    print('\t'.join([bold('SCA2_COL')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
-    print('\t'.join([bold('SEG_COO')] +
+    print('\t'.join([bold('SEG_COO ')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
-    print('\t'.join([bold('SEG_CSR')] +
+    print('\t'.join([bold('SEG_CSR ')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[5])]))
-    print('\t'.join([bold('DENSE1 ')] +
+    print('\t'.join([bold('DENSE1  ')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[6])]))
-    print('\t'.join([bold('DENSE2 ')] +
+    print('\t'.join([bold('DENSE2  ')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[7])]))
     print()
 
