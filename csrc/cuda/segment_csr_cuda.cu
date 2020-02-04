@@ -121,10 +121,10 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
     for (int i = 0; i < out.dim(); i++)
       if (i != dim)
         CHECK_INPUT(src.size(i) == out.size(i));
-    CHECK_INPUT(out.size(dim) == indptr.size(dim) - 1);
+    CHECK_INPUT(src.numel() == 0 || out.size(dim) == indptr.size(dim) - 1);
   } else {
     sizes = src.sizes().vec();
-    sizes[dim] = indptr.size(dim) - 1;
+    sizes[dim] = std::max<int64_t>(indptr.size(dim) - 1, 0);
     out = torch::empty(sizes, src.options());
   }
 
@@ -134,6 +134,9 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
     arg_out = torch::full(out.sizes(), src.size(dim), indptr.options());
     arg_out_data = arg_out.value().data_ptr<int64_t>();
   }
+
+  if (src.numel() == 0)
+    return std::make_tuple(out, arg_out);
 
   auto N = out.size(dim) * (indptr.numel() / indptr.size(-1));
   auto K = out.numel() / N;
@@ -226,7 +229,7 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   indptr = indptr.expand(sizes);
 
   auto dim = indptr.dim() - 1;
-  CHECK_INPUT(src.size(dim) == indptr.size(dim) - 1);
+  CHECK_INPUT(src.size(dim) == 0 || src.size(dim) == indptr.size(dim) - 1);
 
   src = src.contiguous();
 
@@ -237,13 +240,19 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
       if (i != dim)
         CHECK_INPUT(src.size(i) == out.size(i));
   } else {
-    auto d_size = indptr.flatten()[-1].data_ptr<int64_t>();
-    auto h_size = (int64_t *)malloc(sizeof(int64_t));
-    cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
     auto sizes = src.sizes().vec();
-    sizes[dim] = *h_size;
+    if (src.numel() > 0) {
+      auto d_size = indptr.flatten()[-1].data_ptr<int64_t>();
+      auto h_size = (int64_t *)malloc(sizeof(int64_t));
+      cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
+      sizes[dim] = *h_size;
+    } else
+      sizes[dim] = 0;
     out = torch::empty(sizes, src.options());
   }
+
+  if (src.numel() == 0)
+    return out;
 
   auto N = src.size(dim) * (indptr.numel() / indptr.size(-1));
   auto K = src.numel() / N;

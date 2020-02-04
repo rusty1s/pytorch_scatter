@@ -12,12 +12,6 @@ try:
 except OSError:
     warnings.warn('Failed to load `scatter` binaries.')
 
-    def scatter_placeholder(src: torch.Tensor, index: torch.Tensor, dim: int,
-                            out: Optional[torch.Tensor],
-                            dim_size: Optional[int]) -> torch.Tensor:
-        raise ImportError
-        return src
-
     def scatter_with_arg_placeholder(src: torch.Tensor, index: torch.Tensor,
                                      dim: int, out: Optional[torch.Tensor],
                                      dim_size: Optional[int]
@@ -25,7 +19,6 @@ except OSError:
         raise ImportError
         return src, index
 
-    torch.ops.torch_scatter.scatter_mean = scatter_placeholder
     torch.ops.torch_scatter.scatter_min = scatter_with_arg_placeholder
     torch.ops.torch_scatter.scatter_max = scatter_with_arg_placeholder
 
@@ -37,11 +30,13 @@ def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     index = broadcast(index, src, dim)
     if out is None:
         size = src.size()
-        if dim_size is None:
-            size[dim] = int(index.max()) + 1
-        else:
+        if dim_size is not None:
             size[dim] = dim_size
-        out = src.new_zeros(size)
+        elif index.numel() == 0:
+            size[dim] = 0
+        else:
+            size[dim] = int(index.max()) + 1
+        out = torch.zeros(size, dtype=src.dtype, device=src.device)
         return out.scatter_add_(dim, index, src)
     else:
         return out.scatter_add_(dim, index, src)
@@ -58,7 +53,22 @@ def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.scatter_mean(src, index, dim, out, dim_size)
+
+    out = scatter_sum(src, index, dim, out, dim_size)
+    dim_size = out.size(dim)
+
+    index_dim = dim
+    if index_dim < 0:
+        index_dim = index_dim + src.dim()
+    if index.dim() <= dim:
+        index_dim = index.dim() - 1
+
+    ones = torch.ones(index.size(), dtype=src.dtype, device=src.device)
+    count = scatter_sum(ones, index, index_dim, None, dim_size)
+    count.clamp_(1)
+    count = broadcast(count, out, dim)
+    out.div_(count)
+    return out
 
 
 @torch.jit.script

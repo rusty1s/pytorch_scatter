@@ -34,6 +34,8 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
     sizes = src.sizes().vec();
     if (dim_size.has_value())
       sizes[dim] = dim_size.value();
+    else if (index.numel() == 0)
+      sizes[dim] = 0;
     else
       sizes[dim] = 1 + *index.max().data_ptr<int64_t>();
     out = torch::empty(sizes, src.options());
@@ -44,14 +46,14 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full_like(out, src.size(dim), index.options());
     arg_out_data = arg_out.value().data_ptr<int64_t>();
-  }
-
-  torch::optional<torch::Tensor> count = torch::nullopt;
-  if (reduce2REDUCE.at(reduce) == MEAN) {
+  } else if (reduce2REDUCE.at(reduce) == MEAN) {
     auto sizes = index.sizes().vec();
     sizes[dim] = out.size(dim);
-    count = torch::zeros(sizes, out.options());
+    arg_out = torch::zeros(sizes, out.options());
   }
+
+  if (index.numel() == 0)
+    return std::make_tuple(out, arg_out);
 
   auto B = index.numel() / src.size(dim);
   auto E = src.size(dim);
@@ -72,7 +74,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
       if (!optional_out.has_value())
         out.fill_(Reducer<scalar_t, REDUCE>::init());
       if (REDUCE == MEAN)
-        count_data = count.value().data_ptr<scalar_t>();
+        count_data = arg_out.value().data_ptr<scalar_t>();
 
       for (auto b = 0; b < B; b++) {
         auto offset = IndexToOffset<int64_t>::get(b * E, index_info);
@@ -122,7 +124,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
         out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
 
       if (REDUCE == MEAN)
-        arg_out = count;
+        arg_out.value().clamp_(1);
     });
   });
 
@@ -155,6 +157,9 @@ torch::Tensor gather_coo_cpu(torch::Tensor src, torch::Tensor index,
     sizes[dim] = index.size(dim);
     out = torch::empty(sizes, src.options());
   }
+
+  if (index.numel() == 0)
+    return out;
 
   auto B = index.numel() / out.size(dim);
   auto E = index.size(dim);

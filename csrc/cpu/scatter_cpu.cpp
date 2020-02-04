@@ -29,6 +29,8 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
     auto sizes = src.sizes().vec();
     if (dim_size.has_value())
       sizes[dim] = dim_size.value();
+    else if (index.numel() == 0)
+      sizes[dim] = 0;
     else
       sizes[dim] = 1 + *index.max().data_ptr<int64_t>();
     out = torch::empty(sizes, src.options());
@@ -40,6 +42,9 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
     arg_out = torch::full_like(out, src.size(dim), index.options());
     arg_out_data = arg_out.value().data_ptr<int64_t>();
   }
+
+  if (index.numel() == 0)
+    return std::make_tuple(out, arg_out);
 
   auto B = 1;
   for (auto i = 0; i < dim; i++)

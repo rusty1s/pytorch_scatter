@@ -181,6 +181,8 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
     sizes = src.sizes().vec();
     if (dim_size.has_value())
       sizes[dim] = dim_size.value();
+    else if (index.numel() == 0)
+      sizes[dim] = 0;
     else {
       auto d_size = index.max().data_ptr<int64_t>();
       auto h_size = (int64_t *)malloc(sizeof(int64_t));
@@ -195,7 +197,14 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full_like(out, src.size(dim), index.options());
     arg_out_data = arg_out.value().data_ptr<int64_t>();
+  } else if (reduce2REDUCE.at(reduce) == MEAN) {
+    auto sizes = index.sizes().vec();
+    sizes[dim] = out.size(dim);
+    arg_out = torch::zeros(sizes, out.options());
   }
+
+  if (index.numel() == 0)
+    return std::make_tuple(out, arg_out);
 
   auto E = index.numel();
   auto E_2 = index.size(dim);
@@ -254,17 +263,15 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
       }
 
       if (REDUCE == MEAN) {
-        auto sizes = index.sizes().vec();
-        sizes[dim] = out.size(dim);
-        auto count = torch::zeros(sizes, out.options());
-        auto count_data = count.data_ptr<scalar_t>();
+        auto count_data = arg_out.value().data_ptr<scalar_t>();
         segment_coo_kernel<scalar_t, SUM, false>
             <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
                                                    count_data, E, N);
-        arg_out = count;
+        arg_out.value().clamp_(1);
+        auto count = arg_out.value();
         for (int i = dim + 1; i < out.dim(); i++)
           count = count.unsqueeze(-1);
-        out.div_(count.clamp_(1));
+        out.div_(count);
       }
     });
   });
@@ -345,6 +352,9 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
     sizes[dim] = index.size(dim);
     out = torch::empty(sizes, src.options());
   }
+
+  if (index.numel() == 0)
+    return out;
 
   auto E = index.numel();
   auto K = out.numel() / E;

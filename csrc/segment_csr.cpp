@@ -82,14 +82,16 @@ public:
     auto indptr = saved[0];
     auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::empty(src_shape, grad_out.options());
-    gather_csr_fw(grad_out, indptr, grad_in);
-    auto indptr1 = indptr.narrow(-1, 0, indptr.size(-1) - 1);
-    auto indptr2 = indptr.narrow(-1, 1, indptr.size(-1) - 1);
-    auto count = (indptr2 - indptr1).to(grad_in.options());
-    count = gather_csr_fw(count, indptr, torch::nullopt);
-    for (auto i = 0; i < grad_out.dim() - indptr.dim(); i++)
-      count = count.unsqueeze(-1);
-    grad_in.div_(count);
+    if (grad_in.numel() > 0) {
+      gather_csr_fw(grad_out, indptr, grad_in);
+      auto indptr1 = indptr.narrow(-1, 0, indptr.size(-1) - 1);
+      auto indptr2 = indptr.narrow(-1, 1, indptr.size(-1) - 1);
+      auto count = (indptr2 - indptr1).to(grad_in.options());
+      count = gather_csr_fw(count, indptr, torch::nullopt);
+      for (auto i = 0; i < grad_out.dim() - indptr.dim(); i++)
+        count = count.unsqueeze(-1);
+      grad_in.div_(count);
+    }
     return {grad_in, Variable(), Variable()};
   }
 };
