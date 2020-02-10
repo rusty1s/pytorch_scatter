@@ -13,18 +13,21 @@ matrix:
         - CUDA=9.2.148-1
         - CUDA_SHORT=9.2
         - UBUNTU_VERSION=ubuntu1604
+        - TORCH=1.4.0+cu92
     - name: cu100
       env:
         - FORCE_CUDA=1
         - CUDA=10.0.130-1
         - CUDA_SHORT=10.0
         - UBUNTU_VERSION=ubuntu1804
+        - TORCH=1.4.0+cu100
     - name: cu101
       env:
         - FORCE_CUDA=1
         - CUDA=10.1.105-1
         - CUDA_SHORT=10.1
         - UBUNTU_VERSION=ubuntu1804
+        - TORCH=1.4.0
 
 before_install:
   - INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
@@ -33,7 +36,7 @@ before_install:
   - wget https://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/7fa2af80.pub
   - sudo apt-key add 7fa2af80.pub
   - sudo apt update -qq
-  - sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-} cuda-cufft-dev-${CUDA_SHORT/./-} cuda-cusparse-dev-${CUDA_SHORT/./-}
+  - sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-} cuda-cufft-dev-${CUDA_SHORT/./-} cuda-cublas-dev-${CUDA_SHORT/./-} cuda-cusparse-dev-${CUDA_SHORT/./-}
   - sudo apt clean
   - CUDA_HOME=/usr/local/cuda-${CUDA_SHORT}
   - LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
@@ -41,7 +44,7 @@ before_install:
 
 install:
   - pip install numpy
-  - pip install torch==1.4.0+cu${CUDA_SHORT/./} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
 
 script:
   - nvcc --version
