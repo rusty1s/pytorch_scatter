@@ -34,5 +34,8 @@ install:
 script:
   - nvcc --version
   - python -c "import torch; print(torch.__version__)"
+  - ls /usr/local/
+  - ls /usr/local/cuda-${CUDA_SHORT}
+  - ls /usr/local/cuda-${CUDA_SHORT}/lib
   - python setup.py install
   - python setup.py test
