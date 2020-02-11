@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "${TRAVIS_OS_NAME}"
-echo "${FORCE_CUDA}"
-
 if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${FORCE_CUDA}" == "1" ]; then
   INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
   wget "http://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/${INSTALLER}"
