@@ -15,7 +15,7 @@ jobs:
       language: python
       python: 3.7.6
       env:
-        - DEVICE=cpu
+        - IDX=cpu
     # - name: linux/cu92
     #   os: linux
     #   language: python
@@ -43,7 +43,7 @@ jobs:
     #   language: python
     #   python: 3.7.6
     #   env:
-    #     - DEVICE=cu101
+    #     - IDX=cu101
     #     - CUDA_SHORT=10.1
     #     - CUDA=10.1.105-1
     #     - UBUNTU_VERSION=ubuntu1804
@@ -99,7 +99,7 @@ jobs:
 install:
   - source script/install.sh
   - pip3 install numpy
-  - pip3 install torch==${TORCH}+${DEVICE} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip3 install torch==${TORCH}+${IDX} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
   - pip3 install codecov
   - python3 setup.py install || python setup.py install
@@ -108,7 +108,7 @@ script:
   - flake8 .
   - python3 setup.py test || python setup.py test
 after_success:
-  - python3 setup.py bdist_wheel --dist-dir=dist/${DEVICE}
+  - python3 setup.py bdist_wheel --dist-dir=dist/${IDX}
   - codecov
 deploy:
   provider: s3
@@ -116,12 +116,12 @@ deploy:
   secret_access_key:
     secure: ${S3_SECURE_SECRET_KEY}
   bucket: pytorch-scatter
-  local-dir: dist/${DEVICE}/*.whl
-  upload-dir: whl/${DEVICE}
+  local-dir: dist/${IDX}/*.whl
+  upload-dir: whl/${IDX}
   acl: public_read
   on:
     repo: rusty1s/pytorch_scatter
     # tags: true
-    all_branches: true
+    branch: travis
 notifications:
   email: false
