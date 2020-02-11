@@ -105,7 +105,7 @@ install:
   - pip3 install --upgrade pip
   - source script/install.sh
   - pip3 install numpy
-  - pip3 install torch==${TORCH}+${IDX} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
   - pip3 install codecov
   - python3 setup.py install || python setup.py install
