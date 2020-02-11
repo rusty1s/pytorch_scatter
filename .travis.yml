@@ -13,33 +13,51 @@ env:
   global:
     - TORCH_VERSION=1.4.0
     - CIBW_BUILD=cp36-*
-  jobs:
-    - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
-    - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
+  # jobs:
+  #   - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
+  #   - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
     # - FORCE_CUDA=1 CUDA_SHORT=10.0 CUDA=10.0.130-1 UBUNTU_VERSION=ubuntu1804 CUBLAS=cuda-cublas-dev-10-0 TORCH=${TORCH_VERSION}+cu100
     # - FORCE_CUDA=1 CUDA_SHORT=10.1 CUDA=10.1.105-1 UBUNTU_VERSION=ubuntu1804 CUBLAS=libcublas-dev TORCH=${TORCH_VERSION}
 
 jobs:
   include:
-    - os: osx
+    - os: linux
       python: 3.6
-      env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
+      env:
+        - TORCH=${TORCH_VERSION}+cpu
+    - os: linux
+      python: 3.6
+      env:
+        - FORCE_CUDA=1
+        - CUDA_SHORT=9.2
+        - CUDA=9.2.148-1
+        - UBUNTU_VERSION=ubuntu1604
+        - CUBLAS=cuda-cublas-dev-9-2
+        - TORCH=${TORCH_VERSION}+cu92
+    - os: windows
+      language: shell  # `language: python` is an error on Travis CI Windows
+      before_install:
+        - choco install python --version 3.6.7
+    # - os: o
+    #   python: 3.6
+    #   env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
 
 before_install:
+  - pip3 --upgrade pip
   - source install.sh
-  - pip install numpy
-  - pip install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip3 install numpy
+  - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - python -c "import torch; print(torch.__version__)"
-  - pip install flake8
-  - pip install twine cibuildwheel
+  - pip3 install flake8
+  - pip3 install twine cibuildwheel
 
 install:
-  - python setup.py install
+  - python3 setup.py install || python setup.py install
 
 script:
   - flake8 .
-  - python setup.py test
-  - python -m cibuildwheel --output-dir wheelhouse
+  - pytest
+  - python3 -m cibuildwheel --output-dir wheelhouse
   - ls wheelhouse
 notifications:
   email: false
