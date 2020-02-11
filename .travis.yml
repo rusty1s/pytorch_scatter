@@ -62,8 +62,8 @@ jobs:
       language: shell
       env:
         - IDX=cpu
-        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
         - TORCH=${TORCH_VERSION}+${IDX}
+        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       before_install:
         - choco install python --version 3.7.6
         - python -m pip install --upgrade --user pip
@@ -115,7 +115,7 @@ script:
   - python3 setup.py test || python setup.py test
 after_success:
   - if [ "${TRAVIS_OS_NAME}" != "windows" ]; then python3 setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
-  - if [ "${TRAVIS_OS_NAME}" == "windows" ]; then python setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
+  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then python setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
   - codecov
 deploy:
   provider: s3
