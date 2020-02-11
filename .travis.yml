@@ -60,6 +60,7 @@ jobs:
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       before_install:
         - choco install python --version 3.7.6
+        - python -m pip install --upgrade --user pip
     # - name: windows/cu92
     #   os: windows
     #   language: shell
@@ -95,6 +96,7 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
+  - pip3 install --upgrade pip
   - source script/install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH}+${IDX} -f https://download.pytorch.org/whl/torch_stable.html
