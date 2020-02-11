@@ -17,5 +17,6 @@ fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
   wget "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
+  ls
   # ./cuda_${CUDA}_win10.exe
 fi

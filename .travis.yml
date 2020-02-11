@@ -67,17 +67,17 @@ jobs:
       before_install:
         - choco install python --version 3.7.6
         - python -m pip install --upgrade --user pip
-    # - name: windows/cu92
-    #   os: windows
-    #   language: shell
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=9.2
-    #     - CUDA=9.2.148
-    #     - TORCH=${TORCH_VERSION}+92
-    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-    #   before_install:
-    #     - choco install python --version 3.7.6
+    - name: windows/cu92
+      os: windows
+      language: shell
+      env:
+        - IDX=cu92
+        - CUDA_SHORT=9.2
+        - CUDA=9.2.148
+        - TORCH=${TORCH_VERSION}+${IDX}
+        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+      before_install:
+        - choco install python --version 3.7.6
     # - name: windows/cu100
     #   os: windows
     #   language: shell
@@ -115,8 +115,7 @@ script:
   - flake8 .
   - python3 setup.py test || python setup.py test
 after_success:
-  - if [ "${TRAVIS_OS_NAME}" != "windows" ]; then python3 setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
-  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then python setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
+  python3 setup.py bdist_wheel --dist-dir=dist/${IDX} || python setup.py bdist_wheel --dist-dir=dist/${IDX}
   - codecov
 deploy:
   provider: s3

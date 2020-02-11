@@ -1,7 +1,23 @@
+# flake8: noqa
+
 import importlib
 import os.path as osp
 
 import torch
+
+expected_torch_version = '1.4'
+
+try:
+    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+        '_version', [osp.dirname(__file__)]).origin)
+except OSError as e:
+    major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
+    if 'undefined symbol' in str(e) and major != 1 and minor != 4:
+        raise RuntimeError('Expected PyTorch version {} but found version '
+                           '{}.{}.'.format(torch_version, major, minor))
+    raise OSError(e)
+
+cuda_version = torch.ops.torch_scatter.cuda_version()
 
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
                       scatter_max, scatter)
@@ -13,10 +29,6 @@ from .segment_coo import (segment_sum_coo, segment_add_coo, segment_mean_coo,
                           gather_coo)
 from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
                         scatter_log_softmax)
-
-torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-    '_version', [osp.dirname(__file__)]).origin)
-cuda_version = torch.ops.torch_scatter.cuda_version()
 
 if cuda_version != -1 and torch.version.cuda is not None:  # pragma: no cover
     if cuda_version < 10000:
