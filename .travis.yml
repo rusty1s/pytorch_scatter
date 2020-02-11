@@ -115,8 +115,7 @@ after_success:
 deploy:
   provider: s3
   access_key_id: AKIAIZNS6U2JRBGA3OHA
-  secret_access_key:
-    secure: ${S3_SECURE_SECRET_KEY}
+  secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-scatter
   skip_cleanup: true
   local-dir: dist/${IDX}
