@@ -29,22 +29,22 @@ jobs:
         - TORCH=${TORCH_VERSION}+cu92
     - os: windows
       language: shell  # `language: python` is an error on Travis CI Windows
+      env:
+        - TORCH=${TORCH_VERSION}+cpu
       before_install:
         - choco install python --version 3.6.7
     # - os: o
     #   python: 3.6
     #   env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
 
-before_install:
-  - pip3 --upgrade pip
+install:
+  - pip3 install --upgrade pip
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - python -c "import torch; print(torch.__version__)"
   - pip3 install flake8
   - pip3 install twine cibuildwheel
-
-install:
   - python3 setup.py install || python setup.py install
 
 script:
