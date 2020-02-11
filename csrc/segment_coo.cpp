@@ -9,7 +9,7 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__scatter(void) { return NULL; }
+PyMODINIT_FUNC PyInit__segment_coo(void) { return NULL; }
 #endif
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
