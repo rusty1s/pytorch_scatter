@@ -55,14 +55,14 @@ jobs:
     #   language: shell
     #   env:
     #     - TORCH=${TORCH_VERSION}
-    - name: windows/cpu
-      os: windows
-      language: shell
-      env:
-        - TORCH=${TORCH_VERSION}+cpu
-        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      before_install:
-        - choco install python --version 3.7.6
+    # - name: windows/cpu
+    #   os: windows
+    #   language: shell
+    #   env:
+    #     - TORCH=${TORCH_VERSION}+cpu
+    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    #   before_install:
+    #     - choco install python --version 3.7.6
     # - name: windows/cu92
     #   os: windows
     #   language: shell
@@ -98,7 +98,7 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
-  - source install.sh
+  - source script/install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
@@ -115,7 +115,7 @@ deploy:
   provider: s3
   access_key_id: AKIAIZNS6U2JRBGA3OHA
   secret_access_key:
-    secure: e/RR/bllWcIG4nOxj+CjytjqFtdFai9nXSvO15UiW0XzhnPfPRNX5yR068RuJdScS14InDO3ZcEyaiOqwomtNvyrpryjafQ/yrjr4cBd8CRBpYA2tFvGiag3GWD9YSIGCpOUWBSj2wu7Mv5KQ1kLOIPX3maWgCVVh/EA2kvQF8TBCz3nzjlzFRbwy6N5MqnOvzTfoow3d3Sb8qXbIc2+zsUwSJY6D7/M7O4uzP/lFb+1p8NU01ZXZe46UBtBuD6CQnL6YbVFFBjjVtj21XzlwbyznSUjJR51wfWZfc1NJnEinLlruXzXi97Ms93Ta/4FTdQbeTzGew21vsJnXnI0VHrwxZwD5xph0CH++ET6nilePCK+Bv+QEF5cF0gtor7qJQK4MXVHtAFGmamCWRkwDvbiXC9E+F8l1G0vySA52KuWDcn4N12OVkAaJqSo1GYxt7w1NsZ9MnvxwAIf8VzyMUALnQ7AcOTpbJhs+zKXzSYU7Stnwov0cZmFnk5fwL+YBaD30pXHuhhl57mZ1h1mvrGaNjqYyfGY3kHm/AIr43y/Cmj7oSX4pBdiH8O43RQP8aQ3wCAnd659IjBZ3EUXOK4EmUf2iTcfTBJyuZ1C/EEhrwn3xHYDbFLxn5rzNka6jl99lsrZVtkXENpovOLg2C491HAk1327+CE7Sg7UTFk=
+    secure: ${S3_SECURE_SECRET_KEY}
   bucket: pytorch-scatter
   local-dir: dist/${DEVICE}/*.whl
   upload-dir: whl/${DEVICE}
