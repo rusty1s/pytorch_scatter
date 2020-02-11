@@ -48,7 +48,7 @@ jobs:
         - CUDA=10.1.105-1
         - UBUNTU_VERSION=ubuntu1804
         - CUBLAS=libcublas-dev
-        - TORCH=${TORCH_VERSION}+
+        - TORCH=${TORCH_VERSION}
     - name: macosx/cpu
       os: osx
       osx_image: xcode11.3
@@ -98,7 +98,7 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
-  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then alias python3=python; fi
+  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then echo "wadawd"; alias python3=python; fi
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html

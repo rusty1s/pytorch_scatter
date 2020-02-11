@@ -15,7 +15,8 @@ from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
 
 torch.ops.load_library(
     osp.join(osp.dirname(osp.abspath(__file__)), '_version.so'))
-_version = torch.ops.torch_scatter.cuda_version()
+cuda_version = torch.ops.torch_scatter.cuda_version()
+print(cuda_version)
 
 __version__ = '2.0.3'
 
