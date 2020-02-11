@@ -35,7 +35,7 @@ def get_extensions():
     if WITH_CUDA:
         Extension = CUDAExtension
         define_macros += [('WITH_CUDA', None)]
-        extra_compile_args['cxx'] += ['-O0']
+        # extra_compile_args['cxx'] += ['-O0']
         nvcc_flags = os.getenv('NVCC_FLAGS', '')
         nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
         nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
@@ -52,12 +52,12 @@ def get_extensions():
     for main in main_files:
         name = main.split(os.sep)[-1][:-4]
 
-        sources = [main, osp.join(extensions_dir, 'cpu', f'{name}_cpu.cpp')]
+        sources = [main, osp.join(extensions_dir, 'cpu', name + '_cpu.cpp')]
         if WITH_CUDA:
-            sources += [osp.join(extensions_dir, 'cuda', f'{name}_cuda.cu')]
+            sources += [osp.join(extensions_dir, 'cuda', name + '_cuda.cu')]
 
         extension = Extension(
-            f'torch_scatter._{name}',
+            'torch_scatter._' + name,
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,
@@ -82,7 +82,7 @@ setup(
     description='PyTorch Extension Library of Optimized Scatter Operations',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
     license='MIT',
-    python_requires='>=3.6',
+    python_requires='>=3.5',
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,

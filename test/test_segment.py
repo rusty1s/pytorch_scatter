@@ -91,17 +91,17 @@ def test_forward(test, reduce, dtype, device):
     indptr = tensor(test['indptr'], torch.long, device)
     expected = tensor(test[reduce], dtype, device)
 
-    out = getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr)
+    out = getattr(torch_scatter, 'segment_' + reduce + '_csr')(src, indptr)
     if isinstance(out, tuple):
         out, arg_out = out
-        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        arg_expected = tensor(test['arg_' + reduce], torch.long, device)
         assert torch.all(arg_out == arg_expected)
     assert torch.all(out == expected)
 
-    out = getattr(torch_scatter, f'segment_{reduce}_coo')(src, index)
+    out = getattr(torch_scatter, 'segment_' + reduce + '_coo')(src, index)
     if isinstance(out, tuple):
         out, arg_out = out
-        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        arg_expected = tensor(test['arg_' + reduce], torch.long, device)
         assert torch.all(arg_out == arg_expected)
     assert torch.all(out == expected)
 
@@ -129,12 +129,12 @@ def test_out(test, reduce, dtype, device):
 
     out = torch.full_like(expected, -2)
 
-    getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr, out)
+    getattr(torch_scatter, 'segment_' + reduce + '_csr')(src, indptr, out)
     assert torch.all(out == expected)
 
     out.fill_(-2)
 
-    getattr(torch_scatter, f'segment_{reduce}_coo')(src, index, out)
+    getattr(torch_scatter, 'segment_' + reduce + '_coo')(src, index, out)
 
     if reduce == 'sum' or reduce == 'add':
         expected = expected - 2
@@ -165,16 +165,16 @@ def test_non_contiguous(test, reduce, dtype, device):
     if indptr.dim() > 1:
         indptr = indptr.transpose(0, 1).contiguous().transpose(0, 1)
 
-    out = getattr(torch_scatter, f'segment_{reduce}_csr')(src, indptr)
+    out = getattr(torch_scatter, 'segment_' + reduce + '_csr')(src, indptr)
     if isinstance(out, tuple):
         out, arg_out = out
-        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        arg_expected = tensor(test['arg_' + reduce], torch.long, device)
         assert torch.all(arg_out == arg_expected)
     assert torch.all(out == expected)
 
-    out = getattr(torch_scatter, f'segment_{reduce}_coo')(src, index)
+    out = getattr(torch_scatter, 'segment_' + reduce + '_coo')(src, index)
     if isinstance(out, tuple):
         out, arg_out = out
-        arg_expected = tensor(test[f'arg_{reduce}'], torch.long, device)
+        arg_expected = tensor(test['arg_' + reduce], torch.long, device)
         assert torch.all(arg_out == arg_expected)
     assert torch.all(out == expected)
