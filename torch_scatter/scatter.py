@@ -1,4 +1,3 @@
-import warnings
 import os.path as osp
 from typing import Optional, Tuple
 
@@ -6,21 +5,8 @@ import torch
 
 from .utils import broadcast
 
-try:
-    torch.ops.load_library(
-        osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
-except OSError:
-    warnings.warn('Failed to load `scatter` binaries.')
-
-    def scatter_with_arg_placeholder(src: torch.Tensor, index: torch.Tensor,
-                                     dim: int, out: Optional[torch.Tensor],
-                                     dim_size: Optional[int]
-                                     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        raise ImportError
-        return src, index
-
-    torch.ops.torch_scatter.scatter_min = scatter_with_arg_placeholder
-    torch.ops.torch_scatter.scatter_max = scatter_with_arg_placeholder
+torch.ops.load_library(
+    osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
 
 
 @torch.jit.script

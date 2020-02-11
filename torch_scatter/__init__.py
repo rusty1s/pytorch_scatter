@@ -1,3 +1,7 @@
+import os.path as osp
+
+import torch
+
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
                       scatter_max, scatter)
 from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
@@ -8,6 +12,10 @@ from .segment_coo import (segment_sum_coo, segment_add_coo, segment_mean_coo,
                           gather_coo)
 from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
                         scatter_log_softmax)
+
+torch.ops.load_library(
+    osp.join(osp.dirname(osp.abspath(__file__)), '_version.so'))
+_version = torch.ops.torch_scatter.cuda_version()
 
 __version__ = '2.0.3'
 

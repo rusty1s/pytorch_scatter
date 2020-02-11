@@ -35,9 +35,15 @@ def get_extensions():
     for main in main_files:
         name = main.split(os.sep)[-1][:-4]
 
-        sources = [main, osp.join(extensions_dir, 'cpu', name + '_cpu.cpp')]
-        if WITH_CUDA:
-            sources += [osp.join(extensions_dir, 'cuda', name + '_cuda.cu')]
+        sources = [main]
+
+        path = osp.join(extensions_dir, 'cpu', name + '_cpu.cpp')
+        if osp.exists(path):
+            sources += [path]
+
+        path = osp.join(extensions_dir, 'cuda', name + '_cuda.cpp')
+        if WITH_CUDA and osp.exists(path):
+            sources += [path]
 
         extension = Extension(
             'torch_scatter._' + name,
