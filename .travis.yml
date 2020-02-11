@@ -110,6 +110,8 @@ script:
 after_success:
   - python3 setup.py bdist_wheel --dist-dir=dist/${IDX}
   - codecov
+  - ls dist
+  - ls dist/cpu
 deploy:
   provider: s3
   access_key_id: AKIAIZNS6U2JRBGA3OHA
@@ -117,7 +119,7 @@ deploy:
     secure: ${S3_SECURE_SECRET_KEY}
   bucket: pytorch-scatter
   skip_cleanup: true
-  local-dir: dist/${IDX}/*.whl
+  local-dir: dist/${IDX}
   upload-dir: whl/${IDX}
   acl: public_read
   on:
