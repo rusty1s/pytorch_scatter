@@ -65,17 +65,19 @@ jobs:
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       before_install:
         - choco install python --version 3.7.6
-    - name: windows/cu92
-      os: windows
-      language: shell
-      env:
-        - FORCE_CUDA=1
-        - CUDA_SHORT=9.2
-        - CUDA=9.2.148
-        - TORCH=${TORCH_VERSION}+92
-        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      before_install:
-        - choco install python --version 3.7.6
+        - git clone https://github.com/pytorch/vision
+        - cd vision && python.setup.py install
+    # - name: windows/cu92
+    #   os: windows
+    #   language: shell
+    #   env:
+    #     - FORCE_CUDA=1
+    #     - CUDA_SHORT=9.2
+    #     - CUDA=9.2.148
+    #     - TORCH=${TORCH_VERSION}+92
+    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    #   before_install:
+    #     - choco install python --version 3.7.6
     # - name: windows/cu100
     #   os: windows
     #   language: shell
