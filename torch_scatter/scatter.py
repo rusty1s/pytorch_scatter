@@ -1,3 +1,4 @@
+import importlib
 import os.path as osp
 from typing import Optional, Tuple
 
@@ -5,8 +6,8 @@ import torch
 
 from .utils import broadcast
 
-torch.ops.load_library(
-    osp.join(osp.dirname(osp.abspath(__file__)), '_scatter.so'))
+torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+    '_scatter', [osp.dirname(__file__)]).origin)
 
 
 @torch.jit.script

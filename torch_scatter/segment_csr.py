@@ -1,10 +1,11 @@
+import importlib
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library(
-    osp.join(osp.dirname(osp.abspath(__file__)), '_segment_csr.so'))
+torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+    '_segment_csr', [osp.dirname(__file__)]).origin)
 
 
 @torch.jit.script
