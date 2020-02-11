@@ -14,13 +14,13 @@ jobs:
     # - name: linux/cpu
     #   os: linux
     #   language: python
-    #   python: 3.7
+    #   python: 3.7.6
     #   env:
     #     - TORCH=${TORCH_VERSION}+cpu
     # - name: linux/cu92
     #   os: linux
     #   language: python
-    #   python: 3.7
+    #   python: 3.7.6
     #   env:
     #     - FORCE_CUDA=1
     #     - CUDA_SHORT=9.2
@@ -31,7 +31,7 @@ jobs:
     # - name: linux/cu100
     #   os: linux
     #   language: python
-    #   python: 3.7
+    #   python: 3.7.6
     #   env:
     #     - FORCE_CUDA=1
     #     - CUDA_SHORT=10.0
@@ -42,7 +42,7 @@ jobs:
     # - name: linux/cu101
     #   os: linux
     #   language: python
-    #   python: 3.7
+    #   python: 3.7.6
     #   env:
     #     - FORCE_CUDA=1
     #     - CUDA_SHORT=10.1
@@ -66,7 +66,7 @@ jobs:
         - choco install python --version 3.7.6
 
 install:
-  - pip3 install --upgrade pip
+  - pip3 install --upgrade --user pip
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
