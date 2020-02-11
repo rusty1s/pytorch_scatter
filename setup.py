@@ -43,7 +43,8 @@ def get_extensions():
 
     if sys.platform == 'win32':
         # extra_compile_args['cxx'] += ['/MP']
-        libraries = ['ATen', '_C']
+        # libraries = ['ATen', '_C']
+        pass
 
     extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))

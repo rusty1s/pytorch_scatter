@@ -87,7 +87,7 @@ jobs:
     #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
     #   before_install:
     #     - choco install python --version 3.7.6
-    # - name: windows/cu101
+    # - name: windows/cu102
     #   os: windows
     #   language: shell
     #   env:
