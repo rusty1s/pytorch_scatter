@@ -16,6 +16,6 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${FORCE_CUDA}" == "1" ]; then
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${FORCE_CUDA}" == "1" ]; then
-  wget "http://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers/cuda_${CUDA}_win10.exe"
+  wget "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
   # ./cuda_${CUDA}_win10.exe
 fi
