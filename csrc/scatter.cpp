@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <torch/script.h>
 
 #include "cpu/scatter_cpu.h"
@@ -5,6 +6,14 @@
 
 #ifdef WITH_CUDA
 #include "cuda/scatter_cuda.h"
+#endif
+
+#ifdef _WIN32
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC init_C(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__C(void) { return NULL; }
+#endif
 #endif
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
