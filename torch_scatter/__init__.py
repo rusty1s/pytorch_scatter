@@ -6,16 +6,19 @@ import os.path as osp
 import torch
 
 __version__ = '2.0.3'
-expected_torch_version = '1.4'
+expected_torch_version = (1, 4)
 
 try:
     torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
         '_version', [osp.dirname(__file__)]).origin)
 except OSError as e:
-    major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
-    if 'undefined symbol' in str(e) and major != 1 and minor != 4:
-        raise RuntimeError('Expected PyTorch version {} but found version '
-                           '{}.{}.'.format(torch_version, major, minor))
+    if 'undefined symbol' in str(e):
+        major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
+        t_major, t_minor = expected_torch_version
+        if major != t_major or (major == t_major and minor != t_minor):
+            raise RuntimeError(
+                'Expected PyTorch version {}.{} but found version '
+                '{}.{}.'.format(t_major, t_minor, major, minor))
     raise OSError(e)
 
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
