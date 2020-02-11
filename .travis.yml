@@ -10,12 +10,12 @@ env:
 
 jobs:
   include:
-    # - name: linux/cpu
-    #   os: linux
-    #   language: python
-    #   python: 3.7.6
-    #   env:
-    #     - TORCH=${TORCH_VERSION}+cpu
+    - name: linux/cpu
+      os: linux
+      language: python
+      python: 3.7.6
+      env:
+        - DEVICE=cpu
     # - name: linux/cu92
     #   os: linux
     #   language: python
@@ -38,17 +38,16 @@ jobs:
     #     - UBUNTU_VERSION=ubuntu1804
     #     - CUBLAS=cuda-cublas-dev-10-0
     #     - TORCH=${TORCH_VERSION}+cu100
-    - name: linux/cu101
-      os: linux
-      language: python
-      python: 3.7.6
-      env:
-        - FORCE_CUDA=1
-        - CUDA_SHORT=10.1
-        - CUDA=10.1.105-1
-        - UBUNTU_VERSION=ubuntu1804
-        - CUBLAS=libcublas-dev
-        - TORCH=${TORCH_VERSION}
+    # - name: linux/cu101
+    #   os: linux
+    #   language: python
+    #   python: 3.7.6
+    #   env:
+    #     - DEVICE=cu101
+    #     - CUDA_SHORT=10.1
+    #     - CUDA=10.1.105-1
+    #     - UBUNTU_VERSION=ubuntu1804
+    #     - CUBLAS=libcublas-dev
     # - name: macosx/cpu
     #   os: osx
     #   osx_image: xcode11.3
@@ -100,7 +99,7 @@ jobs:
 install:
   - source script/install.sh
   - pip3 install numpy
-  - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip3 install torch==${TORCH}+${DEVICE} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
   - pip3 install codecov
   - python3 setup.py install || python setup.py install
@@ -122,6 +121,7 @@ deploy:
   acl: public_read
   on:
     repo: rusty1s/pytorch_scatter
-    branch: travis
+    # tags: true
+    all_branches: true
 notifications:
   email: false

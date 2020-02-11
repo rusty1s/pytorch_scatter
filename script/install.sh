@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${FORCE_CUDA}" == "1" ]; then
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${DEVICE}" != "cpu" ]; then
   INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
   wget "http://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/${INSTALLER}"
   sudo dpkg -i "${INSTALLER}"
@@ -15,7 +15,7 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${FORCE_CUDA}" == "1" ]; then
   nvcc --version
 fi
 
-if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${FORCE_CUDA}" == "1" ]; then
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${DEVICE}" != "cpu" ]; then
   wget "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
   # ./cuda_${CUDA}_win10.exe
 fi
