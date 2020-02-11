@@ -65,8 +65,6 @@ jobs:
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       before_install:
         - choco install python --version 3.7.6
-        - git clone https://github.com/pytorch/vision
-        - cd vision && python setup.py install
     # - name: windows/cu92
     #   os: windows
     #   language: shell
@@ -107,7 +105,9 @@ install:
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
-  - python3 setup.py install || python setup.py install
+  - git clone https://github.com/pytorch/vision
+  - cd vision && python setup.py install
+  # - python3 setup.py install || python setup.py install
 
 script:
   - flake8 .
