@@ -99,7 +99,6 @@ jobs:
 
 install:
   - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then alias python3=python; fi
-  - pip3 install --upgrade --user pip
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
