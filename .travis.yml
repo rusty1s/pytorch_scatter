@@ -30,13 +30,15 @@ jobs:
     - os: osx
       osx_image: xcode11.2
       language: shell
-
+      env:
+        - TORCH=${TORCH_VERSION}
+        - PATH=/c/Python38:/c/Python38/Scripts:$PATH
     - os: windows
       language: shell  # `language: python` is an error on Travis CI Windows
       env:
         - TORCH=${TORCH_VERSION}+cpu
       before_install:
-        - choco install python --version 3.6.7
+        - choco install python --version 3.8.0
         - python -m pip install --upgrade pip
     # - os: o
     #   python: 3.6
