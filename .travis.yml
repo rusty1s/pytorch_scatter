@@ -2,7 +2,7 @@ sudo: enabled
 
 env:
   global:
-    - TORCH=1.4.0
+    - TORCH_VERSION=1.4.0
   # jobs:
   #   - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
   #   - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
@@ -16,6 +16,7 @@ jobs:
       python: 3.7.6
       env:
         - IDX=cpu
+        - TORCH=${TORCH_VERSION}+${IDX}
     - name: linux/cu92
       os: linux
       language: python
@@ -26,6 +27,7 @@ jobs:
         - CUDA=9.2.148-1
         - UBUNTU_VERSION=ubuntu1604
         - CUBLAS=cuda-cublas-dev-9-2
+        - TORCH=${TORCH_VERSION}+${IDX}
     - name: linux/cu100
       os: linux
       language: python
@@ -36,6 +38,7 @@ jobs:
         - CUDA=10.0.130-1
         - UBUNTU_VERSION=ubuntu1804
         - CUBLAS=cuda-cublas-dev-10-0
+        - TORCH=${TORCH_VERSION}+${IDX}
     - name: linux/cu101
       os: linux
       language: python
@@ -46,18 +49,21 @@ jobs:
         - CUDA=10.1.105-1
         - UBUNTU_VERSION=ubuntu1804
         - CUBLAS=libcublas-dev
+        - TORCH=${TORCH_VERSION}
     - name: macosx/cpu
       os: osx
       osx_image: xcode11.3
       language: shell
       env:
         - IDX=cpu
+        - TORCH=${TORCH_VERSION}
     - name: windows/cpu
       os: windows
       language: shell
       env:
         - IDX=cpu
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+        - TORCH=${TORCH_VERSION}+${IDX}
       before_install:
         - choco install python --version 3.7.6
         - python -m pip install --upgrade --user pip
@@ -113,10 +119,11 @@ after_success:
   - codecov
 deploy:
   provider: s3
+  edge: true
+  skip_cleanup: true
   access_key_id: AKIAIZNS6U2JRBGA3OHA
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-scatter
-  skip_cleanup: true
   local-dir: dist/${IDX}
   upload-dir: whl/${IDX}
   acl: public_read
