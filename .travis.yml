@@ -103,6 +103,7 @@ jobs:
 
 install:
   - pip3 install --upgrade pip
+  - pip3 install wheel
   - source script/install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
