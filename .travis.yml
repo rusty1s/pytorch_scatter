@@ -2,7 +2,7 @@ sudo: enabled
 
 env:
   global:
-    - TORCH_VERSION=1.4.0
+    - TORCH=1.4.0
   # jobs:
   #   - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
   #   - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
