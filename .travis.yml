@@ -27,17 +27,24 @@ jobs:
         - UBUNTU_VERSION=ubuntu1604
         - CUBLAS=cuda-cublas-dev-9-2
         - TORCH=${TORCH_VERSION}+cu92
+    - os: osx
+      osx_image: xcode11.2
+      language: shell
+
     - os: windows
       language: shell  # `language: python` is an error on Travis CI Windows
       env:
         - TORCH=${TORCH_VERSION}+cpu
       before_install:
         - choco install python --version 3.6.7
+        - python -m pip install --upgrade pip
     # - os: o
     #   python: 3.6
     #   env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
 
 install:
+  - python3 --version
+  - python --version
   - pip3 install --upgrade pip
   - source install.sh
   - pip3 install numpy
@@ -49,7 +56,7 @@ install:
 
 script:
   - flake8 .
-  - pytest
+  - python3 setup.py test
   - python3 -m cibuildwheel --output-dir wheelhouse
   - ls wheelhouse
 notifications:
