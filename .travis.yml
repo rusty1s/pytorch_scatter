@@ -4,14 +4,15 @@ sudo: enabled
 
 python:
   - 3.6
-  - 3.7
 
 os:
   - linux
+  - windows
 
 env:
   global:
     - TORCH_VERSION=1.4.0
+    - CIBW_BUILD=cp36-*
   jobs:
     - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
     - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
@@ -21,6 +22,7 @@ env:
 jobs:
   include:
     - os: osx
+      python: 3.6
       env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
 
 before_install:
