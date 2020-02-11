@@ -10,52 +10,51 @@ env:
 
 jobs:
   include:
-    # - name: linux/cpu
-    #   os: linux
-    #   language: python
-    #   python: 3.7.6
-    #   env:
-    #     - TORCH=${TORCH_VERSION}+cpu
-    # - name: linux/cu92
-    #   os: linux
-    #   language: python
-    #   python: 3.7.6
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=9.2
-    #     - CUDA=9.2.148-1
-    #     - UBUNTU_VERSION=ubuntu1604
-    #     - CUBLAS=cuda-cublas-dev-9-2
-    #     - TORCH=${TORCH_VERSION}+cu92
-    # - name: linux/cu100
-    #   os: linux
-    #   language: python
-    #   python: 3.7.6
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=10.0
-    #     - CUDA=10.0.130-1
-    #     - UBUNTU_VERSION=ubuntu1804
-    #     - CUBLAS=cuda-cublas-dev-10-0
-    #     - TORCH=${TORCH_VERSION}+cu100
-    # - name: linux/cu101
-    #   os: linux
-    #   language: python
-    #   python: 3.7.6
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=10.1
-    #     - CUDA=10.1.105-1
-    #     - UBUNTU_VERSION=ubuntu1804
-    #     - CUBLAS=libcublas-dev
-    #     - TORCH=${TORCH_VERSION}+
-    # - name: macosx/cpu
-    #   os: osx
-    #   osx_image: xcode11.3
-    #   language: shell
-    #   env:
-    #     - TORCH=${TORCH_VERSION}
-    # - EXTRA_COMPILE_ARGS="-IC:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\include"
+    - name: linux/cpu
+      os: linux
+      language: python
+      python: 3.7.6
+      env:
+        - TORCH=${TORCH_VERSION}+cpu
+    - name: linux/cu92
+      os: linux
+      language: python
+      python: 3.7.6
+      env:
+        - FORCE_CUDA=1
+        - CUDA_SHORT=9.2
+        - CUDA=9.2.148-1
+        - UBUNTU_VERSION=ubuntu1604
+        - CUBLAS=cuda-cublas-dev-9-2
+        - TORCH=${TORCH_VERSION}+cu92
+    - name: linux/cu100
+      os: linux
+      language: python
+      python: 3.7.6
+      env:
+        - FORCE_CUDA=1
+        - CUDA_SHORT=10.0
+        - CUDA=10.0.130-1
+        - UBUNTU_VERSION=ubuntu1804
+        - CUBLAS=cuda-cublas-dev-10-0
+        - TORCH=${TORCH_VERSION}+cu100
+    - name: linux/cu101
+      os: linux
+      language: python
+      python: 3.7.6
+      env:
+        - FORCE_CUDA=1
+        - CUDA_SHORT=10.1
+        - CUDA=10.1.105-1
+        - UBUNTU_VERSION=ubuntu1804
+        - CUBLAS=libcublas-dev
+        - TORCH=${TORCH_VERSION}+
+    - name: macosx/cpu
+      os: osx
+      osx_image: xcode11.3
+      language: shell
+      env:
+        - TORCH=${TORCH_VERSION}
     - name: windows/cpu
       os: windows
       language: shell
@@ -99,17 +98,18 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
+  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then alias python3=python; fi
   - pip3 install --upgrade --user pip
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
-  - python3 setup.py install || python setup.py install
+  - python3 setup.py install
 
 script:
   - flake8 .
-  - python3 setup.py test || python setup.py install
-  - python3 setup.py bdist_wheel || python3 setup.py bdist_wheel
-  - ls dist
+  - python3 setup.py test
+  # - python3 setup.py bdist_wheel
+  # - ls dist
 notifications:
   email: false
