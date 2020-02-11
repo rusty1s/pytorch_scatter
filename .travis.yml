@@ -116,6 +116,7 @@ deploy:
   secret_access_key:
     secure: ${S3_SECURE_SECRET_KEY}
   bucket: pytorch-scatter
+  skip_cleanup: true
   local-dir: dist/${IDX}/*.whl
   upload-dir: whl/${IDX}
   acl: public_read
