@@ -115,7 +115,8 @@ script:
   - flake8 .
   - python3 setup.py test || python setup.py test
 after_success:
-  python3 setup.py bdist_wheel --dist-dir=dist/${IDX} || python setup.py bdist_wheel --dist-dir=dist/${IDX}
+  - if [ "${TRAVIS_OS_NAME}" != "windows" ]; then python3 setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
+  - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then python setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
   - codecov
 deploy:
   provider: s3
