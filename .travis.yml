@@ -5,12 +5,12 @@ sudo: enabled
 compiler:
   - gcc
 
-jobs:
+matrix:
   include:
     - os: linux
       python:
-        - '3.6'
-        - '3.7'
+        - 3.6
+        - 3.7
       env:
         - FORCE_CUDA=1 CUDA=9.2.148-1 CUDA_SHORT=9.2 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=1.4.0+cu92
         - FORCE_CUDA=1 CUDA=10.0.130-1 CUDA_SHORT=10.0 UBUNTU_VERSION=ubuntu1804 CUBLAS=cuda-cublas-dev-10-0 TORCH=1.4.0+cu100
