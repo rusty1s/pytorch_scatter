@@ -48,20 +48,17 @@ jobs:
     #   env: FORCE_CUDA=0 TORCH=${TORCH_VERSION}
 
 install:
-  - python3 --version
-  - python --version
   - pip3 install --upgrade pip
   - source install.sh
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
-  - python3 -c "import torch; print(torch.__version__)"
   - pip3 install flake8
   - pip3 install twine cibuildwheel
   - python3 setup.py install || python setup.py install
 
 script:
   - flake8 .
-  - python3 setup.py test
+  - python3 setup.py test || python setup.py install
   - python3 -m cibuildwheel --output-dir wheelhouse
   - ls wheelhouse
 notifications:
