@@ -31,7 +31,7 @@ jobs:
       language: python
       python: 3.7.6
       env:
-        - IDX=100
+        - IDX=cu100
         - CUDA_SHORT=10.0
         - CUDA=10.0.130-1
         - UBUNTU_VERSION=ubuntu1804
