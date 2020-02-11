@@ -1,6 +1,5 @@
 import os
 import os.path as osp
-import sys
 import glob
 from setuptools import setup, find_packages
 
@@ -22,29 +21,13 @@ def get_extensions():
     define_macros = []
     extra_compile_args = {'cxx': [], 'nvcc': []}
 
-    # flags = os.getenv('EXTRA_COMPILE_ARGS', '')
-    # extra_compile_args['cxx'] += [] if flags == '' else flags.split(' ')
-    # extra_compile_args['nvcc'] += [] if flags == '' else flags.split(' ')
-
-    libraries = []
-
-    # Windows users: Make sure that your VS path is included, i.e.:
-    # extra_compile_args['cxx'] += ['-I{VISUAL_STUDIO_DIR}\\include']
-    # extra_compile_args['nvcc'] += ['-I{VISUAL_STUDIO_DIR}\\include']
-
     if WITH_CUDA:
         Extension = CUDAExtension
         define_macros += [('WITH_CUDA', None)]
-        # extra_compile_args['cxx'] += ['-O0']
         nvcc_flags = os.getenv('NVCC_FLAGS', '')
         nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
         nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
         extra_compile_args['nvcc'] += nvcc_flags
-
-    if sys.platform == 'win32':
-        # extra_compile_args['cxx'] += ['/MP']
-        # libraries = ['ATen', '_C']
-        pass
 
     extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
@@ -62,7 +45,6 @@ def get_extensions():
             include_dirs=[extensions_dir],
             define_macros=define_macros,
             extra_compile_args=extra_compile_args,
-            libraries=libraries,
         )
         extensions += [extension]
 
