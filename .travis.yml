@@ -1,5 +1,10 @@
 language: python
 
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+
 sudo: enabled
 
 compiler:
@@ -13,7 +18,7 @@ matrix:
         - CUDA=9.2.148-1
         - CUDA_SHORT=9.2
         - UBUNTU_VERSION=ubuntu1604
-        - CUBLAS=cuda-cublas-dev
+        - CUBLAS=cuda-cublas-dev-${CUDA_SHORT/./-}
         - TORCH=1.4.0+cu92
     - name: cu100
       env:
@@ -21,7 +26,7 @@ matrix:
         - CUDA=10.0.130-1
         - CUDA_SHORT=10.0
         - UBUNTU_VERSION=ubuntu1804
-        - CUBLAS=cuda-cublas-dev
+        - CUBLAS=cuda-cublas-dev-${CUDA_SHORT/./-}
         - TORCH=1.4.0+cu100
     - name: cu101
       env:
@@ -29,7 +34,7 @@ matrix:
         - CUDA=10.1.105-1
         - CUDA_SHORT=10.1
         - UBUNTU_VERSION=ubuntu1804
-        - CUBLAS=libcublas-dev
+        - CUBLAS=libcublas-dev=${CUDA}
         - TORCH=1.4.0
 
 before_install:
@@ -39,7 +44,7 @@ before_install:
   - wget https://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/7fa2af80.pub
   - sudo apt-key add 7fa2af80.pub
   - sudo apt update -qq
-  - sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-} ${CUBLAS}-${CUDA_SHORT/./-} cuda-cusparse-dev-${CUDA_SHORT/./-}
+  - sudo apt install -y cuda-core-${CUDA_SHORT/./-} cuda-cudart-dev-${CUDA_SHORT/./-} ${CUBLAS} cuda-cusparse-dev-${CUDA_SHORT/./-}
   - sudo apt clean
   - CUDA_HOME=/usr/local/cuda-${CUDA_SHORT}
   - LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
@@ -48,9 +53,13 @@ before_install:
 install:
   - pip install numpy
   - pip install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
+  - pip install flake8
 
 script:
   - nvcc --version
   - python -c "import torch; print(torch.__version__)"
+  - flake8 .
   - python setup.py install
   - python setup.py test
+notifications:
+  email: false
