@@ -22,9 +22,11 @@ def get_extensions():
     define_macros = []
     extra_compile_args = {'cxx': [], 'nvcc': []}
 
-    flags = os.getenv('EXTRA_COMPILE_ARGS', '')
-    extra_compile_args['cxx'] += [] if flags == '' else flags.split(' ')
-    extra_compile_args['nvcc'] += [] if flags == '' else flags.split(' ')
+    # flags = os.getenv('EXTRA_COMPILE_ARGS', '')
+    # extra_compile_args['cxx'] += [] if flags == '' else flags.split(' ')
+    # extra_compile_args['nvcc'] += [] if flags == '' else flags.split(' ')
+
+    libraries = []
 
     # Windows users: Make sure that your VS path is included, i.e.:
     # extra_compile_args['cxx'] += ['-I{VISUAL_STUDIO_DIR}\\include']
@@ -40,7 +42,8 @@ def get_extensions():
         extra_compile_args['nvcc'] += nvcc_flags
 
     if sys.platform == 'win32':
-        extra_compile_args['cxx'] += ['/MP']
+        # extra_compile_args['cxx'] += ['/MP']
+        libraries = ['ATen', '_C']
 
     extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
@@ -58,6 +61,7 @@ def get_extensions():
             include_dirs=[extensions_dir],
             define_macros=define_macros,
             extra_compile_args=extra_compile_args,
+            libraries=libraries,
         )
         extensions += [extension]
 

@@ -56,25 +56,48 @@ jobs:
     #   language: shell
     #   env:
     #     - TORCH=${TORCH_VERSION}
+    # - EXTRA_COMPILE_ARGS="-IC:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\include"
     - name: windows/cpu
       os: windows
-      language: shell  # `language: python` is an error on Travis CI Windows
+      language: shell
       env:
         - TORCH=${TORCH_VERSION}+cpu
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-        # - EXTRA_COMPILE_ARGS="-IC:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\include"
       before_install:
         - choco install python --version 3.7.6
-    - name: windows/cu101
+    - name: windows/cu92
       os: windows
-      language: shell  # `language: python` is an error on Travis CI Windows
+      language: shell
       env:
         - FORCE_CUDA=1
+        - CUDA_SHORT=9.2
+        - CUDA=9.2.148
         - TORCH=${TORCH_VERSION}
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-        # - EXTRA_COMPILE_ARGS="-IC:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\include"
       before_install:
         - choco install python --version 3.7.6
+    # - name: windows/cu100
+    #   os: windows
+    #   language: shell
+    #   env:
+    #     - FORCE_CUDA=1
+    #     - CUDA_SHORT=10.1
+    #     - CUDA=10.0.130_411.31
+    #     - TORCH=${TORCH_VERSION}
+    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    #   before_install:
+    #     - choco install python --version 3.7.6
+    # - name: windows/cu101
+    #   os: windows
+    #   language: shell
+    #   env:
+    #     - FORCE_CUDA=1
+    #     - CUDA_SHORT=10.1
+    #     - CUDA=10.1.105_418.96
+    #     - TORCH=${TORCH_VERSION}
+    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+    #   before_install:
+    #     - choco install python --version 3.7.6
 
 install:
   - pip3 install --upgrade --user pip
