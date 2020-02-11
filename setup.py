@@ -73,6 +73,7 @@ setup(
     description='PyTorch Extension Library of Optimized Scatter Operations',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
     license='MIT',
+    python_requires='>=3.6',
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
