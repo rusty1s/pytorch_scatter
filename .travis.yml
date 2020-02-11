@@ -105,9 +105,7 @@ install:
   - pip3 install numpy
   - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
   - pip3 install flake8
-  - git clone https://github.com/pytorch/vision
-  - cd vision && python setup.py install
-  # - python3 setup.py install || python setup.py install
+  - python3 setup.py install || python setup.py install
 
 script:
   - flake8 .
