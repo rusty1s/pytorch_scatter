@@ -72,7 +72,7 @@ jobs:
         - FORCE_CUDA=1
         - CUDA_SHORT=9.2
         - CUDA=9.2.148
-        - TORCH=${TORCH_VERSION}
+        - TORCH=${TORCH_VERSION}+92
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       before_install:
         - choco install python --version 3.7.6
@@ -83,7 +83,7 @@ jobs:
     #     - FORCE_CUDA=1
     #     - CUDA_SHORT=10.1
     #     - CUDA=10.0.130_411.31
-    #     - TORCH=${TORCH_VERSION}
+    #     - TORCH=${TORCH_VERSION}+100
     #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
     #   before_install:
     #     - choco install python --version 3.7.6
