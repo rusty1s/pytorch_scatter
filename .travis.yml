@@ -66,7 +66,7 @@ jobs:
       before_install:
         - choco install python --version 3.7.6
         - git clone https://github.com/pytorch/vision
-        - cd vision && python.setup.py install
+        - cd vision && python setup.py install
     # - name: windows/cu92
     #   os: windows
     #   language: shell
