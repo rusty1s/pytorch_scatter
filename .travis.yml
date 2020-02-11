@@ -62,6 +62,7 @@ jobs:
       env:
         - TORCH=${TORCH_VERSION}+cpu
         - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+        - EXTRA_COMPILE_ARGS=-IC:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\include
       before_install:
         - choco install python --version 3.7.6
 

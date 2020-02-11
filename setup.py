@@ -11,7 +11,7 @@ from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 if os.getenv('FORCE_CUDA', '0') == '1':
     WITH_CUDA = True
-if os.getenv('FORCE_NON_CUDA', '0') == '1':
+if os.getenv('FORCE_NO_CUDA', '0') == '1':
     WITH_CUDA = False
 
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
@@ -22,17 +22,21 @@ def get_extensions():
     define_macros = []
     extra_compile_args = {'cxx': [], 'nvcc': []}
 
-    # Windows users: Edit both of these to contain your VS include path, i.e.:
+    flags = os.getenv('EXTRA_COMPILE_ARGS', '')
+    extra_compile_args['cxx'] += [] if flags == '' else flags.split(' ')
+    extra_compile_args['nvcc'] += [] if flags == '' else flags.split(' ')
+
+    # Windows users: Make sure that your VS path is included, i.e.:
     # extra_compile_args['cxx'] += ['-I{VISUAL_STUDIO_DIR}\\include']
     # extra_compile_args['nvcc'] += ['-I{VISUAL_STUDIO_DIR}\\include']
 
     if WITH_CUDA:
         Extension = CUDAExtension
         define_macros += [('WITH_CUDA', None)]
+        extra_compile_args['cxx'] += ['-O0']
         nvcc_flags = os.getenv('NVCC_FLAGS', '')
         nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
         nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
-        extra_compile_args['cxx'] += ['-O0']
         extra_compile_args['nvcc'] += nvcc_flags
 
     if sys.platform == 'win32':
