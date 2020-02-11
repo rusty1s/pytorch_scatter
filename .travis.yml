@@ -1,13 +1,4 @@
-language: python
-
 sudo: enabled
-
-python:
-  - 3.6
-
-os:
-  - linux
-  - windows
 
 env:
   global:
@@ -22,10 +13,12 @@ env:
 jobs:
   include:
     - os: linux
+      language: python
       python: 3.6
       env:
         - TORCH=${TORCH_VERSION}+cpu
     - os: linux
+      language: python
       python: 3.6
       env:
         - FORCE_CUDA=1
