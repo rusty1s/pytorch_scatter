@@ -1,6 +1,8 @@
 #!/bin/bash
 
-if [ "${IDX}" != "cpu" ]; then
+if [ "${IDX}" = "cpu" ]; then
+  export FORCE_CPU=1
+else
   export FORCE_CUDA=1
 fi
 

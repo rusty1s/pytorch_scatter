@@ -19,7 +19,7 @@ BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
 def get_extensions():
     Extension = CppExtension
     define_macros = []
-    extra_compile_args = {'cxx': [], 'nvcc': []}
+    extra_compile_args = {'cxx': []}
 
     if WITH_CUDA:
         Extension = CUDAExtension
@@ -27,7 +27,7 @@ def get_extensions():
         nvcc_flags = os.getenv('NVCC_FLAGS', '')
         nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
         nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
-        extra_compile_args['nvcc'] += nvcc_flags
+        extra_compile_args['nvcc'] = nvcc_flags
 
     extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
