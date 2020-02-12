@@ -10,7 +10,7 @@ from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 if os.getenv('FORCE_CUDA', '0') == '1':
     WITH_CUDA = True
-if os.getenv('FORCE_NO_CUDA', '0') == '1':
+if os.getenv('FORCE_CPU', '0') == '1':
     WITH_CUDA = False
 
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
