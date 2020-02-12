@@ -5,6 +5,7 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
   chmod +x miniconda.sh
   ./miniconda.sh -b
   PATH=/home/travis/miniconda3/bin:${PATH}
+  conda update --yes conda
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
@@ -12,6 +13,7 @@ if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
   chmod +x miniconda.sh
   ./miniconda.sh -b
   PATH=/Users/travis/miniconda3/bin:${PATH}
+  conda update --yes conda
 fi
 
 
@@ -19,5 +21,3 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ]; then
   choco install miniconda3
   PATH=/c/tools/miniconda3/Scripts:$PATH
 fi
-
-conda update --yes conda
