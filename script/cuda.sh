@@ -29,7 +29,29 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu101" ]; then
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
-if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cpu" ]; then
+  export TOOLKIT=cpuonly
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu92" ]; then
+  export CUDA_SHORT=9.2
+  export CUDA=9.2.148
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu100" ]; then
+  export CUDA_SHORT=10.0
+  export CUDA=10.0.130_411.31
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu101" ]; then
+  export CUDA_SHORT=10.1
+  export CUDA=10.1.105_418.96
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "osx" ] && [ "$IDX" = "cpu" ]; then
   export TOOLKIT=""
 fi
 
@@ -54,7 +76,8 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${IDX}" != "cpu" ]; then
   nvcc --version
 fi
 
-# if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
-#   wget "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
+  wget -q "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
+  ls
 #   # ./cuda_${CUDA}_win10
-# fi
+fi

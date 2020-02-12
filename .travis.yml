@@ -1,9 +1,9 @@
 language: shell
 
 os:
-  - linux
-  - osx
-  # - windows
+  # - linux
+  # - osx
+  - windows
 
 env:
   global:
@@ -11,12 +11,12 @@ env:
   jobs:
     - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cpu
     - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cu92
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cu100
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cu101
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cpu
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu92
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu100
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu101
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cu100
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8.1 IDX=cu101
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cpu
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu92
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu100
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7.6 IDX=cu101
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6.10 IDX=cpu
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6.10 IDX=cu92
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6.10 IDX=cu100
@@ -52,85 +52,6 @@ jobs:
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5.9 IDX=cu100
     - os: osx
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5.9 IDX=cu101
-
-# jobs:
-#   include:
-#     - name: linux/cpu
-#       os: linux
-#       env:
-#         - IDX=cpu
-#         - TOOLKIT=cpuonly
-#     - name: linux/cu92
-#       os: linux
-#       env:
-#         - IDX=cu92
-#         - CUDA_SHORT=9.2
-#         - CUDA=9.2.148-1
-#         - UBUNTU_VERSION=ubuntu1604
-#         - CUBLAS=cuda-cublas-dev-9-2
-#         - TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-#     - name: linux/cu100
-#       os: linux
-#       env:
-#         - IDX=cu100
-#         - CUDA_SHORT=10.0
-#         - CUDA=10.0.130-1
-#         - UBUNTU_VERSION=ubuntu1804
-#         - CUBLAS=cuda-cublas-dev-10-0
-#         - TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-#     - name: linux/cu101
-#       os: linux
-#       env:
-#         - IDX=cu101
-#         - CUDA_SHORT=10.1
-#         - CUDA=10.1.105-1
-#         - UBUNTU_VERSION=ubuntu1804
-#         - CUBLAS=libcublas-dev
-#         - TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-#     - name: macosx/cpu
-#       os: osx
-#       env:
-#         - IDX=cpu
-#         - TOOLKIT=""
-#     - name: windows/cpu
-#       os: windows
-#       env:
-#         - IDX=cpu
-#         - TOOLKIT=cpuonly
-    # - name: windows/cu92
-    #   os: windows
-    #   language: shell
-    #   env:
-    #     - IDX=cu92
-    #     - CUDA_SHORT=9.2
-    #     - CUDA=9.2.148
-    #     - TORCH=${TORCH_VERSION}+${IDX}
-    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-    #   before_install:
-    #     - choco install python --version 3.7.6
-    #     - python -m pip install --upgrade --user pip
-    # - name: windows/cu100
-    #   os: windows
-    #   language: shell
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=10.1
-    #     - CUDA=10.0.130_411.31
-    #     - TORCH=${TORCH_VERSION}+100
-    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-    #   before_install:
-    #     - choco install python --version 3.7.6
-    # - name: windows/cu102
-    #   os: windows
-    #   language: shell
-    #   env:
-    #     - FORCE_CUDA=1
-    #     - CUDA_SHORT=10.1
-    #     - CUDA=10.1.105_418.96
-    #     - TORCH=${TORCH_VERSION}
-    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-    #   before_install:
-    #     - choco install python --version 3.7.6
 
 install:
   - source script/cuda.sh
