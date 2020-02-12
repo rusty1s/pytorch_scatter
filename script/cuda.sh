@@ -79,5 +79,5 @@ fi
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
   wget -nv "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
   ls
-#   # ./cuda_${CUDA}_win10
+  PowerShell -Command "Start-Process -FilePath \"cuda_${CUDA}_win10\" -ArgumentList \"-s nvcc_${CUDA_SHORT}\" -Wait -NoNewWindow"
 fi
