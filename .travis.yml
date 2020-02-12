@@ -123,7 +123,7 @@ deploy:
   provider: s3
   edge: true
   skip_cleanup: true
-  access_key_id: AKIAIZNS6U2JRBGA3OHA
+  access_key_id: AKIAJB7S6NJ5OM5MAAGA
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-scatter
   local-dir: dist/${IDX}
