@@ -49,7 +49,7 @@ jobs:
         - CUDA=10.1.105-1
         - UBUNTU_VERSION=ubuntu1804
         - CUBLAS=libcublas-dev
-        - TORCH=${TORCH_VERSION}+${IDX}
+        - TORCH=${TORCH_VERSION}
     - name: macosx/cpu
       os: osx
       osx_image: xcode11.3
