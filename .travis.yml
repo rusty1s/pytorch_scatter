@@ -3,6 +3,7 @@ language: shell
 env:
   global:
     - TORCH_VERSION=1.4.0
+    - CUDA_HOME=/usr/local/cuda
   # jobs:
   #   - FORCE_CUDA=0 TORCH=${TORCH_VERSION}+cpu
   #   - FORCE_CUDA=1 CUDA_SHORT=9.2 CUDA=9.2.148-1 UBUNTU_VERSION=ubuntu1604 CUBLAS=cuda-cublas-dev-9-2 TORCH=${TORCH_VERSION}+cu92
@@ -95,7 +96,7 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
-  - source script/install.sh
+  # - source script/install.sh
   - source script/conda.sh
   - conda create --yes -n test python=3.7.6
   - source activate test
