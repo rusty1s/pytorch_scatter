@@ -99,7 +99,7 @@ install:
   - source script/conda.sh
   - conda create --yes -n test python=3.7.6
   - source activate test
-  - conda install pytorch=${TORCH_VERSION} {$TOOLKIT} -c pytorch
+  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch
   - python setup.py install
   # - pip3 install --upgrade pip
   # - pip3 install wheel
