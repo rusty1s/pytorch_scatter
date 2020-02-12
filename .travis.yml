@@ -14,7 +14,7 @@ jobs:
     - name: linux/cpu
       os: linux
       env:
-        - IDX = cpu
+        - IDX=cpu
         - TOOLKIT=cpuonly
     - name: linux/cu92
       os: linux
@@ -43,13 +43,11 @@ jobs:
         - UBUNTU_VERSION=ubuntu1804
         - CUBLAS=libcublas-dev
         - TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-    # - name: macosx/cpu
-    #   os: osx
-    #   osx_image: xcode11.3
-    #   language: shell
-    #   env:
-    #     - IDX=cpu
-    #     - TORCH=${TORCH_VERSION}
+    - name: macosx/cpu
+      os: osx
+      env:
+        - IDX=cpu
+        - TOOLKIT=""
     # - name: windows/cpu
     #   os: windows
     #   language: shell
@@ -96,7 +94,7 @@ jobs:
     #     - choco install python --version 3.7.6
 
 install:
-  # - source script/install.sh
+  - source script/install.sh
   - source script/conda.sh
   - conda create --yes -n test python=3.7.6
   - source activate test
@@ -104,10 +102,6 @@ install:
   - pip install flake8
   - pip install codecov
   - python setup.py install
-  # - pip3 install --upgrade pip
-  # - pip3 install wheel
-  # - pip3 install numpy
-  # - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
 
 script:
   - flake8 .
@@ -117,6 +111,7 @@ after_success:
   - codecov
 deploy:
   provider: s3
+  region: eu-central-1
   edge: true
   access_key_id: AKIAJB7S6NJ5OM5MAAGA
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
