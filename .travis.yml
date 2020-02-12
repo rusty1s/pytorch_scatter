@@ -1,3 +1,5 @@
+language: shell
+
 env:
   global:
     - TORCH_VERSION=1.4.0
@@ -33,8 +35,6 @@ jobs:
         - TOOLKIT="cudatoolkit=${CUDA_SHORT}"
     - name: linux/cu101
       os: linux
-      language: python
-      python: 3.7.6
       env:
         - IDX=cu101
         - CUDA_SHORT=10.1
@@ -99,34 +99,33 @@ install:
   - source script/conda.sh
   - conda create --yes -n test python=3.7.6
   - source activate test
-  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch
+  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
+  - pip install flake8
+  - pip install codecov
   - python setup.py install
   # - pip3 install --upgrade pip
   # - pip3 install wheel
   # - pip3 install numpy
   # - pip3 install torch==${TORCH} -f https://download.pytorch.org/whl/torch_stable.html
-  # - pip3 install flake8
-  # - pip3 install codecov
 
-# script:
-#   - flake8 .
-#   - python3 setup.py test || python setup.py test
-# after_success:
-#   - if [ "${TRAVIS_OS_NAME}" != "windows" ]; then python3 setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
-#   - if [ "${TRAVIS_OS_NAME}" = "windows" ]; then python setup.py bdist_wheel --dist-dir=dist/${IDX}; fi
-#   - codecov
-# deploy:
-#   provider: s3
-#   edge: true
-#   access_key_id: AKIAJB7S6NJ5OM5MAAGA
-#   secret_access_key: ${S3_SECRET_ACCESS_KEY}
-#   bucket: pytorch-scatter
-#   local_dir: dist/${IDX}
-#   upload_dir: whl/${IDX}
-#   acl: public_read
-#   on:
-#     repo: rusty1s/pytorch_scatter
-#     # tags: true
-#     branch: travis
+script:
+  - flake8 .
+  - python setup.py test
+after_success:
+  - python setup.py bdist_wheel --dist-dir=dist/torch=${TORCH_VERSION}/${IDX}
+  - codecov
+deploy:
+  provider: s3
+  edge: true
+  access_key_id: AKIAJB7S6NJ5OM5MAAGA
+  secret_access_key: ${S3_SECRET_ACCESS_KEY}
+  bucket: pytorch-scatter
+  local_dir: dist/${IDX}
+  upload_dir: whl/${IDX}
+  acl: public_read
+  on:
+    repo: rusty1s/pytorch_scatter
+    # tags: true
+    branch: travis
 notifications:
   email: false
