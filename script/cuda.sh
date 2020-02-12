@@ -83,6 +83,7 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
   ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit
   ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA
   ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}
-  PATH=/c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}/bin:$PATH
+  CUDA_HOME=/c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}
+  PATH=${CUDA_HOME}/bin:$PATH
   nvcc --version
 fi
