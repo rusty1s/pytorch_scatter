@@ -48,16 +48,11 @@ jobs:
       env:
         - IDX=cpu
         - TOOLKIT=""
-    # - name: windows/cpu
-    #   os: windows
-    #   language: shell
-    #   env:
-    #     - IDX=cpu
-    #     - TORCH=${TORCH_VERSION}+${IDX}
-    #     - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-    #   before_install:
-    #     - choco install python --version 3.7.6
-    #     - python -m pip install --upgrade --user pip
+    - name: windows/cpu
+      os: windows
+      env:
+        - IDX=cpu
+        - TOOLKIT=cpuonly
     # - name: windows/cu92
     #   os: windows
     #   language: shell
@@ -96,6 +91,7 @@ jobs:
 install:
   - source script/install.sh
   - source script/conda.sh
+  - conda update --yes conda
   - conda create --yes -n test python=3.7.6
   - source activate test
   - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
