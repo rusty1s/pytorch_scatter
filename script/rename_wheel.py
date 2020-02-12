@@ -14,6 +14,6 @@ for wheel in wheels:
         continue
 
     names = name.split('-')
-    name = '-'.join(names[:-4] + [names[-4] + '%2B' + idx] + names[-3:])
+    name = '-'.join(names[:-5] + [names[-5] + '%2B' + idx] + names[-4:])
     new_wheel = osp.join(*wheel.split(osp.sep)[:-1], name)
     os.rename(wheel, new_wheel)

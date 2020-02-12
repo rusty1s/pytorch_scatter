@@ -1,7 +1,7 @@
 language: shell
 
 os:
-  - linux
+  # - linux
   # - osx
   - windows
 
@@ -9,7 +9,7 @@ env:
   global:
     - CUDA_HOME=/usr/local/cuda
   jobs:
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cpu
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cpu
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu101

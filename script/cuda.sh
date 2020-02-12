@@ -82,7 +82,11 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
   PowerShell -Command "Start-Process -FilePath \"cuda_${CUDA}_win10\" -ArgumentList \"-s nvcc_${CUDA_SHORT}\" -Wait -NoNewWindow"
   ls /c
   ls /c/Program\ Files\ \(x86\)
-  ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit
-  ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit/CUDA
-  ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v9.2
+  # ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit
+  # ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit/CUDA
+  # ls /c/Program\ Files\ \(x86\)/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v9.2
+  ls /c/Program\ Files
+  # ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit
+  # ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA
+  # ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v9.2
 fi
