@@ -1,5 +1,38 @@
 #!/bin/bash
 
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cpu" ]; then
+  export TOOLKIT=cpuonly
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu92" ]; then
+  export CUDA_SHORT=9.2
+  export CUDA=9.2.148-1
+  export UBUNTU_VERSION=ubuntu1604
+  export CUBLAS=cuda-cublas-dev-9-2
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu100" ]; then
+  export CUDA_SHORT=10.0
+  export CUDA=10.0.130-1
+  export UBUNTU_VERSION=ubuntu1804
+  export CUBLAS=cuda-cublas-dev-10-0
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu101" ]; then
+  export IDX=cu101
+  export CUDA_SHORT=10.1
+  export CUDA=10.1.105-1
+  export UBUNTU_VERSION=ubuntu1804
+  export CUBLAS=libcublas-dev
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+  export TOOLKIT=""
+fi
+
 if [ "${IDX}" = "cpu" ]; then
   export FORCE_CPU=1
 else
