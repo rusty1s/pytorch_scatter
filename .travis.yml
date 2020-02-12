@@ -58,7 +58,7 @@ install:
   - source script/conda.sh
   - conda create --yes -n test python=${PYTHON_VERSION}
   - source activate test
-  if [ ${TRAVIS_OS_NAME} = "windows" ] || [ $IDX != "cu92" ]; then conda install pytorch ${TOOLKIT} -c pytorch -c defaults -c numba/label/dev --yes; else conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes; fi
+  - if [ ${TRAVIS_OS_NAME} = "windows" ] || [ $IDX != "cu92" ]; then conda install pytorch ${TOOLKIT} -c pytorch -c defaults -c numba/label/dev --yes; else conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes; fi
   - pip install flake8 codecov
   - python setup.py install
 
