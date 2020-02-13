@@ -71,16 +71,13 @@ jobs:
 
 
 install:
-  - source script/conda.sh
-  - conda create --yes -n test python=${PYTHON_VERSION}
-  - source activate test
-  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
-  - pip install flake8 codecov
   - source script/cuda.sh
+  - source script/conda.sh
   - python setup.py install
 
 script:
-  - flake8 .
+  - pip install flake8 codecov
+  - if [ "${PYTHON_VERSION}" != "3.5" ]; then flake8 .; fi
   - python setup.py test
 after_success:
   - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}/${IDX}
