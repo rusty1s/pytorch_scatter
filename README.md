@@ -36,7 +36,25 @@ In addition, we provide the following **composite functions** which make use of 
 
 All included operations are broadcastable, work on varying data types, are implemented both for CPU and GPU with corresponding backward implementations, and are fully traceable.
 
-## Installation
+# Installation
+
+### Binaries
+
+We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](http://pytorch-scatter.s3-website.eu-central-1.amazonaws.com/whl).
+
+```
+pip install torch-scatter==latest+${CUDA} -f http://pytorch-scatter.s3-website.eu-central-1.amazonaws.com/whl/torch-1.4.0.html --trusted-host pytorch-scatter.s3-website.eu-central-1.amazonaws.com
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu100` or `cu101` depending on your PyTorch installation.
+
+|             | `cpu` | `cu92` | `cu100` | `cu101` |
+|-------------|-------|--------|---------|---------|
+| **Linux**   | ✅    | ✅     | ✅      | ✅      |
+| **Windows** | ✅    | ❌     | ❌      | ✅      |
+| **macOS**   | ✅    | ❌     | ❌      | ❌      |
+
+### From source
 
 Ensure that at least PyTorch 1.4.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
 
@@ -51,19 +69,18 @@ $ echo $CPATH
 >>> /usr/local/cuda/include:...
 ```
 
-When running in a docker container without nvidia driver, PyTorch needs to evaluate the compute capabilities and may fail. In this case, ensure that the compute capabilities are set via `TORCH_CUDA_ARCH_LIST`
+Then run:
+
+```
+python setup.py install
+```
+
+When running in a docker container without nvidia driver, PyTorch needs to evaluate the compute capabilities and may fail.
+In this case, ensure that the compute capabilities are set via `TORCH_CUDA_ARCH_LIST`, *e.g.*:
 
 ```
 export TORCH_CUDA_ARCH_LIST = "6.0 6.1 7.2+PTX 7.5+PTX"
 ```
-
-### Windows
-
-If you are installing this on Windows specifically, **you will need to point the setup to your Visual Studio installation** for some neccessary libraries and header files.
-To do this, add the include and library paths of your installation to the path lists in setup.py as described in the respective comments in the code.
-
-If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_scatter/issues).
-Be sure to import `torch` first before using this package to resolve symbols the dynamic linker must see.
 
 ## Example
 
