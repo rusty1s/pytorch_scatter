@@ -64,14 +64,6 @@ else
   export FORCE_CUDA=1
 fi
 
-# if [ "${IDX}" == "cu100" ] || [ "${IDX}" == "cu101" ]; then
-#   export NVCC_FLAGS="-gencode=arch=compute_35,code=sm_35 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_50,code=compute_50"
-# fi
-
-# if [ "${IDX}" == "cu92" ]; then
-#   export NVCC_FLAGS="-gencode=arch=compute_35,code=sm_35 -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_50,code=compute_50"
-# fi
-
 if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${IDX}" != "cpu" ]; then
   INSTALLER=cuda-repo-${UBUNTU_VERSION}_${CUDA}_amd64.deb
   wget -nv "http://developer.download.nvidia.com/compute/cuda/repos/${UBUNTU_VERSION}/x86_64/${INSTALLER}"
