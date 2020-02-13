@@ -1,11 +1,11 @@
-import importlib
+import glob
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-    '_segment_csr', [osp.dirname(__file__)]).origin)
+torch.ops.load_library(
+    glob.glob(osp.join(osp.dirname(__file__), '_segment_csr.*'))[0])
 
 
 @torch.jit.script

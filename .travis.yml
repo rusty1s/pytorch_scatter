@@ -77,11 +77,10 @@ install:
 
 script:
   - if [ "${PYTHON_VERSION}" != "3.5" ]; then pip install flake8 && flake8 .; fi
-  - if [ "${PYTHON_VERSION}" = "3.5" ]; then pip install zzip; fi
   - python setup.py test
 after_success:
-  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}/${IDX}
-  - python script/rename_wheel.py
+  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
+  - python script/rename_wheel.py ${IDX}
   - pip install codecov && codecov
 deploy:
   provider: s3
@@ -90,8 +89,8 @@ deploy:
   access_key_id: AKIAJB7S6NJ5OM5MAAGA
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-scatter
-  local_dir: dist/torch-${TORCH_VERSION}/${IDX}
-  upload_dir: whl/torch-${TORCH_VERSION}/${IDX}
+  local_dir: dist/torch-${TORCH_VERSION}
+  upload_dir: whl/torch-${TORCH_VERSION}
   acl: public_read
   on:
     repo: rusty1s/pytorch_scatter
