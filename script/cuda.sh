@@ -35,19 +35,24 @@ fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu92" ]; then
   export CUDA_SHORT=9.2
-  export CUDA=9.2.148
+  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2
+  export CUDA_FILE=cuda_${CUDA_SHORT}.148_win10
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+
+
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu100" ]; then
   export CUDA_SHORT=10.0
-  export CUDA=10.0.130_411.31
+  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+  export CUDA_FILE=cuda_${CUDA_SHORT}.130_411.31_win10
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu101" ]; then
   export CUDA_SHORT=10.1
-  export CUDA=10.1.105_418.96
+  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+  export CUDA_FILE=cuda_${CUDA_SHORT}.105_418.96_win10.exe
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
@@ -77,12 +82,9 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${IDX}" != "cpu" ]; then
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
-  wget -nv "https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2/cuda_${CUDA}_win10"
-  PowerShell -Command "Start-Process -FilePath \"cuda_${CUDA}_win10\" -ArgumentList \"-s nvcc_${CUDA_SHORT}\" -Wait -NoNewWindow"
-  ls /c/Program\ Files
-  ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit
-  ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA
-  ls /c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}
+  wget -nv "${CUDA_URL}/${CUDA_FILE}"
+  PowerShell -Command "Start-Process -FilePath \"${CUDA_FILE}\" -ArgumentList \"-s nvcc_${CUDA_SHORT}\" -Wait -NoNewWindow"
+  ls /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017
   CUDA_HOME=/c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}
   PATH=${CUDA_HOME}/bin:$PATH
   PATH=/c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2017/BuildTools/MSBuild/15.0/Bin:$PATH
