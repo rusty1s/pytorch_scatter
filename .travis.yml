@@ -1,9 +1,9 @@
 language: shell
 
 os:
-  - linux
+  # - linux
   - osx
-  - windows
+  # - windows
 
 env:
   global:
@@ -77,6 +77,7 @@ install:
 
 script:
   - if [ "${PYTHON_VERSION}" != "3.5" ]; then pip install flake8 && flake8 .; fi
+  - if [ "${PYTHON_VERSION}" = "3.5" ]; then pip install zzip; fi
   - python setup.py test
 after_success:
   - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}/${IDX}
