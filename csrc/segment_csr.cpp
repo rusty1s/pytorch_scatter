@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <torch/script.h>
 
 #include "cpu/segment_csr_cpu.h"
@@ -5,6 +6,10 @@
 
 #ifdef WITH_CUDA
 #include "cuda/segment_csr_cuda.h"
+#endif
+
+#ifdef _WIN32
+PyMODINIT_FUNC PyInit__segment_csr(void) { return NULL; }
 #endif
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>

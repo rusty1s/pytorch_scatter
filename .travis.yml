@@ -1,35 +1,90 @@
+language: shell
+
+os:
+  - linux
+  - osx
+  - windows
+
+env:
+  global:
+    - CUDA_HOME=/usr/local/cuda
+  jobs:
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cpu
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu101
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cpu
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu92
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu101
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cpu
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
+    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu101
+
 jobs:
-  include:
-    - os: linux
-      language: python
-      python: 3.7
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - gcc-5
-            - g++-5
-      env:
-        - CC=gcc-5
-        - CXX=g++-5
+  exclude:  # Exclude *all* macOS CUDA jobs and Windows CUDA 9.2/10.0 jobs.
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu101
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu92
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu101
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
+    - os: osx
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu101
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu92
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
+
+
 install:
-  - pip install numpy
-  - pip install --pre torch torchvision -f https://download.pytorch.org/whl/nightly/cpu/torch_nightly.html
-  - pip install pycodestyle
-  - pip install flake8
-  - pip install codecov
-  - pip install sphinx
-  - pip install sphinx_rtd_theme
-  - pip install sphinx-autodoc-typehints
-script:
-  - python -c "import torch; print(torch.__version__)"
-  - pycodestyle .
-  - flake8 .
+  - source script/cuda.sh
+  - source script/conda.sh
+  - conda create --yes -n test python="${PYTHON_VERSION}"
+  - source activate test
+  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
+  - source script/torch.sh
+  - pip install flake8 codecov
   - python setup.py install
+
+script:
+  - flake8 .
   - python setup.py test
-  - cd docs && make clean && make html && make doctest && cd ..
 after_success:
+  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
+  - python script/rename_wheel.py ${IDX}
   - codecov
+deploy:
+  provider: s3
+  region: eu-central-1
+  edge: true
+  access_key_id: AKIAJB7S6NJ5OM5MAAGA
+  secret_access_key: ${S3_SECRET_ACCESS_KEY}
+  bucket: pytorch-scatter
+  local_dir: dist/torch-${TORCH_VERSION}
+  upload_dir: whl/torch-${TORCH_VERSION}
+  acl: public_read
+  on:
+    repo: rusty1s/pytorch_scatter
+    tags: true
 notifications:
   email: false

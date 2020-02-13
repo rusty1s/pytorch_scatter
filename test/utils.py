@@ -7,7 +7,7 @@ grad_dtypes = [torch.float, torch.double]
 
 devices = [torch.device('cpu')]
 if torch.cuda.is_available():
-    devices += [torch.device('cuda:{}'.format(torch.cuda.current_device()))]
+    devices += [torch.device(f'cuda:{torch.cuda.current_device()}')]
 
 
 def tensor(x, dtype, device):

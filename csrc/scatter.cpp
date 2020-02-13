@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <torch/script.h>
 
 #include "cpu/scatter_cpu.h"
@@ -5,6 +6,10 @@
 
 #ifdef WITH_CUDA
 #include "cuda/scatter_cuda.h"
+#endif
+
+#ifdef _WIN32
+PyMODINIT_FUNC PyInit__scatter(void) { return NULL; }
 #endif
 
 torch::Tensor broadcast(torch::Tensor src, torch::Tensor other, int64_t dim) {

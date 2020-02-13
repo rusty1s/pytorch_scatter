@@ -1,38 +1,11 @@
-import warnings
+import importlib
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-try:
-    torch.ops.load_library(
-        osp.join(osp.dirname(osp.abspath(__file__)), '_segment_coo.so'))
-except OSError:
-    warnings.warn('Failed to load `segment_coo` binaries.')
-
-    def segment_coo_placeholder(src: torch.Tensor, index: torch.Tensor,
-                                out: Optional[torch.Tensor],
-                                dim_size: Optional[int]) -> torch.Tensor:
-        raise ImportError
-        return src
-
-    def segment_coo_with_arg_placeholder(
-            src: torch.Tensor, index: torch.Tensor,
-            out: Optional[torch.Tensor],
-            dim_size: Optional[int]) -> Tuple[torch.Tensor, torch.Tensor]:
-        raise ImportError
-        return src, index
-
-    def gather_coo_placeholder(src: torch.Tensor, index: torch.Tensor,
-                               out: Optional[torch.Tensor]) -> torch.Tensor:
-        raise ImportError
-        return src
-
-    torch.ops.torch_scatter.segment_sum_coo = segment_coo_placeholder
-    torch.ops.torch_scatter.segment_mean_coo = segment_coo_placeholder
-    torch.ops.torch_scatter.segment_min_coo = segment_coo_with_arg_placeholder
-    torch.ops.torch_scatter.segment_max_coo = segment_coo_with_arg_placeholder
-    torch.ops.torch_scatter.gather_coo = gather_coo_placeholder
+torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+    '_segment_coo', [osp.dirname(__file__)]).origin)
 
 
 @torch.jit.script
