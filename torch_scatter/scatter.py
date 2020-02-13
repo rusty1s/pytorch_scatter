@@ -1,5 +1,5 @@
 import os
-import glob
+import importlib
 import os.path as osp
 from typing import Optional, Tuple
 
@@ -8,8 +8,8 @@ import torch
 from .utils import broadcast
 
 try:
-    torch.ops.load_library(
-        glob.glob(osp.join(osp.dirname(__file__), '_scatter.*'))[0])
+    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+        '_scatter', [osp.dirname(__file__)]).origin)
 except OSError as e:
     if os.getenv('BUILD_DOCS', '0') == '1':
         pass
