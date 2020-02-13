@@ -19,7 +19,10 @@ except OSError as e:
             raise RuntimeError(
                 f'Expected PyTorch version {t_major}.{t_minor} but found '
                 f'version {major}.{minor}.')
-    raise OSError(e)
+    if os.getenv('BUILD_DOCS', '0') == '1':
+        pass
+    else:
+        raise OSError(e)
 
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
                       scatter_max, scatter)

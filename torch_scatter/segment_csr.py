@@ -1,11 +1,18 @@
+import os
 import importlib
 import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
-torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-    '_segment_csr', [osp.dirname(__file__)]).origin)
+try:
+    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+        '_segment_csr', [osp.dirname(__file__)]).origin)
+except OSError as e:
+    if os.getenv('BUILD_DOCS', '0') == '1':
+        pass
+    else:
+        raise OSError(e)
 
 
 @torch.jit.script
