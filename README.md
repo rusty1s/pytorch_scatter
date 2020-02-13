@@ -69,7 +69,13 @@ $ echo $CPATH
 >>> /usr/local/cuda/include:...
 ```
 
-Then run:
+Then run
+
+```
+pip install torch-scatter
+```
+
+or
 
 ```
 python setup.py install
