@@ -1,26 +1,26 @@
 language: shell
 
 os:
-  - linux
-  - osx
+  # - linux
+  # - osx
   - windows
 
 env:
   global:
     - CUDA_HOME=/usr/local/cuda
   jobs:
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cpu
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cpu
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
     - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu101
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cpu
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu92
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu101
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cpu
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
-    - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu101
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cpu
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu92
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu101
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cpu
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
+    # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu101
 
 jobs:
   exclude:  # Exclude *all* macOS CUDA jobs and Windows CUDA 9.2/10.0 jobs.
@@ -65,7 +65,6 @@ install:
   - source script/torch.sh
   - pip install flake8 codecov
   - python setup.py install
-
 script:
   - flake8 .
   - python setup.py test
@@ -85,6 +84,6 @@ deploy:
   acl: public_read
   on:
     repo: rusty1s/pytorch_scatter
-    tags: true
+    branch: master
 notifications:
   email: false

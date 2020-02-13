@@ -1,7 +1,7 @@
 # flake8: noqa
 
 import os
-import importlib
+import glob
 import os.path as osp
 
 import torch
@@ -10,8 +10,8 @@ __version__ = '2.0.3'
 expected_torch_version = (1, 4)
 
 try:
-    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-        '_version', [osp.dirname(__file__)]).origin)
+    torch.ops.load_library(
+        glob.glob(osp.join(osp.dirname(__file__), '_version.*'))[0])
 except OSError as e:
     if 'undefined symbol' in str(e):
         major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
