@@ -14,10 +14,6 @@ extensions = [
     'sphinx_autodoc_typehints',
 ]
 
-autodoc_mock_imports = [
-    'torch',
-]
-
 source_suffix = '.rst'
 master_doc = 'index'
 
