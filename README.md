@@ -41,6 +41,7 @@ All included operations are broadcastable, work on varying data types, are imple
 ### Binaries
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](http://pytorch-scatter.s3-website.eu-central-1.amazonaws.com/whl).
+To install from binaries, simply run
 
 ```
 pip install torch-scatter==latest+${CUDA} -f http://pytorch-scatter.s3-website.eu-central-1.amazonaws.com/whl/torch-1.4.0.html --trusted-host pytorch-scatter.s3-website.eu-central-1.amazonaws.com
