@@ -1,6 +1,6 @@
 -f https://download.pytorch.org/whl/torch_stable.html
 numpy
-torch
+torch_nightly
 sphinx
 sphinx_rtd_theme
 sphinx-autodoc-typehints
