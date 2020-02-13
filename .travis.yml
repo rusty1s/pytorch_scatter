@@ -54,7 +54,8 @@ jobs:
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu92
     - os: windows
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
-
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu101
 
 install:
   - source script/cuda.sh
