@@ -26,7 +26,7 @@ def get_extensions():
         define_macros += [('WITH_CUDA', None)]
         nvcc_flags = os.getenv('NVCC_FLAGS', '')
         nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
-        nvcc_flags += ['--expt-relaxed-constexpr']
+        nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr']
         extra_compile_args['nvcc'] = nvcc_flags
 
     extensions_dir = osp.join(osp.dirname(osp.abspath(__file__)), 'csrc')
