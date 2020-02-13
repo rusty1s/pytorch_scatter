@@ -36,7 +36,7 @@ In addition, we provide the following **composite functions** which make use of 
 
 All included operations are broadcastable, work on varying data types, are implemented both for CPU and GPU with corresponding backward implementations, and are fully traceable.
 
-# Installation
+## Installation
 
 ### Binaries
 
