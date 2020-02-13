@@ -84,6 +84,6 @@ deploy:
   acl: public_read
   on:
     repo: rusty1s/pytorch_scatter
-    branch: master
+    tags: true
 notifications:
   email: false
