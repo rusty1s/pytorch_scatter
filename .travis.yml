@@ -27,7 +27,7 @@ env:
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5 IDX=cu101
 
 jobs:
-  exclude:  # Exclude all macOS CUDA jobs and Windows cu100 job.
+  exclude:  # Exclude all macOS CUDA jobs and Windows CUDA 10.0 jobs.
     - os: osx
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
     - os: osx
@@ -63,8 +63,8 @@ jobs:
 
 
 install:
-  - source script/cuda.sh
   - source script/conda.sh
+  - source script/cuda.sh
   - conda create --yes -n test python=${PYTHON_VERSION}
   - source activate test
   - if [ ${TRAVIS_OS_NAME} = "windows" ] || [ $IDX != "cu92" ]; then conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch -c defaults -c numba/label/dev --yes; else conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes; fi
