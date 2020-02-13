@@ -27,7 +27,7 @@ env:
     # - TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5 IDX=cu101
 
 jobs:
-  exclude:  # Exclude all macOS CUDA jobs.
+  exclude:  # Exclude all macOS CUDA jobs and Windows cu100 job.
     - os: osx
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu92
     - os: osx
@@ -52,13 +52,22 @@ jobs:
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5 IDX=cu100
     - os: osx
       env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5 IDX=cu101
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.8 IDX=cu100
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.7 IDX=cu100
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.6 IDX=cu100
+    - os: windows
+      env: TORCH_VERSION=1.4.0 PYTHON_VERSION=3.5 IDX=cu100
+
 
 install:
   - source script/cuda.sh
   - source script/conda.sh
   - conda create --yes -n test python=${PYTHON_VERSION}
   - source activate test
-  - if [ ${TRAVIS_OS_NAME} = "windows" ] || [ $IDX != "cu92" ]; then conda install pytorch ${TOOLKIT} -c pytorch -c defaults -c numba/label/dev --yes; else conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes; fi
+  - if [ ${TRAVIS_OS_NAME} = "windows" ] || [ $IDX != "cu92" ]; then conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch -c defaults -c numba/label/dev --yes; else conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes; fi
   - pip install flake8 codecov
   - python setup.py install
 
