@@ -59,6 +59,9 @@ jobs:
 install:
   - source script/cuda.sh
   - source script/conda.sh
+  - conda create --yes -n test python="${PYTHON_VERSION}"
+  - source activate test
+  - source script/torch.sh
   - pip install flake8 codecov
   - python setup.py install
 
