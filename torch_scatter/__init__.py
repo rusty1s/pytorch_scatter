@@ -1,6 +1,6 @@
 # flake8: noqa
 
-import glob
+import importlib
 import os.path as osp
 
 import torch
@@ -9,16 +9,16 @@ __version__ = '2.0.3'
 expected_torch_version = (1, 4)
 
 try:
-    torch.ops.load_library(
-        glob.glob(osp.join(osp.dirname(__file__), '_version.*'))[0])
+    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+        '_version', [osp.dirname(__file__)]).origin)
 except OSError as e:
     if 'undefined symbol' in str(e):
         major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
         t_major, t_minor = expected_torch_version
         if major != t_major or (major == t_major and minor != t_minor):
             raise RuntimeError(
-                'Expected PyTorch version {}.{} but found version '
-                '{}.{}.'.format(t_major, t_minor, major, minor))
+                f'Expected PyTorch version {t_major}.{t_minor} but found '
+                f'version {major}.{minor}.')
     raise OSError(e)
 
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
@@ -43,11 +43,11 @@ if cuda_version != -1 and torch.version.cuda is not None:  # pragma: no cover
 
     if t_major != major or t_minor != minor:
         raise RuntimeError(
-            'Detected that PyTorch and torch_scatter were compiled with '
-            'different CUDA versions. PyTorch has CUDA version={}.{} and '
-            'torch_scatter has CUDA version={}.{}. Please reinstall the '
-            'torch_scatter that matches your PyTorch install.'.format(
-                t_major, t_minor, major, minor))
+            f'Detected that PyTorch and torch_scatter were compiled with '
+            f'different CUDA versions. PyTorch has CUDA version '
+            f'{t_major}.{t_minor} and torch_scatter has CUDA version '
+            f'{major}.{minor}. Please reinstall the torch_scatter that '
+            f'matches your PyTorch install.')
 
 __all__ = [
     'scatter_sum',

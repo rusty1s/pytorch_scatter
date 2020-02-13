@@ -37,11 +37,11 @@ def get_extensions():
 
         sources = [main]
 
-        path = osp.join(extensions_dir, 'cpu', name + '_cpu.cpp')
+        path = osp.join(extensions_dir, 'cpu', f'{name}_cpu.cpp')
         if osp.exists(path):
             sources += [path]
 
-        path = osp.join(extensions_dir, 'cuda', name + '_cuda.cu')
+        path = osp.join(extensions_dir, 'cuda', f'{name}_cuda.cu')
         if WITH_CUDA and osp.exists(path):
             sources += [path]
 
@@ -70,7 +70,7 @@ setup(
     description='PyTorch Extension Library of Optimized Scatter Operations',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
     license='MIT',
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
