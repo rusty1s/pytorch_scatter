@@ -20,10 +20,12 @@ except OSError as e:
             raise RuntimeError(
                 f'Expected PyTorch version {t_major}.{t_minor} but found '
                 f'version {major}.{minor}.')
+    raise OSError(e)
+except AttributeError as e:
     if os.getenv('BUILD_DOCS', '0') == '1':
         pass
     else:
-        raise OSError(e)
+        raise AttributeError(e)
 
 cuda_version = torch.ops.torch_scatter.cuda_version()
 if cuda_version != -1 and torch.version.cuda is not None:  # pragma: no cover
