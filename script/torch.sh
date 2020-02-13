@@ -1,7 +1,5 @@
 #!/bin/bash
 
-conda install pytorch="${TORCH_VERSION}" "${TOOLKIT}" -c pytorch --yes
-
 # Fix "member may not be initialized" error on Windows: https://github.com/pytorch/pytorch/issues/27958
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
   sed -i.bak -e 's/constexpr/const/g' /c/tools/miniconda3/envs/test/lib/site-packages/torch/include/torch/csrc/jit/script/module.h
