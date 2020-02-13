@@ -70,16 +70,10 @@ $ echo $CPATH
 >>> /usr/local/cuda/include:...
 ```
 
-Then run
+Then run:
 
 ```
 pip install torch-scatter
-```
-
-or
-
-```
-python setup.py install
 ```
 
 When running in a docker container without nvidia driver, PyTorch needs to evaluate the compute capabilities and may fail.
