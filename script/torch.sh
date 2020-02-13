@@ -1,6 +1,12 @@
 #!/bin/bash
 
-conda install pytorch="${TORCH_VERSION}" "${TOOLKIT}" -c pytorch --yes
+if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
+  conda install pytorch="${TORCH_VERSION}" "${TOOLKIT}" -c pytorch --yes
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+  conda install pytorch="${TORCH_VERSION}" -c pytorch --yes
+fi
 
 # Fix "member may not be initialized" error on Windows: https://github.com/pytorch/pytorch/issues/27958
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
