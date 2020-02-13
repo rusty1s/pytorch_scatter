@@ -98,7 +98,7 @@ fi
 
 # Fix Cuda9.2 on Windows: https://github.com/pytorch/pytorch/issues/6109
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" = "cu92" ]; then
-  cat -n "${CUDA_PATH}/include/crt/host_config.h"
+  cat -n "${CUDA_HOME}/include/crt/host_config.h"
   sed -i.bak -e '129,141d' "${CUDA_PATH}/include/crt/host_config.h"
-  cat -n "${CUDA_PATH}/include/crt/host_config.h"
+  cat -n "${CUDA_HOME}/include/crt/host_config.h"
 fi
