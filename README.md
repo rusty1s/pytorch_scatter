@@ -53,7 +53,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu100` or `cu101` d
 |-------------|-------|--------|---------|---------|
 | **Linux**   | ✅    | ✅     | ✅      | ✅      |
 | **Windows** | ✅    | ❌     | ❌      | ✅      |
-| **macOS**   | ✅    | ❌     | ❌      | ❌      |
+| **macOS**   | ✅    |        |         |         |
 
 ### From source
 
