@@ -1,18 +1,8 @@
-import os
-import importlib
-import os.path as osp
 from typing import Optional, Tuple
 
 import torch
 
 from .utils import broadcast
-
-try:
-    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-        '_scatter', [osp.dirname(__file__)]).origin)
-except AttributeError as e:
-    if os.getenv('BUILD_DOCS', '0') != '1':
-        raise AttributeError(e)
 
 
 @torch.jit.script
