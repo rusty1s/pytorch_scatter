@@ -72,7 +72,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
     int64_t idx, next_idx, row_start;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (!optional_out.has_value())
-        out.fill_(Reducer<scalar_t>::init(REDUCE));
+        out.fill_(Reducer<scalar_t, REDUCE>::init());
       if (REDUCE == MEAN)
         count_data = arg_out.value().data_ptr<scalar_t>();
 
@@ -87,13 +87,13 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
         for (auto e = 0; e < E; e++) {
 
           for (auto k = 0; k < K; k++)
-            Reducer<scalar_t>::update(
-                REDUCE, &vals[k], src_data[b * E * K + e * K + k], &args[k], e);
+            Reducer<scalar_t, REDUCE>::update(
+                &vals[k], src_data[b * E * K + e * K + k], &args[k], e);
 
           if (e == E - 1) {
             for (auto k = 0; k < K; k++)
-              Reducer<scalar_t>::write(
-                  REDUCE, out_data + b * N * K + idx * K + k, vals[k],
+              Reducer<scalar_t, REDUCE>::write(
+                  out_data + b * N * K + idx * K + k, vals[k],
                   arg_out_data + b * N * K + idx * K + k, args[k],
                   e + 1 - row_start);
             if (REDUCE == MEAN)
@@ -104,8 +104,8 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
 
             if (idx != next_idx) {
               for (auto k = 0; k < K; k++) {
-                Reducer<scalar_t>::write(
-                    REDUCE, out_data + b * N * K + idx * K + k, vals[k],
+                Reducer<scalar_t, REDUCE>::write(
+                    out_data + b * N * K + idx * K + k, vals[k],
                     arg_out_data + b * N * K + idx * K + k, args[k],
                     e + 1 - row_start);
 
@@ -121,7 +121,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
         }
       }
       if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
-        out.masked_fill_(out == Reducer<scalar_t>::init(REDUCE), (scalar_t)0);
+        out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
 
       if (REDUCE == MEAN)
         arg_out.value().clamp_(1);

@@ -40,8 +40,8 @@ const std::map<std::string, ReductionType> reduce2REDUCE = {
     }                                                                          \
   }()
 
-template <typename scalar_t> struct Reducer {
-  static inline scalar_t init(ReductionType REDUCE) {
+template <typename scalar_t, ReductionType REDUCE> struct Reducer {
+  static inline scalar_t init() {
     if (REDUCE == MUL || REDUCE == DIV)
       return (scalar_t)1;
     else if (REDUCE == MIN)
@@ -52,8 +52,8 @@ template <typename scalar_t> struct Reducer {
       return (scalar_t)0;
   }
 
-  static inline void update(ReductionType REDUCE, scalar_t *val,
-                            scalar_t new_val, int64_t *arg, int64_t new_arg) {
+  static inline void update(scalar_t *val, scalar_t new_val, int64_t *arg,
+                            int64_t new_arg) {
     if (REDUCE == SUM || REDUCE == MEAN)
       *val = *val + new_val;
     else if (REDUCE == MUL)
@@ -67,9 +67,8 @@ template <typename scalar_t> struct Reducer {
     }
   }
 
-  static inline void write(ReductionType REDUCE, scalar_t *address,
-                           scalar_t val, int64_t *arg_address, int64_t arg,
-                           int count) {
+  static inline void write(scalar_t *address, scalar_t val,
+                           int64_t *arg_address, int64_t arg, int count) {
     if (REDUCE == SUM || REDUCE == MUL || REDUCE == DIV)
       *address = val;
     else if (REDUCE == MEAN)

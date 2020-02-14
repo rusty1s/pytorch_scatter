@@ -61,22 +61,22 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
     int64_t i, idx;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (!optional_out.has_value())
-        out.fill_(Reducer<scalar_t>::init(REDUCE));
+        out.fill_(Reducer<scalar_t, REDUCE>::init());
 
       for (auto b = 0; b < B; b++) {
         for (auto e = 0; e < E; e++) {
           for (auto k = 0; k < K; k++) {
             i = b * E * K + e * K + k;
             idx = index_info.data[IndexToOffset<int64_t>::get(i, index_info)];
-            Reducer<scalar_t>::update(
-                REDUCE, out_data + b * N * K + idx * K + k, src_data[i],
+            Reducer<scalar_t, REDUCE>::update(
+                out_data + b * N * K + idx * K + k, src_data[i],
                 arg_out_data + b * N * K + idx * K + k, e);
           }
         }
       }
 
       if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
-        out.masked_fill_(out == Reducer<scalar_t>::init(REDUCE), (scalar_t)0);
+        out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
     });
   });
 
