@@ -1,5 +1,3 @@
-# flake8: noqa
-
 import os
 import importlib
 import os.path as osp
@@ -10,8 +8,9 @@ __version__ = '2.0.3'
 expected_torch_version = (1, 4)
 
 try:
-    torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-        '_version', [osp.dirname(__file__)]).origin)
+    for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
+        torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
+            library, [osp.dirname(__file__)]).origin)
 except OSError as e:
     if 'undefined symbol' in str(e):
         major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
@@ -24,6 +23,31 @@ except OSError as e:
 except AttributeError as e:
     if os.getenv('BUILD_DOCS', '0') != '1':
         raise AttributeError(e)
+
+    from .placeholder import cuda_version_placeholder
+    torch.ops.torch_scatter.cuda_version = cuda_version_placeholder
+
+    from .placeholder import scatter_arg_placeholder
+    torch.ops.torch_scatter.scatter_min = scatter_arg_placeholder
+    torch.ops.torch_scatter.scatter_max = scatter_arg_placeholder
+
+    from .placeholder import segment_csr_placeholder
+    from .placeholder import segment_csr_arg_placeholder
+    from .placeholder import gather_csr_placeholder
+    torch.ops.torch_scatter.segment_sum_csr = segment_csr_placeholder
+    torch.ops.torch_scatter.segment_mean_csr = segment_csr_placeholder
+    torch.ops.torch_scatter.segment_min_csr = segment_csr_arg_placeholder
+    torch.ops.torch_scatter.segment_max_csr = segment_csr_arg_placeholder
+    torch.ops.torch_scatter.gather_csr = gather_csr_placeholder
+
+    from .placeholder import segment_coo_placeholder
+    from .placeholder import segment_coo_arg_placeholder
+    from .placeholder import gather_coo_placeholder
+    torch.ops.torch_scatter.segment_sum_coo = segment_coo_placeholder
+    torch.ops.torch_scatter.segment_mean_coo = segment_coo_placeholder
+    torch.ops.torch_scatter.segment_min_coo = segment_coo_arg_placeholder
+    torch.ops.torch_scatter.segment_max_coo = segment_coo_arg_placeholder
+    torch.ops.torch_scatter.gather_coo = gather_coo_placeholder
 
 if torch.version.cuda is not None:  # pragma: no cover
     cuda_version = torch.ops.torch_scatter.cuda_version()
@@ -45,15 +69,15 @@ if torch.version.cuda is not None:  # pragma: no cover
             f'matches your PyTorch install.')
 
 from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
-                      scatter_max, scatter)
+                      scatter_max, scatter)  # noqa: E402
 from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
                           segment_min_csr, segment_max_csr, segment_csr,
-                          gather_csr)
+                          gather_csr)  # noqa: E402
 from .segment_coo import (segment_sum_coo, segment_add_coo, segment_mean_coo,
                           segment_min_coo, segment_max_coo, segment_coo,
-                          gather_coo)
+                          gather_coo)  # noqa: E402
 from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
-                        scatter_log_softmax)
+                        scatter_log_softmax)  # noqa: E402
 
 __all__ = [
     'scatter_sum',
