@@ -9,9 +9,7 @@ try:
     torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
         '_segment_coo', [osp.dirname(__file__)]).origin)
 except AttributeError as e:
-    if os.getenv('BUILD_DOCS', '0') == '1':
-        pass
-    else:
+    if os.getenv('BUILD_DOCS', '0') != '1':
         raise AttributeError(e)
 
 

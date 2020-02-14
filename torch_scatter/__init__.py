@@ -22,19 +22,19 @@ except OSError as e:
                 f'version {major}.{minor}.')
     raise OSError(e)
 except AttributeError as e:
-    if os.getenv('BUILD_DOCS', '0') == '1':
-        pass
-    else:
+    if os.getenv('BUILD_DOCS', '0') != '1':
         raise AttributeError(e)
 
-cuda_version = torch.ops.torch_scatter.cuda_version()
-if cuda_version != -1 and torch.version.cuda is not None:  # pragma: no cover
-    if cuda_version < 10000:
+if torch.version.cuda is not None:  # pragma: no cover
+    cuda_version = torch.ops.torch_scatter.cuda_version()
+
+    if cuda_version == -1:
+        major = minor = 0
+    elif cuda_version < 10000:
         major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
     else:
         major, minor = int(str(cuda_version)[0:2]), int(str(cuda_version)[3])
     t_major, t_minor = [int(x) for x in torch.version.cuda.split('.')]
-    cuda_version = str(major) + '.' + str(minor)
 
     if t_major != major or t_minor != minor:
         raise RuntimeError(
