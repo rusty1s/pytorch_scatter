@@ -68,17 +68,17 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
 
         offset = (n / (indptr.size(-1) - 1)) * E * K;
         for (auto k = 0; k < K; k++)
-          vals[k] = Reducer<scalar_t>::init(REDUCE);
+          vals[k] = Reducer<scalar_t, REDUCE>::init();
 
         for (auto e = row_start; e < row_end; e++)
           for (auto k = 0; k < K; k++)
-            Reducer<scalar_t>::update(
-                REDUCE, &vals[k], src_data[offset + e * K + k], &args[k], e);
+            Reducer<scalar_t, REDUCE>::update(
+                &vals[k], src_data[offset + e * K + k], &args[k], e);
 
         for (auto k = 0; k < K; k++)
-          Reducer<scalar_t>::write(REDUCE, out_data + n * K + k, vals[k],
-                                   arg_out_data + n * K + k, args[k],
-                                   row_end - row_start);
+          Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, vals[k],
+                                           arg_out_data + n * K + k, args[k],
+                                           row_end - row_start);
       }
     });
   });
