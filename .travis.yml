@@ -77,7 +77,7 @@ deploy:
   provider: s3
   region: eu-central-1
   edge: true
-  access_key_id: AKIAJB7S6NJ5OM5MAAGA
+  access_key_id: ${S3_ACCESS_KEY}
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-geometric.com
   local_dir: dist/torch-${TORCH_VERSION}
