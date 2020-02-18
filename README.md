@@ -41,7 +41,7 @@ All included operations are broadcastable, work on varying data types, are imple
 ### Binaries
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
-To install from binaries, simply run
+To install the binaries for PyTorch 1.4.0, simply run
 
 ```
 pip install torch-scatter==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.4.0.html
