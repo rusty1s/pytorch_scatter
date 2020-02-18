@@ -36,6 +36,7 @@ scatter_fw(torch::Tensor src, torch::Tensor index, int64_t dim,
     return scatter_cpu(src, index, dim, optional_out, dim_size, reduce);
   }
 }
+
 using torch::autograd::AutogradContext;
 using torch::autograd::Variable;
 using torch::autograd::variable_list;
