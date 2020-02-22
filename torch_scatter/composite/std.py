@@ -27,14 +27,14 @@ def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     index = broadcast(index, src, dim)
     tmp = scatter_sum(src, index, dim, dim_size=dim_size)
     count = broadcast(count, tmp, dim).clamp_(1)
-    mean = tmp.div_(count)
+    mean = tmp.div(count)
 
     var = (src - mean.gather(dim, index))
     var = var * var
     out = scatter_sum(var, index, dim, out, dim_size)
 
     if unbiased:
-        count.sub_(1).clamp_(1)
-    out.div_(count).sqrt_()
+        count = count.sub(1).clamp_(1)
+    out = out.div(count).sqrt()
 
     return out

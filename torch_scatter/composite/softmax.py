@@ -17,12 +17,12 @@ def scatter_softmax(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     max_per_src_element = max_value_per_index.gather(dim, index)
 
     recentered_scores = src - max_per_src_element
-    recentered_scores_exp = recentered_scores.exp_()
+    recentered_scores_exp = recentered_scores.exp()
 
     sum_per_index = scatter_sum(recentered_scores_exp, index, dim)
     normalizing_constants = sum_per_index.add_(eps).gather(dim, index)
 
-    return recentered_scores_exp.div_(normalizing_constants)
+    return recentered_scores_exp.div(normalizing_constants)
 
 
 @torch.jit.script

@@ -4,6 +4,7 @@ from torch_scatter import scatter_log_softmax, scatter_softmax
 
 def test_softmax():
     src = torch.tensor([0.2, 0, 0.2, -2.1, 3.2, 7, -1, float('-inf')])
+    src.requires_grad_()
     index = torch.tensor([0, 1, 0, 1, 1, 2, 4, 4])
 
     out = scatter_softmax(src, index)
@@ -19,9 +20,12 @@ def test_softmax():
 
     assert torch.allclose(out, expected)
 
+    out.backward(torch.randn_like(out))
+
 
 def test_log_softmax():
     src = torch.tensor([0.2, 0, 0.2, -2.1, 3.2, 7, -1, float('-inf')])
+    src.requires_grad_()
     index = torch.tensor([0, 1, 0, 1, 1, 2, 4, 4])
 
     out = scatter_log_softmax(src, index)
@@ -36,3 +40,5 @@ def test_log_softmax():
     ], dim=0)
 
     assert torch.allclose(out, expected)
+
+    out.backward(torch.randn_like(out))

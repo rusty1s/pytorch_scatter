@@ -4,6 +4,7 @@ from torch_scatter import scatter_logsumexp
 
 def test_logsumexp():
     src = torch.tensor([0.5, 0, 0.5, -2.1, 3.2, 7, -1, -100])
+    src.requires_grad_()
     index = torch.tensor([0, 1, 0, 1, 1, 2, 4, 4])
 
     out = scatter_logsumexp(src, index)
@@ -16,3 +17,5 @@ def test_logsumexp():
 
     expected = torch.stack([out0, out1, out2, out3, out4], dim=0)
     assert torch.allclose(out, expected)
+
+    out.backward(torch.randn_like(out))
