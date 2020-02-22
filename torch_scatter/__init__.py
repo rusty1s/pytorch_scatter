@@ -4,7 +4,7 @@ import os.path as osp
 
 import torch
 
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 expected_torch_version = (1, 4)
 
 try:
