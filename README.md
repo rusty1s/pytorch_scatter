@@ -28,7 +28,7 @@ Segment operations require the "group-index" tensor to be sorted, whereas scatte
 
 The package consists of the following operations with reduction types `"sum"|"mean"|"min"|"max"`:
 
-* [**scatter**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment.html) based on arbitrary indices
+* [**scatter**](https://pytorch-scatter.readthedocs.io/en/latest/functions/scatter.html) based on arbitrary indices
 * [**segment_coo**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment_coo.html) based on sorted indices
 * [**segment_csr**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment_csr.html) based on compressed indices via pointers
 
