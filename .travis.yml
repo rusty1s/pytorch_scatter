@@ -84,6 +84,7 @@ deploy:
   upload_dir: whl/torch-${TORCH_VERSION}
   acl: public_read
   on:
+    all_branches: true
     repo: rusty1s/pytorch_scatter
     condition: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
 notifications:
