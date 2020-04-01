@@ -11,14 +11,6 @@ try:
     for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
         torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
             library, [osp.dirname(__file__)]).origin)
-except OSError as e:
-    major, minor = [int(x) for x in torch.__version__.split('.')[:2]]
-    t_major, t_minor = expected_torch_version
-    if major != t_major or (major == t_major and minor != t_minor):
-        raise RuntimeError(
-            f'Expected PyTorch version {t_major}.{t_minor} but found '
-            f'version {major}.{minor}.')
-    raise OSError(e)
 except AttributeError as e:
     if os.getenv('BUILD_DOCS', '0') != '1':
         raise AttributeError(e)
