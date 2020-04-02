@@ -25,9 +25,7 @@ def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     size = src.size()
     size[dim] = dim_size
-    max_value_per_index = torch.full(size, float('-inf'), dtype=src.dtype,
-                                     device=src.device)
-    scatter_max(src, index, dim, max_value_per_index, dim_size)[0]
+    max_value_per_index = scatter_max(src, index, dim=dim, dim_size=dim_size)[0]
     max_per_src_element = max_value_per_index.gather(dim, index)
     recentered_scores = src - max_per_src_element
 
