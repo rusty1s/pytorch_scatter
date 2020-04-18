@@ -110,3 +110,16 @@ tensor([[5, 5, 3, 4, 0, 1]
 ```
 python setup.py test
 ```
+
+## C++ API
+
+`torch-scatter` also offers a C++ API that contains C++ equivalent of python models.
+
+```
+mkdir build
+cd build
+# Add -DWITH_CUDA=on support for the CUDA if needed
+cmake ..
+make
+make install
+```
