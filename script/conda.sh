@@ -28,5 +28,5 @@ conda create --yes -n test python="${PYTHON_VERSION}"
 gcc --version
 
 if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-  conda install gcc_linux-64
+  conda install gcc_linux-64 --yes
 fi
