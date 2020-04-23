@@ -97,7 +97,7 @@ public:
     count = gather_coo_fw(count, index, torch::nullopt);
     for (auto i = 0; i < grad_out.dim() - index.dim(); i++)
       count = count.unsqueeze(-1);
-    grad_in.div_(count);
+    grad_in.true_divide_(count);
     return {grad_in, Variable(), Variable(), Variable()};
   }
 };

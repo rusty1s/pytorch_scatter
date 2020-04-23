@@ -11,4 +11,4 @@ if torch.cuda.is_available():
 
 
 def tensor(x, dtype, device):
-    return None if x is None else torch.tensor(x, dtype=dtype, device=device)
+    return None if x is None else torch.tensor(x, device=device).to(dtype)
