@@ -1,8 +1,8 @@
 language: shell
 
 os:
-  # - linux
-  # - osx
+  - linux
+  - osx
   - windows
 
 env:
