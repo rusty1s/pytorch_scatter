@@ -50,6 +50,7 @@ jobs:
       env: TORCH_VERSION=1.5.0 PYTHON_VERSION=3.6 IDX=cu92
 
 install:
+  - source script/gcc.sh
   - source script/cuda.sh
   - source script/conda.sh
   - conda create --yes -n test python="${PYTHON_VERSION}"
