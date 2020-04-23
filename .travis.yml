@@ -1,9 +1,9 @@
 language: shell
 
 os:
-  - linux
+  # - linux
   # - osx
-  # - windows
+  - windows
 
 env:
   global:
