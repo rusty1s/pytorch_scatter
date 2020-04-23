@@ -40,9 +40,9 @@ All included operations are broadcastable, work on varying data types, are imple
 
 ### Binaries
 
-#### PyTorch 1.5.0
-
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
+
+#### PyTorch 1.5.0
 
 To install the binaries for PyTorch 1.5.0, simply run
 

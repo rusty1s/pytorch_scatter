@@ -50,9 +50,11 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     count.clamp_(1)
     count = broadcast(count, out, dim)
     if torch.is_floating_point(out):
-        out.true_divide_(count)
+        out.div_(count)
+        # out.true_divide_(count)
     else:
-        out.floor_divide_(count)
+        out.div_(count)
+        # out.floor_divide_(count)
     return out
 
 
