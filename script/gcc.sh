@@ -1,7 +1,6 @@
 #!/bin/bash
 
 if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-  sudo apt-get install software-properties-common --yes
   sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
   sudo apt update
   sudo apt install gcc-7 g++-7 --yes
@@ -10,7 +9,5 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
   sudo update-alternatives --config gcc
   gcc --version
   g++ --version
-  export CC=gcc-7
-  export CXX=g++-7
 fi
 
