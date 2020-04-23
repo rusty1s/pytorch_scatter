@@ -61,8 +61,8 @@ install(FILES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/cpu)
 if(WITH_CUDA)
   install(FILES
-  csrc/cpu/scatter_cuda.h
-  csrc/cpu/segment_coo_cuda.h
-  csrc/cpu/segment_csr_cuda.h
+  csrc/cuda/scatter_cuda.h
+  csrc/cuda/segment_coo_cuda.h
+  csrc/cuda/segment_csr_cuda.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/cuda)
 endif()
