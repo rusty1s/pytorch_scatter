@@ -36,22 +36,22 @@ fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu92" ]; then
   export CUDA_SHORT=9.2
-  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2
+  export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod2/local_installers2
   export CUDA_FILE=cuda_${CUDA_SHORT}.148_win10
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu101" ]; then
   export CUDA_SHORT=10.1
-  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+  export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
   export CUDA_FILE=cuda_${CUDA_SHORT}.105_418.96_win10.exe
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu102" ]; then
   export CUDA_SHORT=10.2
-  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
-  export CUDA_FILE=cuda_${CUDA_SHORT}.89_441.22_win10
+  export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+  export CUDA_FILE=cuda_${CUDA_SHORT}.89_441.22_win10.exe
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
