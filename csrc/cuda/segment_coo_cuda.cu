@@ -1,5 +1,6 @@
 #include "segment_coo_cuda.h"
 
+#include <type_traits>
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
@@ -34,9 +35,10 @@ segment_coo_kernel(const scalar_t *src_data,
     scalar_t val = HAS_VAL ? src_data[row_idx] : (scalar_t)1, tmp;
 
 #pragma unroll
-    for (int i = 1; i < 32; i *= 2) {
+    for (int i = 1; i < 32; i *= 2) { // use left shift?
       // Parallel reduction inside a single warp.
-      tmp = __shfl_up_sync(FULL_MASK, val, i);
+      using float_t = typename std::conditional<std::is_same<scalar_t, at::Half>::value, __half, scalar_t>::type;
+      tmp = __shfl_up_sync(FULL_MASK, (float_t)val, i);
       next_idx = __shfl_up_sync(FULL_MASK, idx, i);
       if (lane_idx >= i && row_idx / D == (row_idx - i) / D) {
         assert(idx >= next_idx);
@@ -215,7 +217,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_coo_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "segment_coo_kernel", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
@@ -362,7 +364,7 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_coo_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "gather_coo_kernel", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 

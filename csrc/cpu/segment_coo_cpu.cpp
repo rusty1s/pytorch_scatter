@@ -63,7 +63,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
   auto index_info = getTensorInfo<int64_t>(index);
   auto stride = index_info.strides[index_info.dims - 1];
   std::vector<int64_t> args(K);
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_coo", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "segment_coo", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
     scalar_t *count_data = nullptr;
@@ -168,7 +168,7 @@ torch::Tensor gather_coo_cpu(torch::Tensor src, torch::Tensor index,
 
   auto index_info = getTensorInfo<int64_t>(index);
   auto stride = index_info.strides[index_info.dims - 1];
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_coo", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "gather_coo", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 

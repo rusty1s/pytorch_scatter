@@ -47,8 +47,9 @@ segment_csr_kernel(const scalar_t *src_data,
       // Parallel reduction inside a single warp.
       if (REDUCE == MIN || REDUCE == MAX)
         arg_tmp = __shfl_down_sync(FULL_MASK, arg, i);
+      using float_t = typename std::conditional<std::is_same<scalar_t, at::Half>::value, __half, scalar_t>::type;
       Reducer<scalar_t, REDUCE>::update(
-          &val, __shfl_down_sync(FULL_MASK, val, i), &arg, arg_tmp);
+          &val, __shfl_down_sync(FULL_MASK, (float_t)val, i), &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {
@@ -144,7 +145,7 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_csr_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "segment_csr_kernel", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
@@ -260,7 +261,7 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_csr_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "gather_csr_kernel", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
