@@ -8,7 +8,6 @@ os:
 env:
   global:
     - CUDA_HOME=/usr/local/cuda
-
   jobs:
     - TORCH_VERSION=1.5.0 PYTHON_VERSION=3.8 IDX=cpu
     - TORCH_VERSION=1.5.0 PYTHON_VERSION=3.8 IDX=cu92
