@@ -26,7 +26,7 @@ def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     index = broadcast(index, src, dim)
     tmp = scatter_sum(src, index, dim, dim_size=dim_size)
-    count = broadcast(count, tmp, dim).clamp_(1)
+    count = broadcast(count, tmp, dim).clamp(1)
     mean = tmp.div(count)
 
     var = (src - mean.gather(dim, index))
