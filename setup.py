@@ -63,7 +63,7 @@ tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_scatter',
-    version='2.0.4',
+    version='2.0.5',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url='https://github.com/rusty1s/pytorch_scatter',
@@ -74,6 +74,7 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
+    extras_require={'test': tests_require},
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
         'build_ext':

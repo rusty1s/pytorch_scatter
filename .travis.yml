@@ -58,7 +58,7 @@ install:
   - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
   - source script/torch.sh
   - pip install flake8 codecov
-  - python setup.py install
+  - pip install .[test]
 script:
   - flake8 .
   - python setup.py test

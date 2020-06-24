@@ -4,7 +4,7 @@ import os.path as osp
 
 import torch
 
-__version__ = '2.0.4'
+__version__ = '2.0.5'
 
 try:
     for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
