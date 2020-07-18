@@ -39,7 +39,7 @@ except AttributeError as e:
     torch.ops.torch_scatter.segment_max_coo = segment_coo_arg_placeholder
     torch.ops.torch_scatter.gather_coo = gather_coo_placeholder
 
-if torch.version.cuda is not None and torch.cuda.is_available():  # pragma: no cover
+if torch.cuda.is_available() and torch.version.cuda:  # pragma: no cover
     cuda_version = torch.ops.torch_scatter.cuda_version()
 
     if cuda_version == -1:
