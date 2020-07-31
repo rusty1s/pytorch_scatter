@@ -9,112 +9,55 @@ env:
   global:
     - CUDA_HOME=/usr/local/cuda
   jobs:
-    include:
-      # Python 3.8
-      - if: true
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-      - if: true
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
-      # Python 3.7
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
-      # Python 3.6
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
-      - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-        env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.8
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.7
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
+    # - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.6
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
+    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
 
 jobs:
-  # Exclude *all* macOS CUDA jobs and Windows CUDA 9.2 jobs.
+  # For daily builds, we only test on CUDA 10.2
+  # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
-    # macOS
-    - os: osx
+    # Python 3.8
+    - if: $TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy AND $TRAVIS_OS_NAME != "osx"
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
+    - if: ($TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) OR $TRAVIS_OS_NAME != "linux"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: osx
+    - if: ($TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) OR $TRAVIS_OS_NAME == "osx"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    - os: osx
+    - if: $TRAVIS_OS_NAME == "osx"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-    - os: osx
+    - if: $TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy AND $TRAVIS_OS_NAME != "osx"
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
+    - if: ($TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) OR $TRAVIS_OS_NAME != "linux"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-    - os: osx
+    - if: ($TRAVIS_TAG == "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) OR $TRAVIS_OS_NAME == "osx"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
-    - os: osx
+    - if: $TRAVIS_OS_NAME == "osx"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
-    - os: osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
-    - os: osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
-    # Windows
-    - os: windows
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: windows
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: windows
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-    - os: windows
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-    - os: windows
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
-    - os: windows
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
 
 install:
   - source script/gcc.sh
@@ -147,6 +90,6 @@ deploy:
   on:
     all_branches: true
     repo: rusty1s/pytorch_scatter
-    condition: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
+    condition: $TRAVIS_TAG != "" OR $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
 notifications:
   email: false
