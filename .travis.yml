@@ -53,6 +53,7 @@ jobs:
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 install:
+  - echo $TRAVIS_OS_NAME
   - source script/gcc.sh
   - source script/cuda.sh
   - source script/conda.sh
