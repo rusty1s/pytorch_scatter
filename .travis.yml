@@ -38,7 +38,7 @@ env:
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
 
 jobs:
-  # For daily builds, we only test on Python 3.6/CUDA 10.2
+  # For daily builds, we only test on *Python 3.6* and *CUDA 10.2*.
   # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
     # Python 3.6
