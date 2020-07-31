@@ -23,9 +23,9 @@ jobs:
   exclude:
     - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux:
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx:
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
     - if: os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
