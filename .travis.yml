@@ -21,7 +21,7 @@ env:
 
 jobs:
   exclude:
-    - if: tag is blank or commit_message !~ ci-deploy
+    - if: not (tag is present or commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
 
 install:
