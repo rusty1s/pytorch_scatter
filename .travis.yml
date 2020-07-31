@@ -43,8 +43,9 @@ jobs:
   exclude:
     # Python 3.8
     # - if: $TRAVIS_TAG = "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-    - if: env(TRAVIS_OS_NAME) = linux
+    -# dawdawd
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
+      if: env(TRAVIS_OS_NAME) = linux
     # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME != "linux"
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
     # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME = "osx"
@@ -53,7 +54,6 @@ jobs:
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 install:
-  - echo $TRAVIS_OS_NAME
   - source script/gcc.sh
   - source script/cuda.sh
   - source script/conda.sh
