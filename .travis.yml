@@ -2,8 +2,8 @@ language: shell
 
 os:
   - linux
-  # - osx
-  # - windows
+  - osx
+  - windows
 
 env:
   global:
@@ -11,8 +11,8 @@ env:
   jobs:
     # Python 3.8
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
     # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
     # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
@@ -41,7 +41,7 @@ jobs:
   # For daily builds, we only test on CUDA 10.2
   # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
-    - if: branch = master
+    - if: tag is blank OR os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME != "linux"
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
