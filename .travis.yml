@@ -10,31 +10,19 @@ env:
     - CUDA_HOME=/usr/local/cuda
   jobs:
     # Python 3.8
-    include:
-      - # PY=3.8 TORCH=1.6.0 cpu
-        if: (tag is present or commit_message =~ ci-deploy) or os = osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-      - # PY=3.8 TORCH=1.6.0 cu92
-        if: (tag is present or commit_message =~ ci-deploy) and os = linux
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-      - # PY=3.8 TORCH=1.6.0 cu101
-        if: (tag is present or commit_message =~ ci-deploy) and os != osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-      - # PY=3.8 TORCH=1.6.0 cu102
-        if: os != osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-      - # PY=3.8 TORCH=1.5.0 cpu
-        if: (tag is present or commit_message =~ ci-deploy) or os = osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
-      - # PY=3.8 TORCH=1.5.0 cu92
-        if: (tag is present or commit_message =~ ci-deploy) and os = linux
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-      - # PY=3.8 TORCH=1.5.0 cu101
-        if: (tag is present or commit_message =~ ci-deploy) and os != osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
-      - # PY=3.8 TORCH=1.5.0 cu102
-        if: os != osx
-        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
+    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+
+jobs:
+  exclude:
+    - if: tag is blank or commit_message !~ ci-deploy
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
 
 install:
   - source script/gcc.sh
