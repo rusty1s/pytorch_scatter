@@ -63,34 +63,34 @@ jobs:
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
     - if: not (tag is present or commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
     # Python 3.8
     - if: not (tag is present or commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
     - if: not (tag is present or commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
 
 install:
