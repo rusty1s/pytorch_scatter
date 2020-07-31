@@ -43,7 +43,7 @@ jobs:
   exclude:
     # Python 3.8
     # - if: $TRAVIS_TAG = "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
-    - if: env(TRAVIS_OS_NAME) = "linux"
+    - if: env(TRAVIS_OS_NAME) = linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME != "linux"
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
