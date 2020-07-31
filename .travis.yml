@@ -11,8 +11,8 @@ env:
   jobs:
     # Python 3.8
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
     # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
     # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
@@ -23,7 +23,11 @@ jobs:
   exclude:
     - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: os = osx:
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux:
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx:
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
+    - if: os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 install:
