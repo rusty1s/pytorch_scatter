@@ -42,7 +42,8 @@ jobs:
   # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
     # Python 3.8
-    - if: NOT $TRAVIS_TAG != "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
+    # - if: $TRAVIS_TAG = "" AND NOT $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
+    - if: $TRAVIS_OS_NAME == "linux"
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME != "linux"
     #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
