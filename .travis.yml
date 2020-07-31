@@ -28,60 +28,70 @@ env:
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
     # Python 3.6
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
-    # - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
 
 jobs:
   # For daily builds, we only test on CUDA 10.2
   # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
     # Python 3.8
-    - if: tag is blank and os != osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: tag is blank or os != linux
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
     - if: os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-    - if: tag is blank and os != osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
-    - if: tag is blank or os != linux
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
     - if: os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
     # Python 3.7
-    - if: tag is blank
+    - if: (tag is blank or not commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: tag is blank or os != linux
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
-    - if: tag is blank
+    - if: (tag is blank or not commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
-    - if: tag is blank or os != linux
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
-    - if: tag is blank or os = osx
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
-
-
-
-    # - if: ($TRAVIS_TAG = "" && ! $TRAVIS_COMMIT_MESSAGE =~ ci-deploy) || $TRAVIS_OS_NAME = "osx"
-    #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    # - if: $TRAVIS_OS_NAME = "osx"
-    #   env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
+    # Python 3.6
+    - if: (tag is blank or not commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
+    - if: (tag is blank or not commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
+    - if: (tag is blank or not commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
 
 install:
   - source script/gcc.sh
