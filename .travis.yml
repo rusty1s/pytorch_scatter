@@ -11,8 +11,10 @@ env:
   jobs:
     include:
       # Python 3.8
-      - env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-      - env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+      - if: true
+        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
+      - if: true
+        env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
       - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
         env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
       - if: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
