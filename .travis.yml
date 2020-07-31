@@ -21,8 +21,10 @@ env:
 
 jobs:
   exclude:
-    - if: not (tag is present or commit_message =~ ci-deploy)
+    - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
+    - if: os = osx:
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 install:
   - source script/gcc.sh
