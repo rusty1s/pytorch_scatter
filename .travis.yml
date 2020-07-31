@@ -9,27 +9,89 @@ env:
   global:
     - CUDA_HOME=/usr/local/cuda
   jobs:
+    # Python 3.6
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.7
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
     # Python 3.8
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
-    # - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
 
 jobs:
+  # For daily builds, we only test on Python 3.6/CUDA 10.2
+  # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
+    # Python 3.6
     - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
+    - if: os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
+    - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu101
+    - if: os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.7
+    - if: not (tag is present or commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
+    - if: not (tag is present or commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu101
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.5.0 IDX=cu102
+    # Python 3.8
+    - if: not (tag is present or commit_message =~ ci-deploy)
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: os = osx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
-
+    - if: not (tag is present or commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu92
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = odx
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
 
 install:
   - source script/gcc.sh
@@ -49,19 +111,19 @@ after_success:
   - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
   - python script/rename_wheel.py ${IDX}
   - codecov
-# deploy:
-#   provider: s3
-#   region: eu-central-1
-#   edge: true
-#   access_key_id: ${S3_ACCESS_KEY}
-#   secret_access_key: ${S3_SECRET_ACCESS_KEY}
-#   bucket: pytorch-geometric.com
-#   local_dir: dist/torch-${TORCH_VERSION}
-#   upload_dir: whl/torch-${TORCH_VERSION}
-#   acl: public_read
-#   on:
-#     all_branches: true
-#     repo: rusty1s/pytorch_scatter
-#     condition: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
+deploy:
+  provider: s3
+  region: eu-central-1
+  edge: true
+  access_key_id: ${S3_ACCESS_KEY}
+  secret_access_key: ${S3_SECRET_ACCESS_KEY}
+  bucket: pytorch-geometric.com
+  local_dir: dist/torch-${TORCH_VERSION}
+  upload_dir: whl/torch-${TORCH_VERSION}
+  acl: public_read
+  on:
+    all_branches: true
+    repo: rusty1s/pytorch_scatter
+    condition: $TRAVIS_TAG != "" || $TRAVIS_COMMIT_MESSAGE =~ ci-deploy
 notifications:
   email: false
