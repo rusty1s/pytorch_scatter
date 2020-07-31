@@ -42,6 +42,22 @@ All included operations are broadcastable, work on varying data types, are imple
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
 
+#### PyTorch 1.6.0
+
+To install the binaries for PyTorch 1.6.0, simply run
+
+```
+pip install torch-scatter==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.6.0.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101` or `cu102` depending on your PyTorch installation.
+
+|             | `cpu` | `cu92` | `cu101` | `cu102` |
+|-------------|-------|--------|---------|---------|
+| **Linux**   | ✅    | ✅     | ✅      | ✅      |
+| **Windows** | ✅    | ❌     | ✅      | ✅      |
+| **macOS**   | ✅    |        |         |         |
+
 #### PyTorch 1.5.0
 
 To install the binaries for PyTorch 1.5.0, simply run
@@ -76,11 +92,11 @@ where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu100` or `cu101` d
 
 ### From source
 
-Ensure that at least PyTorch 1.4.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+Ensure that at least PyTorch 1.5.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
 
 ```
 $ python -c "import torch; print(torch.__version__)"
->>> 1.4.0
+>>> 1.5.0
 
 $ echo $PATH
 >>> /usr/local/cuda/bin:...
