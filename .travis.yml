@@ -27,6 +27,7 @@ env:
         env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu101
       - if: os != osx
         env: PYTHON_VERSION=3.8 TORCH_VERSION=1.5.0 IDX=cu102
+
     # Python 3.7
     # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
     # - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
