@@ -95,9 +95,9 @@ public:
     count = broadcast(count, out, dim);
 
     if (out.is_floating_point())
-    	out.true_divide_(count);
+      out.true_divide_(count);
     else
-	out.floor_divide_(count);
+      out.floor_divide_(count);
 
     ctx->save_for_backward({index, count});
     if (optional_out.has_value())

@@ -5,7 +5,7 @@ import glob
 import shutil
 
 idx = sys.argv[1]
-assert idx in ['cpu', 'cu92', 'cu101', 'cu102']
+assert idx in ['cpu', 'cu92', 'cu101', 'cu102', 'cu110']
 
 dist_dir = osp.join(osp.dirname(osp.abspath(__file__)), '..', 'dist')
 wheels = glob.glob(osp.join('dist', '**', '*.whl'), recursive=True)
