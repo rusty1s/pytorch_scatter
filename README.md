@@ -58,7 +58,6 @@ where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101`, `cu102`, or
 | **Windows** | ✅    | ❌     | ✅      | ✅      | ✅      |
 | **macOS**   | ✅    |        |         |         |         |
 
-
 #### PyTorch 1.6.0
 
 To install the binaries for PyTorch 1.6.0, simply run
