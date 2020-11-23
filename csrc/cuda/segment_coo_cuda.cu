@@ -215,12 +215,6 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   auto N = out.size(dim);
   auto avg_len = (float)E_2 / (float)N;
 
-  std::cout << "E " << E << std::endl;
-  std::cout << "E2 " << E_2 << std::endl;
-  std::cout << "E1 " << E_1 << std::endl;
-  std::cout << "K " << K << std::endl;
-  std::cout << "N " << N << std::endl;
-
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_coo_kernel", [&] {
