@@ -85,7 +85,7 @@ __global__ void segment_coo_broadcast_kernel(
 
   int D = index_info.sizes[index_info.dims - 1];
   int E_1 = E / D;
-  int E_2 = D + TB - (D % TB);
+  int E_2 = (D - 1) + TB - ((D - 1) % TB);
 
   int row_idx = blockIdx.x * blockDim.y + threadIdx.y;
   int col_idx = blockIdx.y * blockDim.x + threadIdx.x;
@@ -214,6 +214,12 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   auto K = src.numel() / E;
   auto N = out.size(dim);
   auto avg_len = (float)E_2 / (float)N;
+
+  std::cout << "E " << E << std::endl;
+  std::cout << "E2 " << E_2 << std::endl;
+  std::cout << "E1 " << E_1 << std::endl;
+  std::cout << "K " << K << std::endl;
+  std::cout << "N " << N << std::endl;
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
