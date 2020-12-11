@@ -6,8 +6,14 @@ import torch
 
 __version__ = '2.0.5'
 
+if torch.cuda.is_available():
+    sublib = "gpu"
+else:
+    sublib = "cpu"
+
 try:
     for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
+        library = "%s_%s" % (library, sublib)
         torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
             library, [osp.dirname(__file__)]).origin)
 except AttributeError as e:
