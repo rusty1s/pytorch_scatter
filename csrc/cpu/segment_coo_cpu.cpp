@@ -52,8 +52,11 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
     arg_out = torch::zeros(sizes, out.options());
   }
 
-  if (index.numel() == 0)
+  if (src.numel() == 0) {
+    if (!optional_out.has_value())
+      out.fill_(0);
     return std::make_tuple(out, arg_out);
+  }
 
   auto B = index.numel() / src.size(dim);
   auto E = src.size(dim);
@@ -158,8 +161,11 @@ torch::Tensor gather_coo_cpu(torch::Tensor src, torch::Tensor index,
     out = torch::empty(sizes, src.options());
   }
 
-  if (index.numel() == 0)
+  if (src.numel() == 0) {
+    if (!optional_out.has_value())
+      out.fill_(0);
     return out;
+  }
 
   auto B = index.numel() / out.size(dim);
   auto E = index.size(dim);

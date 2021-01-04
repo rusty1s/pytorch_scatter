@@ -95,7 +95,7 @@ public:
       count = gather_csr_fw(count, indptr, torch::nullopt);
       for (auto i = 0; i < grad_out.dim() - indptr.dim(); i++)
         count = count.unsqueeze(-1);
-      grad_in.div_(count);
+      grad_in.true_divide_(count);
     }
     return {grad_in, Variable(), Variable()};
   }

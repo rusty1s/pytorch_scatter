@@ -43,8 +43,11 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
     arg_out_data = arg_out.value().data_ptr<int64_t>();
   }
 
-  if (index.numel() == 0)
+  if (src.numel() == 0) {
+    if (!optional_out.has_value())
+      out.fill_(0);
     return std::make_tuple(out, arg_out);
+  }
 
   auto B = 1;
   for (auto i = 0; i < dim; i++)

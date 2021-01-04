@@ -136,8 +136,11 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
     arg_out_data = arg_out.value().data_ptr<int64_t>();
   }
 
-  if (src.numel() == 0)
+  if (src.numel() == 0) {
+    if (!optional_out.has_value())
+      out.fill_(0);
     return std::make_tuple(out, arg_out);
+  }
 
   auto N = out.size(dim) * (indptr.numel() / indptr.size(-1));
   auto K = out.numel() / N;
@@ -252,8 +255,11 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
     out = torch::empty(sizes, src.options());
   }
 
-  if (src.numel() == 0)
+  if (src.numel() == 0) {
+    if (!optional_out.has_value())
+      out.fill_(0);
     return out;
+  }
 
   auto N = src.size(dim) * (indptr.numel() / indptr.size(-1));
   auto K = src.numel() / N;

@@ -76,7 +76,8 @@ setup(
     tests_require=tests_require,
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
-        'build_ext': BuildExtension.with_options(no_python_abi_suffix=True)
+        'build_ext':
+        BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
 )

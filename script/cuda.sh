@@ -12,18 +12,19 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu92" ]; then
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu100" ]; then
-  export CUDA_SHORT=10.0
-  export CUDA=10.0.130-1
-  export UBUNTU_VERSION=ubuntu1804
-  export CUBLAS=cuda-cublas-dev-10-0
-  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-fi
-
 if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu101" ]; then
   export IDX=cu101
   export CUDA_SHORT=10.1
   export CUDA=10.1.105-1
+  export UBUNTU_VERSION=ubuntu1804
+  export CUBLAS=libcublas-dev
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+
+if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "$IDX" = "cu102" ]; then
+  export CUDA_SHORT=10.2
+  export CUDA=10.2.89-1
   export UBUNTU_VERSION=ubuntu1804
   export CUBLAS=libcublas-dev
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
@@ -40,17 +41,17 @@ if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu92" ]; then
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
-if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu100" ]; then
-  export CUDA_SHORT=10.0
-  export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
-  export CUDA_FILE=cuda_${CUDA_SHORT}.130_411.31_win10
-  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
-fi
-
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu101" ]; then
   export CUDA_SHORT=10.1
   export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
   export CUDA_FILE=cuda_${CUDA_SHORT}.105_418.96_win10.exe
+  export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
+fi
+
+if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "$IDX" = "cu102" ]; then
+  export CUDA_SHORT=10.2
+  export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+  export CUDA_FILE=cuda_${CUDA_SHORT}.89_441.22_win10.exe
   export TOOLKIT="cudatoolkit=${CUDA_SHORT}"
 fi
 
@@ -80,6 +81,12 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ] && [ "${IDX}" != "cpu" ]; then
 fi
 
 if [ "${TRAVIS_OS_NAME}" = "windows" ] && [ "${IDX}" != "cpu" ]; then
+  # Install NVIDIA drivers, see:
+  # https://github.com/pytorch/vision/blob/master/packaging/windows/internal/cuda_install.bat#L99-L102
+  curl -k -L "https://drive.google.com/u/0/uc?id=1injUyo3lnarMgWyRcXqKg4UGnN0ysmuq&export=download" --output "/tmp/gpu_driver_dlls.zip"
+  7z x "/tmp/gpu_driver_dlls.zip" -o"/c/Windows/System32"
+
+  # Install CUDA
   wget -nv "${CUDA_URL}/${CUDA_FILE}"
   PowerShell -Command "Start-Process -FilePath \"${CUDA_FILE}\" -ArgumentList \"-s nvcc_${CUDA_SHORT} cublas_dev_${CUDA_SHORT} cusparse_dev_${CUDA_SHORT}\" -Wait -NoNewWindow"
   CUDA_HOME=/c/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_SHORT}

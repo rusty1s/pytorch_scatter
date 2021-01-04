@@ -28,7 +28,7 @@ Segment operations require the "group-index" tensor to be sorted, whereas scatte
 
 The package consists of the following operations with reduction types `"sum"|"mean"|"min"|"max"`:
 
-* [**scatter**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment.html) based on arbitrary indices
+* [**scatter**](https://pytorch-scatter.readthedocs.io/en/latest/functions/scatter.html) based on arbitrary indices
 * [**segment_coo**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment_coo.html) based on sorted indices
 * [**segment_csr**](https://pytorch-scatter.readthedocs.io/en/latest/functions/segment_csr.html) based on compressed indices via pointers
 
@@ -41,6 +41,25 @@ All included operations are broadcastable, work on varying data types, are imple
 ### Binaries
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
+
+#### PyTorch 1.5.0
+
+To install the binaries for PyTorch 1.5.0, simply run
+
+```
+pip install torch-scatter==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.5.0.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101` or `cu102` depending on your PyTorch installation.
+
+|             | `cpu` | `cu92` | `cu101` | `cu102` |
+|-------------|-------|--------|---------|---------|
+| **Linux**   | ✅    | ✅     | ✅      | ✅      |
+| **Windows** | ✅    | ❌     | ✅      | ✅      |
+| **macOS**   | ✅    |        |         |         |
+
+#### PyTorch 1.4.0
+
 To install the binaries for PyTorch 1.4.0, simply run
 
 ```
@@ -109,4 +128,17 @@ tensor([[5, 5, 3, 4, 0, 1]
 
 ```
 python setup.py test
+```
+
+## C++ API
+
+`torch-scatter` also offers a C++ API that contains C++ equivalent of python models.
+
+```
+mkdir build
+cd build
+# Add -DWITH_CUDA=on support for the CUDA if needed
+cmake ..
+make
+make install
 ```

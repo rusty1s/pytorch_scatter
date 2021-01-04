@@ -93,7 +93,11 @@ public:
     auto count = std::get<0>(result);
     count.clamp_(1);
     count = broadcast(count, out, dim);
-    out.div_(count);
+
+    if (out.is_floating_point())
+    	out.true_divide_(count);
+    else
+	out.floor_divide_(count);
 
     ctx->save_for_backward({index, count});
     if (optional_out.has_value())
@@ -110,7 +114,7 @@ public:
     auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     count = torch::gather(count, dim, index, false);
     auto grad_in = torch::gather(grad_out, dim, index, false);
-    grad_in.div_(count);
+    grad_in.true_divide_(count);
     return {grad_in, Variable(), Variable(), Variable(), Variable()};
   }
 };
