@@ -58,8 +58,8 @@ if torch.cuda.is_available() and torch.version.cuda:  # pragma: no cover
             f'{major}.{minor}. Please reinstall the torch_scatter that '
             f'matches your PyTorch install.')
 
-from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
-                      scatter_max, scatter)  # noqa
+from .scatter import (scatter_sum, scatter_add, scatter_mul, scatter_mean,
+                      scatter_min, scatter_max, scatter)  # noqa
 from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
                           segment_min_csr, segment_max_csr, segment_csr,
                           gather_csr)  # noqa
@@ -72,6 +72,7 @@ from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
 __all__ = [
     'scatter_sum',
     'scatter_add',
+    'scatter_mul',
     'scatter_mean',
     'scatter_min',
     'scatter_max',
