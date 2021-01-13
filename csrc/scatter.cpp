@@ -97,6 +97,7 @@ public:
     auto dim = ctx->saved_data["dim"].toInt();
     auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::gather(grad_out * out, dim, index, false).div_(src);
+    grad_in.masked_fill_(grad_in.isnan(), 0);
     return {grad_in, Variable(), Variable(), Variable(), Variable()};
   }
 };
