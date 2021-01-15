@@ -64,7 +64,7 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
 
     .. math::
         \mathrm{out}_i =
-        \sum_{j = \mathrm{indptr}[i]}^{\mathrm{indptr}[i+i]}~\mathrm{src}_j.
+        \sum_{j = \mathrm{indptr}[i]}^{\mathrm{indptr}[i+1]-1}~\mathrm{src}_j.
 
     Due to the use of index pointers, :meth:`segment_csr` is the fastest
     method to apply for grouped reductions.
