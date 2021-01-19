@@ -17,6 +17,9 @@ except AttributeError as e:
     from .placeholder import cuda_version_placeholder
     torch.ops.torch_scatter.cuda_version = cuda_version_placeholder
 
+    from .placeholder import scatter_placeholder
+    torch.ops.torch_scatter.scatter_mul = scatter_placeholder
+
     from .placeholder import scatter_arg_placeholder
     torch.ops.torch_scatter.scatter_min = scatter_arg_placeholder
     torch.ops.torch_scatter.scatter_max = scatter_arg_placeholder

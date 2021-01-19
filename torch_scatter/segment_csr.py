@@ -22,16 +22,18 @@ def segment_mean_csr(src: torch.Tensor, indptr: torch.Tensor,
 
 
 @torch.jit.script
-def segment_min_csr(src: torch.Tensor, indptr: torch.Tensor,
-                    out: Optional[torch.Tensor] = None
-                    ) -> Tuple[torch.Tensor, torch.Tensor]:
+def segment_min_csr(
+        src: torch.Tensor, indptr: torch.Tensor,
+        out: Optional[torch.Tensor] = None
+) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.segment_min_csr(src, indptr, out)
 
 
 @torch.jit.script
-def segment_max_csr(src: torch.Tensor, indptr: torch.Tensor,
-                    out: Optional[torch.Tensor] = None
-                    ) -> Tuple[torch.Tensor, torch.Tensor]:
+def segment_max_csr(
+        src: torch.Tensor, indptr: torch.Tensor,
+        out: Optional[torch.Tensor] = None
+) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.segment_max_csr(src, indptr, out)
 
 
@@ -51,7 +53,7 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
     Formally, if :attr:`src` and :attr:`indptr` are :math:`n`-dimensional and
     :math:`m`-dimensional tensors with
     size :math:`(x_0, ..., x_{m-1}, x_m, x_{m+1}, ..., x_{n-1})` and
-    :math:`(x_0, ..., x_{m-1}, y)`, respectively, then :attr:`out` must be an
+    :math:`(x_0, ..., x_{m-2}, y)`, respectively, then :attr:`out` must be an
     :math:`n`-dimensional tensor with size
     :math:`(x_0, ..., x_{m-1}, y - 1, x_{m+1}, ..., x_{n-1})`.
     Moreover, the values of :attr:`indptr` must be between :math:`0` and
