@@ -55,7 +55,7 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
     size :math:`(x_0, ..., x_{m-1}, x_m, x_{m+1}, ..., x_{n-1})` and
     :math:`(x_0, ..., x_{m-2}, y)`, respectively, then :attr:`out` must be an
     :math:`n`-dimensional tensor with size
-    :math:`(x_0, ..., x_{m-1}, y - 1, x_{m+1}, ..., x_{n-1})`.
+    :math:`(x_0, ..., x_{m-2}, y - 1, x_{m}, ..., x_{n-1})`.
     Moreover, the values of :attr:`indptr` must be between :math:`0` and
     :math:`x_m` in ascending order.
     The :attr:`indptr` tensor supports broadcasting in case its dimensions do
