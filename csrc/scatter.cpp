@@ -9,7 +9,11 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__scatter(void) { return NULL; }
+#ifdef WITH_CUDA
+PyMODINIT_FUNC PyInit__scatter_cuda(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__scatter_cpu(void) { return NULL; }
+#endif
 #endif
 
 torch::Tensor broadcast(torch::Tensor src, torch::Tensor other, int64_t dim) {

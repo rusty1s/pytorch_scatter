@@ -112,13 +112,13 @@ install:
   - source script/torch.sh
   - pip install flake8
   - pip install codecov
-  - pip install .[test]
+  - travis_wait 30 pip install -e .
 script:
   - flake8 .
   - python setup.py test
 after_success:
-  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
-  - python script/rename_wheel.py ${IDX}
+  - python setup.py bdist_wheel --dist-dir=dist
+  - ls -lah dist/
   - codecov
 deploy:
   provider: s3
@@ -127,8 +127,8 @@ deploy:
   access_key_id: ${S3_ACCESS_KEY}
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-geometric.com
-  local_dir: dist/torch-${TORCH_VERSION}
-  upload_dir: whl/torch-${TORCH_VERSION}
+  local_dir: dist
+  upload_dir: whl/torch-${TORCH_VERSION}+${IDX}
   acl: public_read
   on:
     all_branches: true

@@ -4,18 +4,14 @@ import os.path as osp
 
 import torch
 
-__version__ = '2.0.5'
+__version__ = '2.0.6'
 
-if torch.cuda.is_available():
-    sublib = "gpu"
-else:
-    sublib = "cpu"
+suffix = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 try:
     for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
-        library = "%s_%s" % (library, sublib)
         torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-            library, [osp.dirname(__file__)]).origin)
+            f'{library}_{suffix}', [osp.dirname(__file__)]).origin)
 except AttributeError as e:
     if os.getenv('BUILD_DOCS', '0') != '1':
         raise AttributeError(e)
@@ -45,7 +41,7 @@ except AttributeError as e:
     torch.ops.torch_scatter.segment_max_coo = segment_coo_arg_placeholder
     torch.ops.torch_scatter.gather_coo = gather_coo_placeholder
 
-if torch.cuda.is_available() and torch.version.cuda:  # pragma: no cover
+if torch.cuda.is_available():  # pragma: no cover
     cuda_version = torch.ops.torch_scatter.cuda_version()
 
     if cuda_version == -1:
