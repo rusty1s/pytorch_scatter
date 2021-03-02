@@ -19,6 +19,9 @@ except AttributeError as e:
     from .placeholder import cuda_version_placeholder
     torch.ops.torch_scatter.cuda_version = cuda_version_placeholder
 
+    from .placeholder import scatter_placeholder
+    torch.ops.torch_scatter.scatter_mul = scatter_placeholder
+
     from .placeholder import scatter_arg_placeholder
     torch.ops.torch_scatter.scatter_min = scatter_arg_placeholder
     torch.ops.torch_scatter.scatter_max = scatter_arg_placeholder
@@ -52,7 +55,7 @@ if torch.cuda.is_available():  # pragma: no cover
         major, minor = int(str(cuda_version)[0:2]), int(str(cuda_version)[3])
     t_major, t_minor = [int(x) for x in torch.version.cuda.split('.')]
 
-    if t_major != major or t_minor != minor:
+    if t_major != major:
         raise RuntimeError(
             f'Detected that PyTorch and torch_scatter were compiled with '
             f'different CUDA versions. PyTorch has CUDA version '
@@ -60,8 +63,8 @@ if torch.cuda.is_available():  # pragma: no cover
             f'{major}.{minor}. Please reinstall the torch_scatter that '
             f'matches your PyTorch install.')
 
-from .scatter import (scatter_sum, scatter_add, scatter_mean, scatter_min,
-                      scatter_max, scatter)  # noqa
+from .scatter import (scatter_sum, scatter_add, scatter_mul, scatter_mean,
+                      scatter_min, scatter_max, scatter)  # noqa
 from .segment_csr import (segment_sum_csr, segment_add_csr, segment_mean_csr,
                           segment_min_csr, segment_max_csr, segment_csr,
                           gather_csr)  # noqa
@@ -74,6 +77,7 @@ from .composite import (scatter_std, scatter_logsumexp, scatter_softmax,
 __all__ = [
     'scatter_sum',
     'scatter_add',
+    'scatter_mul',
     'scatter_mean',
     'scatter_min',
     'scatter_max',

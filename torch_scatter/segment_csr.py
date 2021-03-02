@@ -22,16 +22,18 @@ def segment_mean_csr(src: torch.Tensor, indptr: torch.Tensor,
 
 
 @torch.jit.script
-def segment_min_csr(src: torch.Tensor, indptr: torch.Tensor,
-                    out: Optional[torch.Tensor] = None
-                    ) -> Tuple[torch.Tensor, torch.Tensor]:
+def segment_min_csr(
+        src: torch.Tensor, indptr: torch.Tensor,
+        out: Optional[torch.Tensor] = None
+) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.segment_min_csr(src, indptr, out)
 
 
 @torch.jit.script
-def segment_max_csr(src: torch.Tensor, indptr: torch.Tensor,
-                    out: Optional[torch.Tensor] = None
-                    ) -> Tuple[torch.Tensor, torch.Tensor]:
+def segment_max_csr(
+        src: torch.Tensor, indptr: torch.Tensor,
+        out: Optional[torch.Tensor] = None
+) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.segment_max_csr(src, indptr, out)
 
 
@@ -51,9 +53,9 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
     Formally, if :attr:`src` and :attr:`indptr` are :math:`n`-dimensional and
     :math:`m`-dimensional tensors with
     size :math:`(x_0, ..., x_{m-1}, x_m, x_{m+1}, ..., x_{n-1})` and
-    :math:`(x_0, ..., x_{m-1}, y)`, respectively, then :attr:`out` must be an
+    :math:`(x_0, ..., x_{m-2}, y)`, respectively, then :attr:`out` must be an
     :math:`n`-dimensional tensor with size
-    :math:`(x_0, ..., x_{m-1}, y - 1, x_{m+1}, ..., x_{n-1})`.
+    :math:`(x_0, ..., x_{m-2}, y - 1, x_{m}, ..., x_{n-1})`.
     Moreover, the values of :attr:`indptr` must be between :math:`0` and
     :math:`x_m` in ascending order.
     The :attr:`indptr` tensor supports broadcasting in case its dimensions do
@@ -64,7 +66,7 @@ def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
 
     .. math::
         \mathrm{out}_i =
-        \sum_{j = \mathrm{indptr}[i]}^{\mathrm{indptr}[i+i]}~\mathrm{src}_j.
+        \sum_{j = \mathrm{indptr}[i]}^{\mathrm{indptr}[i+1]-1}~\mathrm{src}_j.
 
     Due to the use of index pointers, :meth:`segment_csr` is the fastest
     method to apply for grouped reductions.

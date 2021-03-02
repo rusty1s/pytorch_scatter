@@ -32,6 +32,13 @@ def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
 
 @torch.jit.script
+def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+                out: Optional[torch.Tensor] = None,
+                dim_size: Optional[int] = None) -> torch.Tensor:
+    return torch.ops.torch_scatter.scatter_mul(src, index, dim, out, dim_size)
+
+
+@torch.jit.script
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
@@ -127,8 +134,8 @@ def scatter(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         with size :attr:`dim_size` at dimension :attr:`dim`.
         If :attr:`dim_size` is not given, a minimal sized output tensor
         according to :obj:`index.max() + 1` is returned.
-    :param reduce: The reduce operation (:obj:`"sum"`, :obj:`"mean"`,
-        :obj:`"min"` or :obj:`"max"`). (default: :obj:`"sum"`)
+    :param reduce: The reduce operation (:obj:`"sum"`, :obj:`"mul"`,
+        :obj:`"mean"`, :obj:`"min"` or :obj:`"max"`). (default: :obj:`"sum"`)
 
     :rtype: :class:`Tensor`
 
@@ -150,6 +157,8 @@ def scatter(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     """
     if reduce == 'sum' or reduce == 'add':
         return scatter_sum(src, index, dim, out, dim_size)
+    if reduce == 'mul':
+        return scatter_mul(src, index, dim, out, dim_size)
     elif reduce == 'mean':
         return scatter_mean(src, index, dim, out, dim_size)
     elif reduce == 'min':
