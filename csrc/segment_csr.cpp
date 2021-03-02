@@ -9,7 +9,11 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__segment_csr(void) { return NULL; }
+#ifdef WITH_CUDA
+PyMODINIT_FUNC PyInit__segment_csr_cuda(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__segment_csr_cpu(void) { return NULL; }
+#endif
 #endif
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>

@@ -69,7 +69,7 @@ if [ "${TRAVIS_OS_NAME}" = "osx" ] && [ "$IDX" = "cpu" ]; then
 fi
 
 if [ "${IDX}" = "cpu" ]; then
-  export FORCE_CPU=1
+  export FORCE_ONLY_CPU=1
 else
   export FORCE_CUDA=1
 fi
