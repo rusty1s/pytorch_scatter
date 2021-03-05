@@ -10,61 +10,71 @@ env:
     - CUDA_HOME=/usr/local/cuda
   jobs:
     # Python 3.6
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cpu
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu101
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu102
+    - PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu111
     - PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cpu
     - PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu92
     - PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu101
     - PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu102
     - PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu110
-    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
-    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
-    - PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
     # Python 3.7
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cpu
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu101
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu102
+    - PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu111
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cpu
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu92
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu101
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu102
     - PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu110
-    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
-    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
-    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
-    - PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
     # Python 3.8
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cpu
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu101
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu102
+    - PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu111
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cpu
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu92
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu101
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu102
     - PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu110
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    - PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 jobs:
-  # For daily builds, we only test on Python 3.6 with CUDA 10.2/11.0.
+  # For daily builds, we only test on Python 3.6 with 11.0/11.1.
   # For deployment, we exclude *all* macOS CUDA and Windows CUDA 9.2 jobs.
   exclude:
-    # Python 3.6
+    # Python 3.6 / PyTorch 1.8.0
+    - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu101
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu102
+    - if: os = osx
+      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.8.0 IDX=cu111
+    # Python 3.6 / PyTorch 1.7.0
     - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
       env: PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu92
     - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu101
-    - if: os = osx
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu102
     - if: os = osx
       env: PYTHON_VERSION=3.6 TORCH_VERSION=1.7.0 IDX=cu110
-    - if: not (tag is present or commit_message =~ ci-deploy) and os != osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: os = osx
-      env: PYTHON_VERSION=3.6 TORCH_VERSION=1.6.0 IDX=cu102
-    # Python 3.7
+    # Python 3.7 / PyTorch 1.8.0
     - if: not (tag is present or commit_message =~ ci-deploy)
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cpu
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu101
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu102
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.8.0 IDX=cu111
+    - if: not (tag is present or commit_message =~ ci-deploy)
+    # Python 3.7 / PyTorch 1.7.0
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu92
@@ -74,16 +84,17 @@ jobs:
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu102
     - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.7 TORCH_VERSION=1.7.0 IDX=cu110
+    # Python 3.8 / PyTorch 1.8.0
     - if: not (tag is present or commit_message =~ ci-deploy)
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu92
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu101
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu101
     - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
-      env: PYTHON_VERSION=3.7 TORCH_VERSION=1.6.0 IDX=cu102
-    # Python 3.8
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu102
+    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
+      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.8.0 IDX=cu111
     - if: not (tag is present or commit_message =~ ci-deploy)
+    # Python 3.8 / PyTorch 1.7.0
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cpu
     - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu92
@@ -93,14 +104,6 @@ jobs:
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu102
     - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
       env: PYTHON_VERSION=3.8 TORCH_VERSION=1.7.0 IDX=cu110
-    - if: not (tag is present or commit_message =~ ci-deploy)
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cpu
-    - if: not (tag is present or commit_message =~ ci-deploy) or os != linux
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu92
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu101
-    - if: not (tag is present or commit_message =~ ci-deploy) or os = osx
-      env: PYTHON_VERSION=3.8 TORCH_VERSION=1.6.0 IDX=cu102
 
 install:
   - source script/gcc.sh
@@ -108,7 +111,7 @@ install:
   - source script/conda.sh
   - conda create --yes -n test python="${PYTHON_VERSION}"
   - source activate test
-  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch --yes
+  - conda install pytorch=${TORCH_VERSION} ${TOOLKIT} -c pytorch -c conda-forge --yes
   - source script/torch.sh
   - pip install flake8
   - pip install codecov
