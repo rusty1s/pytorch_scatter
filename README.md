@@ -58,9 +58,9 @@ where `${CUDA}` should be replaced by either `cpu`, `cu101`, `cu102`, or `cu111`
 | **Windows** | ✅    | ✅      | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |         |
 
-#### PyTorch 1.7.0
+#### PyTorch 1.7.0/1.7.1
 
-To install the binaries for PyTorch 1.7.0, simply run
+To install the binaries for PyTorch 1.7.0 and 1.7.1, simply run
 
 ```
 pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.7.0+${CUDA}.html
