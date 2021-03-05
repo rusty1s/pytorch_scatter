@@ -10,6 +10,9 @@ from torch.__config__ import parallel_info
 from torch.utils.cpp_extension import BuildExtension
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
+major, minor = int(str(torch.__version__)[0]), int(str(torch.__version__)[2])
+use_ninja = major >= 2 or (major == 1 and minor >= 8)
+
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
 if os.getenv('FORCE_CUDA', '0') == '1':
@@ -96,7 +99,8 @@ setup(
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
         'build_ext':
-        BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
+        BuildExtension.with_options(no_python_abi_suffix=True,
+                                    use_ninja=use_ninja)
     },
     packages=find_packages(),
 )
