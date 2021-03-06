@@ -97,7 +97,7 @@ Then run:
 pip install torch-scatter
 ```
 
-When running in a docker container without nvidia driver, PyTorch needs to evaluate the compute capabilities and may fail.
+When running in a docker container without NVIDIA driver, PyTorch needs to evaluate the compute capabilities and may fail.
 In this case, ensure that the compute capabilities are set via `TORCH_CUDA_ARCH_LIST`, *e.g.*:
 
 ```
