@@ -18,3 +18,6 @@ def test_logsumexp():
         assert out.tolist() == torch.logsumexp(src, dim=0).tolist()
 
     outputs.backward(torch.randn_like(outputs))
+
+    jit = torch.jit.script(scatter_logsumexp)
+    assert jit(inputs, index).tolist() == outputs.tolist()

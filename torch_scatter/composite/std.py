@@ -5,7 +5,6 @@ from torch_scatter import scatter_sum
 from torch_scatter.utils import broadcast
 
 
-@torch.jit.script
 def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None,

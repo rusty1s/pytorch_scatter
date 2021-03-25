@@ -13,3 +13,6 @@ def test_std():
     assert torch.allclose(out, expected)
 
     out.backward(torch.randn_like(out))
+
+    jit = torch.jit.script(scatter_std)
+    assert jit(src, index, dim=-1, unbiased=True).tolist() == out.tolist()

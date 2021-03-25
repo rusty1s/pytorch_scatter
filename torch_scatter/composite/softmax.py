@@ -4,7 +4,6 @@ from torch_scatter import scatter_sum, scatter_max
 from torch_scatter.utils import broadcast
 
 
-@torch.jit.script
 def scatter_softmax(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                     eps: float = 1e-12) -> torch.Tensor:
     if not torch.is_floating_point(src):
@@ -25,7 +24,6 @@ def scatter_softmax(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     return recentered_scores_exp.div(normalizing_constants)
 
 
-@torch.jit.script
 def scatter_log_softmax(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                         eps: float = 1e-12) -> torch.Tensor:
     if not torch.is_floating_point(src):
