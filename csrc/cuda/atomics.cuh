@@ -68,6 +68,25 @@
                                                                                \
   template <typename scalar, size_t size> struct Atomic##NAME##DecimalImpl;    \
                                                                                \
+  template <typename scalar> struct Atomic##NAME##DecimalImpl<scalar, 2> {     \
+    inline __device__ void operator()(scalar *address, scalar val) {           \
+      unsigned int * address_as_ui =                                           \
+        (unsigned int *) ((char *)address - ((size_t)address & 2));            \
+      unsigned int old = *address_as_ui;                                       \
+      unsigned int assumed;                                                    \
+                                                                               \
+      do {                                                                     \
+        assumed = old;                                                         \
+        at::Half hsum;                                                         \
+        hsum.x = (size_t)address & 2 ? (old >> 16) : (old & 0xffff);           \
+        hsum = OP(hsum, val);                                                  \
+        old = (size_t)address & 2 ? (old & 0xffff) |                           \
+          (hsum.x << 16) : (old & 0xffff0000) | hsum.x;                        \
+        old = atomicCAS(address_as_ui, assumed, old);                          \
+      } while (assumed != old);                                                \
+    }                                                                          \
+  };                                                                           \
+                                                                               \
   template <typename scalar> struct Atomic##NAME##DecimalImpl<scalar, 4> {     \
     inline __device__ void operator()(scalar *address, scalar val) {           \
       int *address_as_i = (int *)address;                                      \
@@ -116,6 +135,15 @@ static inline __device__ void atomAdd(int32_t *address, int32_t val) {
 static inline __device__ void atomAdd(int64_t *address, int64_t val) {
   AtomicAddIntegerImpl<int64_t, sizeof(int64_t)>()(address, val);
 }
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 700 || CUDA_VERSION < 10000)
+static inline __device__ void atomAdd(at::Half *address, at::Half val) {
+  AtomicAddDecimalImpl<at::Half, sizeof(at::Half)>()(address, val);
+}
+#else
+static inline __device__ void atomAdd(at::Half *address, at::Half val) {
+  atomicAdd(reinterpret_cast<__half*>(address), val);
+}
+#endif
 static inline __device__ void atomAdd(float *address, float val) {
   atomicAdd(address, val);
 }
@@ -150,6 +178,9 @@ static inline __device__ void atomMul(int64_t *address, int64_t val) {
 static inline __device__ void atomMul(float *address, float val) {
   AtomicMulDecimalImpl<float, sizeof(float)>()(address, val);
 }
+static inline __device__ void atomMul(at::Half *address, at::Half val) {
+  AtomicMulDecimalImpl<at::Half, sizeof(at::Half)>()(address, val);
+}
 static inline __device__ void atomMul(double *address, double val) {
   AtomicMulDecimalImpl<double, sizeof(double)>()(address, val);
 }
@@ -171,6 +202,9 @@ static inline __device__ void atomDiv(int32_t *address, int32_t val) {
 }
 static inline __device__ void atomDiv(int64_t *address, int64_t val) {
   AtomicDivIntegerImpl<int64_t, sizeof(int64_t)>()(address, val);
+}
+static inline __device__ void atomDiv(at::Half *address, at::Half val) {
+  AtomicDivDecimalImpl<at::Half, sizeof(at::Half)>()(address, val);
 }
 static inline __device__ void atomDiv(float *address, float val) {
   AtomicDivDecimalImpl<float, sizeof(float)>()(address, val);
@@ -197,6 +231,9 @@ static inline __device__ void atomMax(int32_t *address, int32_t val) {
 static inline __device__ void atomMax(int64_t *address, int64_t val) {
   AtomicMaxIntegerImpl<int64_t, sizeof(int64_t)>()(address, val);
 }
+static inline __device__ void atomMax(at::Half *address, at::Half val) {
+  AtomicMaxDecimalImpl<at::Half, sizeof(at::Half)>()(address, val);
+}
 static inline __device__ void atomMax(float *address, float val) {
   AtomicMaxDecimalImpl<float, sizeof(float)>()(address, val);
 }
@@ -221,6 +258,9 @@ static inline __device__ void atomMin(int32_t *address, int32_t val) {
 }
 static inline __device__ void atomMin(int64_t *address, int64_t val) {
   AtomicMinIntegerImpl<int64_t, sizeof(int64_t)>()(address, val);
+}
+static inline __device__ void atomMin(at::Half *address, at::Half val) {
+  AtomicMinDecimalImpl<at::Half, sizeof(at::Half)>()(address, val);
 }
 static inline __device__ void atomMin(float *address, float val) {
   AtomicMinDecimalImpl<float, sizeof(float)>()(address, val);
