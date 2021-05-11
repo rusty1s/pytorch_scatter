@@ -34,6 +34,6 @@ def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     if unbiased:
         count = count.sub(1).clamp_(1)
-    out = out.div(count).sqrt()
+    out = out.div(count + 1e-6).sqrt()
 
     return out
