@@ -115,7 +115,7 @@ install:
   - source script/torch.sh
   - pip install flake8
   - pip install codecov
-  - travis_wait 30 pip install -e .
+  - travis_wait 30 pip install -e .[test]
 script:
   - flake8 .
   - python setup.py test
