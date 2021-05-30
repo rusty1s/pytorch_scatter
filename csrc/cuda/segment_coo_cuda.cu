@@ -186,10 +186,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
     else {
       auto tmp = index.select(dim, index.size(dim) - 1);
       tmp = tmp.numel() > 1 ? tmp.max() : tmp;
-      auto d_size = tmp.data_ptr<int64_t>();
-      auto h_size = (int64_t *)malloc(sizeof(int64_t));
-      cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
-      sizes[dim] = 1 + *h_size;
+      sizes[dim] = 1 + tmp.cpu().data_ptr<int64_t>()[0];
     }
     out = torch::zeros(sizes, src.options());
   }

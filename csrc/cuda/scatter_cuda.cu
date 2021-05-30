@@ -84,10 +84,7 @@ scatter_cuda(torch::Tensor src, torch::Tensor index, int64_t dim,
     else if (index.numel() == 0)
       sizes[dim] = 0;
     else {
-      auto d_size = index.max().data_ptr<int64_t>();
-      auto h_size = (int64_t *)malloc(sizeof(int64_t));
-      cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
-      sizes[dim] = 1 + *h_size;
+      sizes[dim] = 1 + index.max().cpu().data_ptr<int64_t>()[0];
     }
     out = torch::empty(sizes, src.options());
   }
