@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Cuda ${{ matrix.cuda-version }}
         run: |
-          ./.github/workflows/cuda.sh
+          source .github/workflows/cuda.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
