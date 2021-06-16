@@ -46,13 +46,13 @@ jobs:
         run: |
           pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
 
-      - name: Install main package for CPU:
+      - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
           FORCE_ONLY_CPU=1 pip install -e .
           ls -lah torch_scatter/
 
-      - name: Install main package with CUDA:
+      - name: Install main package with CUDA
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
