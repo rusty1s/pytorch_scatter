@@ -1,10 +1,10 @@
-name: Building
+name: Building Wheels
 
 on: [workflow_dispatch]
 
 jobs:
 
-  building:
+  bdist_wheel:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -53,14 +53,16 @@ jobs:
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_ONLY_CPU=1 pip install -e .
+          export FORCE_ONLY_CPU=1
+          pip install -e .
           ls -lah torch_scatter/
 
       - name: Install main package with CUDA
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           ./.github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          FORCE_CUDA=1 pip install -e .
+          export FORCE_CUDA=1
+          pip install -e .
           ls -lah torch_scatter/
 
       - name: Build wheel
