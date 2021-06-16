@@ -1,0 +1,56 @@
+name: Building
+
+on: [workflow_dispatch]
+
+jobs:
+
+  building:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.9]
+        torch-version: [1.9.0]
+        cuda-version: ['cu111']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Update pip
+        run: |
+          pip install --upgrade pip
+          python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+
+      - name: Get pip cache
+        id: pip-cache
+        run: |
+          python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-torch==${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+
+      - name: Install Cuda ${{ matrix.cuda-version }}
+        run: |
+          ./.github/workflows/cuda.sh
+
+      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+        run: |
+          pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
+
+      - name: Install main package
+        run: |
+          pip install -e .[test]
+
+      - name: Run test-suite
+        run: |
+          python setup.py test
+          ls -lah
+          ls torch_scatter -lah
