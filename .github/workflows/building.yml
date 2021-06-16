@@ -48,6 +48,9 @@ jobs:
 
       - name: Install main package
         run: |
+          CUDA_HOME=/usr/local/cuda-11.1
+          LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+          PATH=${CUDA_HOME}/bin:${PATH}
           FORCE_CUDA=1 pip install -e .[test]
 
       - name: Run test-suite
@@ -55,3 +58,8 @@ jobs:
           python setup.py test
           ls -lah
           ls torch_scatter -lah
+
+      - name: Build wheel
+        run: |
+          python setup.py bdist_wheel --dist-dir=dist
+          ls -lah dist/
