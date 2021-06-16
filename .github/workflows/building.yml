@@ -46,12 +46,11 @@ jobs:
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
-          pip install --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable/+${{ matrix.cuda-version }}.html
+          pip install --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
 
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          python -c "import torch; print(torch.__version__ + '+cpu')"
           FORCE_ONLY_CPU=1 pip install -e .
         shell:
           bash
@@ -59,7 +58,6 @@ jobs:
       - name: Install main package with CUDA
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
-          python -c "import torch; print(torch.__version__ + '+' + torch.version.cuda)"
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           FORCE_CUDA=1 pip install -e .
         shell:
