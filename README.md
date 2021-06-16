@@ -1,7 +1,9 @@
 [pypi-image]: https://badge.fury.io/py/torch-scatter.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-scatter
-[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
-[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[testing-image]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/testing.yml/badge.svg
+[testing-url]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/testing.yml
+[linting-image]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/linting.yml/badge.svg
+[linting-url]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/linting.yml
 [docs-image]: https://readthedocs.org/projects/pytorch-scatter/badge/?version=latest
 [docs-url]: https://pytorch-scatter.readthedocs.io/en/latest/?badge=latest
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
@@ -10,7 +12,8 @@
 # PyTorch Scatter
 
 [![PyPI Version][pypi-image]][pypi-url]
-[![Build Status][build-image]][build-url]
+[![Testing Status][testing-image]][testing-url]
+[![Linting Status][linting-image]][linting-url]
 [![Docs Status][docs-image]][docs-url]
 [![Code Coverage][coverage-image]][coverage-url]
 
