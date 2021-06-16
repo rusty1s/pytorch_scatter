@@ -10,10 +10,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-10.15, windows-latest]
+        # os: [ubuntu-18.04, macos-10.15, windows-latest]
+        os: [windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
         torch-version: [1.8.0]
-        cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        cuda-version: ['cpu']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
@@ -69,11 +71,13 @@ jobs:
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
 
-      # - name: Upload wheel
-      #   uses: shallwefootball/s3-upload-action@master
-      #   with:
-      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
-      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-      #     aws_bucket: 'pytorch-geometric.com'
-      #     source_dir: 'dist'
-      #     destination_dir: 'whl/torch-${{ matrix.torch-version }}+${{ matrix.cuda-version }}'
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload wheel
+        run: |
+          aws s3 sync dist s3://pytorch-geometric.com/whl/${{ matrix.torch-version }}+${{ matrix.cuda-version }} --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
