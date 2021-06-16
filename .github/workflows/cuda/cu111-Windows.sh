@@ -10,6 +10,10 @@ export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}
 export CUDA_FILE=cuda_${CUDA_SHORT}.1_456.81_win10.exe
 
 # Install CUDA:
-curl "${CUDA_URL}/${CUDA_FILE}" --output "${CUDA_FILE}"
-PowerShell -Command "Start-Process -FilePath \"${CUDA_FILE}\" -ArgumentList \"-s nvcc_${CUDA_SHORT} cuobjdump_${CUDA_SHORT} nvprune_${CUDA_SHORT} cupti_${CUDA_SHORT} cublas_dev_${CUDA_SHORT} cudart_${CUDA_SHORT} cufft_dev_${CUDA_SHORT} curand_dev_${CUDA_SHORT} cusolver_dev_${CUDA_SHORT} cusparse_dev_${CUDA_SHORT} npp_dev_${CUDA_SHORT} nvrtc_dev_${CUDA_SHORT} nvml_dev_${CUDA_SHORT}\" -Wait -NoNewWindow"
+echo "Downloading ${CUDA_URL}/${CUDA_FILE}..."
+PowerShell -Command "Invoke-WebRequest -OutFile ${CUDA_FILE} -Uri ${CUDA_URL}/${CUDA_FILE}"
+echo "Done!"
+echo "Installing from ${CUDA_FILE}..."
+PowerShell -Command "Start-Process -FilePath ${CUDA_FILE} -ArgumentList \"-s nvcc_${CUDA_SHORT} cuobjdump_${CUDA_SHORT} nvprune_${CUDA_SHORT} cupti_${CUDA_SHORT} cublas_dev_${CUDA_SHORT} cudart_${CUDA_SHORT} cufft_dev_${CUDA_SHORT} curand_dev_${CUDA_SHORT} cusolver_dev_${CUDA_SHORT} cusparse_dev_${CUDA_SHORT} npp_dev_${CUDA_SHORT} nvrtc_dev_${CUDA_SHORT} nvml_dev_${CUDA_SHORT}\" -Wait -NoNewWindow"
+echo "Done!"
 rm -f "${CUDA_FILE}"
