@@ -10,10 +10,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-10.15, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
-        torch-version: [1.8.0, 1.9.0]
-        cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        # os: [ubuntu-18.04, macos-10.15, windows-latest]
+        os: [windows-latest]
+        # python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.9]
+        # torch-version: [1.8.0, 1.9.0]
+        torch-version: [1.8.0]
+        # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        cuda-version: ['cu102', 'cu111']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
@@ -43,6 +47,7 @@ jobs:
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
           pip install --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
+          python -c "import torch; print(torch.__version__ + '+' + torch.version.cuda)"
 
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
