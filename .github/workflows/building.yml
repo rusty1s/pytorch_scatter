@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, macos-10.15, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
-        torch-version: [1.9.0]
+        torch-version: [1.8.0]
         cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
         exclude:
           - torch-version: 1.9.0
@@ -69,11 +69,11 @@ jobs:
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
 
-      - name: Upload wheel
-        uses: shallwefootball/s3-upload-action@master
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: 'pytorch-geometric.com'
-          source_dir: 'dist'
-          destination_dir: 'whl/torch-${{ matrix.torch-version }}+${{ matrix.cuda-version }}'
+      # - name: Upload wheel
+      #   uses: shallwefootball/s3-upload-action@master
+      #   with:
+      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+      #     aws_bucket: 'pytorch-geometric.com'
+      #     source_dir: 'dist'
+      #     destination_dir: 'whl/torch-${{ matrix.torch-version }}+${{ matrix.cuda-version }}'
