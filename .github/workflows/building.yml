@@ -46,10 +46,30 @@ jobs:
         run: |
           pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
 
-      - name: Build main package
+      - Install main package for CPU:
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          FORCE_CUDA=1 pip install -e .
+          ls -lah torch_scatter/
+
+      - Install main package with CUDA:
+        if: ${{ matrix.cuda-version == 'cpu' }}
+        run: |
+          FORCE_ONLY_CPU=1 pip install -e .
+          ls -lah torch_scatter/
+
+      - name: Build wheel
         run: |
           pip install wheel
-          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           python setup.py bdist_wheel --dist-dir=dist
-          ls -lah torch_scatter/
           ls -lah dist/
+
+      - name: Upload wheel
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ pytorch-geometric.com }}
+          source_dir: 'dist'
+          destination_dir: 'whl/torch-${{ matrix.torch-version }}+${{ matrix.cuda-version }}'
