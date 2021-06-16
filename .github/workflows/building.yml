@@ -23,6 +23,7 @@ jobs:
 
       - name: Update pip
         run: |
+          echo ${{ runner.os }}
           pip install --upgrade pip
 
       - name: Install CUDA ${{ matrix.cuda-version }}
@@ -31,8 +32,14 @@ jobs:
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+        if : ${{ runner.os != 'macos' }}
         run: |
           pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
+
+      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }} on macOS
+        if : ${{ runner.os == 'macos' }}
+        run: |
+          pip install torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable.html
 
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
