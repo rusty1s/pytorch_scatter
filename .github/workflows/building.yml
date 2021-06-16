@@ -39,37 +39,35 @@ jobs:
         run: |
           pip install --upgrade pip
 
-      # - name: Install CUDA ${{ matrix.cuda-version }}
-      #   if: ${{ matrix.cuda-version != 'cpu' }}
-      #   run: |
-      #     bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+      - name: Install CUDA ${{ matrix.cuda-version }}
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
           pip install numpy typing-extensions
-          pip install --no-index --no-cache-dir --verbose torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
-          python -c "import torch; print('PyTorch:', torch.__version__)"
-          python -c "import torch; print('CUDA:   ', torch.version.cuda)"
+          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
 
-      # - name: Install main package for CPU
-      #   if: ${{ matrix.cuda-version == 'cpu' }}
-      #   run: |
-      #     FORCE_ONLY_CPU=1 pip install -e .
-      #   shell:
-      #     bash
+      - name: Install main package for CPU
+        if: ${{ matrix.cuda-version == 'cpu' }}
+        run: |
+          FORCE_ONLY_CPU=1 pip install -e .
+        shell:
+          bash
 
-      # - name: Install main package for GPU
-      #   if: ${{ matrix.cuda-version != 'cpu' }}
-      #   run: |
-      #     source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-      #     FORCE_CUDA=1 pip install -e .
-      #   shell:
-      #     bash
+      - name: Install main package for GPU
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          FORCE_CUDA=1 pip install -e .
+        shell:
+          bash
 
-      # - name: Build wheel
-      #   run: |
-      #     pip install wheel
-      #     python setup.py bdist_wheel --dist-dir=dist
+      - name: Build wheel
+        run: |
+          pip install wheel
+          python setup.py bdist_wheel --dist-dir=dist
 
       # - name: Upload wheel
       #   uses: shallwefootball/s3-upload-action@master
