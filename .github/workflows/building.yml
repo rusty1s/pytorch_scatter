@@ -38,15 +38,15 @@ jobs:
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
-          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+          ./.github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
-        if : ${{ runner.os != 'macOS' }}
+        if : ${{ runner.os != 'macOS' && (matrix.torch-version != '1.8.0' || matrix.cuda-version != 'cu102') }}
         run: |
           pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
 
-      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }} on macOS
-        if : ${{ runner.os == 'macOS' }}
+      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+        if : ${{ runner.os == 'macOS' || (matrix.torch-version == '1.8.0' && matrix.cuda-version == 'cu102') }}
         run: |
           pip install torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable.html
 
@@ -59,7 +59,7 @@ jobs:
       - name: Install main package with CUDA
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
-          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          ./.github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           FORCE_CUDA=1 pip install -e .
           ls -lah torch_scatter/
 
