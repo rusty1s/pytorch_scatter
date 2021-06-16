@@ -9,10 +9,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-10.15]  #[ubuntu-18.04]
-        python-version: [3.6, 3.7, 3.8, 3.9]
-        torch-version: [1.9.0]
-        cuda-version: ['cpu']
+        os: [macos-10.15, ubuntu-18.04]
+        python-version: [3.9]
+        torch-version: [1.8.0]
+        cuda-version: ['cpu', 'cu102', 'cu111']
+        exclude:
+          - os: macos-10.15
+            cuda-version: 'cu102'
+          - os: macos-10.15
+            cuda-version: 'cu111'
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +28,6 @@ jobs:
 
       - name: Update pip
         run: |
-          echo ${{ runner.os }}
           pip install --upgrade pip
 
       - name: Install CUDA ${{ matrix.cuda-version }}
@@ -32,12 +36,12 @@ jobs:
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
-        if : ${{ runner.os != 'macos' }}
+        if : ${{ runner.os != 'macOS' }}
         run: |
           pip install torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }} on macOS
-        if : ${{ runner.os == 'macos' }}
+        if : ${{ runner.os == 'macOS' }}
         run: |
           pip install torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable.html
 
