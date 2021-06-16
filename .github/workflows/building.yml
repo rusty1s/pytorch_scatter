@@ -11,8 +11,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04]
         python-version: [3.9]
-        torch-version: [1.8.0]
-        cuda-version: ['cu101', 'cu102']
+        torch-version: [1.9.0]
+        cuda-version: ['cu102']
 
     steps:
       - uses: actions/checkout@v2
