@@ -12,6 +12,9 @@ export CUDA_FILE=cuda_${CUDA_SHORT}.105_418.96_win10.exe
 # Install CUDA:
 echo "${CUDA_URL}/${CUDA_FILE}"
 curl "${CUDA_URL}/${CUDA_FILE}" --output "${CUDA_FILE}"
+rm -f "${CUDA_FILE}"
+ls -lah
+PowerShell -Command "Invoke-WebRequest -OutFile ${CUDA_FILE} -Uri ${CUDA_URL}/${CUDA_FILE}"
 ls -lah
 PowerShell -Command "Start-Process -FilePath \"${CUDA_FILE}\" -ArgumentList \"-s nvcc_${CUDA_SHORT} cuobjdump_${CUDA_SHORT} nvprune_${CUDA_SHORT} cupti_${CUDA_SHORT} cublas_dev_${CUDA_SHORT} cudart_${CUDA_SHORT} cufft_dev_${CUDA_SHORT} curand_dev_${CUDA_SHORT} cusolver_dev_${CUDA_SHORT} cusparse_dev_${CUDA_SHORT} npp_dev_${CUDA_SHORT} nvrtc_dev_${CUDA_SHORT} nvml_dev_${CUDA_SHORT}\" -Wait -NoNewWindow"
 rm -f "${CUDA_FILE}"
