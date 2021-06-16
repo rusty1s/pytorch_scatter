@@ -34,7 +34,8 @@ def get_extensions():
         extra_link_args = ['-s']
 
         info = parallel_info()
-        if 'backend: OpenMP' in info and 'OpenMP not found' not in info:
+        if ('backend: OpenMP' in info and 'OpenMP not found' not in info
+                and sys.platform != 'darwin'):
             extra_compile_args['cxx'] += ['-DAT_PARALLEL_OPENMP']
             if sys.platform == 'win32':
                 extra_compile_args['cxx'] += ['/openmp']
