@@ -6,7 +6,7 @@ curl -k -L "https://drive.google.com/u/0/uc?id=1injUyo3lnarMgWyRcXqKg4UGnN0ysmuq
 7z x "/tmp/gpu_driver_dlls.zip" -o"/c/Windows/System32"
 
 export CUDA_SHORT=10.1
-export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers
+export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/local_installers/
 export CUDA_FILE=cuda_${CUDA_SHORT}.243_426.00_win10.exe
 
 # Install CUDA:
