@@ -2,7 +2,7 @@
 
 # Install NVIDIA drivers, see:
 # https://github.com/pytorch/vision/blob/master/packaging/windows/internal/cuda_install.bat#L99-L102
-curl -k -L "https://drive.google.com/u/0/uc?id=1injUyo3lnarMgWyRcXqKg4UGnN0ysmuq&export=download" --output "/tmp/gpu_driver_dlls.zip"
+curl -sS "https://drive.google.com/u/0/uc?id=1injUyo3lnarMgWyRcXqKg4UGnN0ysmuq&export=download" --output "/tmp/gpu_driver_dlls.zip"
 7z x "/tmp/gpu_driver_dlls.zip" -o"/c/Windows/System32"
 
 export CUDA_SHORT=10.1
@@ -10,7 +10,6 @@ export CUDA_URL=https://developer.nvidia.com/compute/cuda/${CUDA_SHORT}/Prod/loc
 export CUDA_FILE=cuda_${CUDA_SHORT}.105_418.96_win10.exe
 
 # Install CUDA:
-choco install wget --no-progress
-wget -nv "${CUDA_URL}/${CUDA_FILE}"
+curl -sS "${CUDA_URL}/${CUDA_FILE}" --output "${CUDA_FILE}"
 PowerShell -Command "Start-Process -FilePath \"${CUDA_FILE}\" -ArgumentList \"-s nvcc_${CUDA_SHORT} cuobjdump_${CUDA_SHORT} nvprune_${CUDA_SHORT} cupti_${CUDA_SHORT} cublas_dev_${CUDA_SHORT} cudart_${CUDA_SHORT} cufft_dev_${CUDA_SHORT} curand_dev_${CUDA_SHORT} cusolver_dev_${CUDA_SHORT} cusparse_dev_${CUDA_SHORT} npp_dev_${CUDA_SHORT} nvrtc_dev_${CUDA_SHORT} nvml_dev_${CUDA_SHORT}\" -Wait -NoNewWindow"
-rm -f "${CUDA_URL}/${CUDA_FILE}"
+rm -f "${CUDA_FILE}"
