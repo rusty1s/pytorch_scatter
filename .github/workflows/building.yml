@@ -42,6 +42,8 @@ jobs:
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+        shell:
+          bash
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         if : ${{ runner.os != 'macOS' && (matrix.torch-version != '1.8.0' || matrix.cuda-version != 'cu102') }}
@@ -57,7 +59,6 @@ jobs:
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
           pip install -e .
-          ls -lah torch_scatter/
         env:
           FORCE_ONLY_CPU: 1
 
@@ -67,6 +68,8 @@ jobs:
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           pip install -e .
           ls -lah torch_scatter/
+        shell:
+          bash
         env:
           FORCE_CUDA: 1
 
@@ -74,7 +77,6 @@ jobs:
         run: |
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
-          ls -lah dist/
 
       # - name: Upload wheel
       #   uses: shallwefootball/s3-upload-action@master
