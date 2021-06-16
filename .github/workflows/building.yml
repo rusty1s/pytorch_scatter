@@ -11,13 +11,13 @@ jobs:
       fail-fast: false
       matrix:
         # os: [ubuntu-18.04, macos-10.15, windows-latest]
-        os: [windows-latest]
+        os: [ubuntu-18.04]
         # python-version: [3.6, 3.7, 3.8, 3.9]
         python-version: [3.6]
         # torch-version: [1.8.0, 1.9.0]
         torch-version: [1.8.0]
         # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
-        cuda-version: ['cu101']
+        cuda-version: ['cu102']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
@@ -45,18 +45,13 @@ jobs:
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
-        if : ${{ runner.os != 'macOS' }}
         run: |
-          pip install --no-cache-dir torch==${{ matrix.torch-version}}+${{ matrix.cuda-version }} -f https://download.pytorch.org/whl/torch_stable.html
-
-      - name: Install default PyTorch ${{ matrix.torch-version }}
-        if : ${{ runner.os == 'macOS' || (matrix.torch-version == '1.8.0' && matrix.cuda-version == 'cu102') }}
-        run: |
-          pip install --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable.html
+          pip install --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/torch_stable/+${{ matrix.cuda-version }}.html
 
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
+          python -c "import torch; print(torch.__version__ + '+cpu')"
           FORCE_ONLY_CPU=1 pip install -e .
         shell:
           bash
@@ -64,6 +59,7 @@ jobs:
       - name: Install main package with CUDA
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
+          python -c "import torch; print(torch.__version__ + '+' + torch.version.cuda)"
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           FORCE_CUDA=1 pip install -e .
         shell:
