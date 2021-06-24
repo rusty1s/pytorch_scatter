@@ -35,7 +35,6 @@ jobs:
 
       - name: Update pip
         run: |
-          ldd --version
           pip install --upgrade pip
 
       - name: Install CUDA ${{ matrix.cuda-version }}
