@@ -10,6 +10,7 @@ requirements:
     - {{ compiler('c') }}  # [win]
 
   host:
+    - pip
     - python {{ environ.get('PYTHON_VERSION') }}
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
     - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
@@ -21,7 +22,7 @@ requirements:
 
 build:
   string: py{{ environ.get('PYTHON_VERSION').replace('.', '') }}_torch_{{ environ['TORCH_VERSION'] }}_{{ environ['CUDA_VERSION'] }}
-  script: python setup.py install
+  script: pip install .
   script_env:
     - FORCE_CUDA
 
