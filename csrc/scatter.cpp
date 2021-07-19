@@ -91,7 +91,7 @@ public:
                         old_index.dim() <= dim ? old_index.dim() - 1 : dim,
                         torch::nullopt, out.size(dim), "sum");
     auto count = std::get<0>(result);
-    count.clamp_(1); // TODO
+    count.masked_fill_(count.value() < 1, 1);
     count = broadcast(count, out, dim);
 
     if (out.is_floating_point())

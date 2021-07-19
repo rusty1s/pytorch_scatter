@@ -150,23 +150,22 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND(
-      at::ScalarType::Half, src.scalar_type(), "segment_csr_kernel", [&] {
-        auto src_data = src.data_ptr<scalar_t>();
-        auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
+    auto src_data = src.data_ptr<scalar_t>();
+    auto out_data = out.data_ptr<scalar_t>();
 
-        AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
-          if (K == 1) {
-            segment_csr_kernel<scalar_t, REDUCE, 1>
-                <<<BLOCKS(32, N), THREADS, 0, stream>>>(
-                    src_data, indptr_info, out_data, arg_out_data, N, E);
-          } else {
-            segment_csr_broadcast_kernel<scalar_t, REDUCE>
-                <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(
-                    src_data, indptr_info, out_data, arg_out_data, N, K, E);
-          }
-        });
-      });
+    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+      if (K == 1) {
+        segment_csr_kernel<scalar_t, REDUCE, 1>
+            <<<BLOCKS(32, N), THREADS, 0, stream>>>(
+                src_data, indptr_info, out_data, arg_out_data, N, E);
+      } else {
+        segment_csr_broadcast_kernel<scalar_t, REDUCE>
+            <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(
+                src_data, indptr_info, out_data, arg_out_data, N, K, E);
+      }
+    });
+  });
 
   return std::make_tuple(out, arg_out);
 }
@@ -270,20 +269,18 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND(
-      at::ScalarType::Half, src.scalar_type(), "gather_csr_kernel", [&] {
-        auto src_data = src.data_ptr<scalar_t>();
-        auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
+    auto src_data = src.data_ptr<scalar_t>();
+    auto out_data = out.data_ptr<scalar_t>();
 
-        if (K == 1)
-          gather_csr_kernel<scalar_t, 4>
-              <<<BLOCKS(1, 4 * N), THREADS, 0, stream>>>(src_data, indptr_info,
-                                                         out_data, N, E);
-        else
-          gather_csr_broadcast_kernel<scalar_t>
-              <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(src_data, indptr_info,
-                                                         out_data, N, K, E);
-      });
+    if (K == 1)
+      gather_csr_kernel<scalar_t, 4><<<BLOCKS(1, 4 * N), THREADS, 0, stream>>>(
+          src_data, indptr_info, out_data, N, E);
+    else
+      gather_csr_broadcast_kernel<scalar_t>
+          <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(src_data, indptr_info,
+                                                     out_data, N, K, E);
+  });
 
   return out;
 }
