@@ -57,7 +57,7 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
   auto indptr_info = getTensorInfo<int64_t>(indptr);
   auto stride = indptr_info.strides[indptr_info.dims - 1];
   std::vector<int64_t> args(K);
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_csr", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
@@ -135,7 +135,7 @@ torch::Tensor gather_csr_cpu(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = getTensorInfo<int64_t>(indptr);
   auto stride = indptr_info.strides[indptr_info.dims - 1];
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_csr", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 

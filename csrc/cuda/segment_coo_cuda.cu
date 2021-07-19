@@ -3,6 +3,7 @@
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+#include <type_traits>
 
 #include "reducer.cuh"
 #include "utils.cuh"
@@ -25,6 +26,10 @@ segment_coo_kernel(const scalar_t *src_data,
   int lane_idx = row_idx & (32 - 1);
   int D = index_info.sizes[index_info.dims - 1];
 
+  using cuda_scalar_t =
+      typename std::conditional<std::is_same<scalar_t, at::Half>::value, __half,
+                                scalar_t>::type;
+
   if (row_idx < E) {
     int offset = at::cuda::detail::IndexToOffset<int64_t, int, -1>::get(
         row_idx, index_info);
@@ -36,7 +41,7 @@ segment_coo_kernel(const scalar_t *src_data,
 #pragma unroll
     for (int i = 1; i < 32; i *= 2) {
       // Parallel reduction inside a single warp.
-      tmp = __shfl_up_sync(FULL_MASK, val, i);
+      tmp = __shfl_up_sync(FULL_MASK, (cuda_scalar_t)val, i);
       next_idx = __shfl_up_sync(FULL_MASK, idx, i);
       if (lane_idx >= i && row_idx / D == (row_idx - i) / D) {
         assert(idx >= next_idx);
@@ -214,7 +219,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "segment_coo_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
@@ -266,14 +271,15 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
         segment_coo_kernel<scalar_t, SUM, false>
             <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
                                                    count_data, E, N);
-        arg_out.value().clamp_(1);
+        arg_out.value().masked_fill_(arg_out.value() < (scalar_t)1,
+                                     (scalar_t)1);
         auto count = arg_out.value();
         for (int i = dim + 1; i < out.dim(); i++)
           count = count.unsqueeze(-1);
         if (out.is_floating_point())
-          out.true_divide_(count);
+          out.div_(count);
         else
-          out.floor_divide_(count);
+          out.div_(count, "floor");
       }
     });
   });
@@ -364,7 +370,7 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES(src.scalar_type(), "gather_coo_kernel", [&] {
+  AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 

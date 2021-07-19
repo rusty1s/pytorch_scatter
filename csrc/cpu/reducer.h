@@ -72,7 +72,7 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     if (REDUCE == SUM || REDUCE == MUL || REDUCE == DIV)
       *address = val;
     else if (REDUCE == MEAN)
-      *address = val / (count > 0 ? count : (scalar_t)1);
+      *address = val / (scalar_t)(count > 0 ? count : 1);
     else if (REDUCE == MIN || REDUCE == MAX) {
       if (count > 0) {
         *address = val;
