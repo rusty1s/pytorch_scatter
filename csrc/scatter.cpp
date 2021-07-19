@@ -130,9 +130,9 @@ public:
     count.masked_fill_(count < 1, 1);
     count = broadcast(count, out, dim);
     if (out.is_floating_point())
-      out.div_(count);
+      out.true_divide_(count);
     else
-      out.div_(count, "floor");
+      out.floor_divide_(count);
 
     ctx->save_for_backward({index, count});
     if (optional_out.has_value())

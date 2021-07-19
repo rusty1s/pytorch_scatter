@@ -52,8 +52,10 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     count = scatter_sum(ones, index, index_dim, None, dim_size)
     count[count < 1] = 1
     count = broadcast(count, out, dim)
-    rounding_mode = None if torch.is_floating_point(out) else 'floor'
-    out.div_(count, rounding_mode=rounding_mode)
+    if out.is_floating_point():
+        out.true_divide_(count)
+    else:
+        out.floor_divide_(count)
     return out
 
 

@@ -277,9 +277,9 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
         for (int i = dim + 1; i < out.dim(); i++)
           count = count.unsqueeze(-1);
         if (out.is_floating_point())
-          out.div_(count);
+          out.true_divide_(count);
         else
-          out.div_(count, "floor");
+          out.floor_divide_(count);
       }
     });
   });
