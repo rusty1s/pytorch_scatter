@@ -24,7 +24,6 @@ def segment_mean_coo(src: torch.Tensor, index: torch.Tensor,
     return torch.ops.torch_scatter.segment_mean_coo(src, index, out, dim_size)
 
 
-@torch.jit.script
 def segment_min_coo(
         src: torch.Tensor, index: torch.Tensor,
         out: Optional[torch.Tensor] = None,
@@ -32,7 +31,6 @@ def segment_min_coo(
     return torch.ops.torch_scatter.segment_min_coo(src, index, out, dim_size)
 
 
-@torch.jit.script
 def segment_max_coo(
         src: torch.Tensor, index: torch.Tensor,
         out: Optional[torch.Tensor] = None,

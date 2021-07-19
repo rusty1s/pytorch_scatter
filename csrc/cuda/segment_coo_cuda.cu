@@ -276,11 +276,10 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
         auto count = arg_out.value();
         for (int i = dim + 1; i < out.dim(); i++)
           count = count.unsqueeze(-1);
-        if (torch::is_floating_point(out)) {
-          out.div_(count);
-        } else {
-          out.div_(count, "floor");
-        }
+        if (out.is_floating_point())
+          out.true_divide_(count);
+        else
+          out.floor_divide_(count);
       }
     });
   });

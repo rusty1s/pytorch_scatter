@@ -54,7 +54,6 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     return out
 
 
-@torch.jit.script
 def scatter_min(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
@@ -62,7 +61,6 @@ def scatter_min(
     return torch.ops.torch_scatter.scatter_min(src, index, dim, out, dim_size)
 
 
-@torch.jit.script
 def scatter_max(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
