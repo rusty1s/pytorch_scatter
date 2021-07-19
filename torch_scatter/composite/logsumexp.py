@@ -6,7 +6,6 @@ from torch_scatter import scatter_sum, scatter_max
 from torch_scatter.utils import broadcast
 
 
-@torch.jit.script
 def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                       out: Optional[torch.Tensor] = None,
                       dim_size: Optional[int] = None,

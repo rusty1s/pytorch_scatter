@@ -90,7 +90,7 @@ __global__ void segment_coo_broadcast_kernel(
 
   int D = index_info.sizes[index_info.dims - 1];
   int E_1 = E / D;
-  int E_2 = D + TB - (D % TB);
+  int E_2 = (D - 1) + TB - ((D - 1) % TB);
 
   int row_idx = blockIdx.x * blockDim.y + threadIdx.y;
   int col_idx = blockIdx.y * blockDim.x + threadIdx.x;
@@ -189,10 +189,9 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
     else if (index.numel() == 0)
       sizes[dim] = 0;
     else {
-      auto d_size = index.max().data_ptr<int64_t>();
-      auto h_size = (int64_t *)malloc(sizeof(int64_t));
-      cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
-      sizes[dim] = 1 + *h_size;
+      auto tmp = index.select(dim, index.size(dim) - 1);
+      tmp = tmp.numel() > 1 ? tmp.max() : tmp;
+      sizes[dim] = 1 + tmp.cpu().data_ptr<int64_t>()[0];
     }
     out = torch::zeros(sizes, src.options());
   }

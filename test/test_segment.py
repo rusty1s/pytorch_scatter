@@ -91,19 +91,31 @@ def test_forward(test, reduce, dtype, device):
     indptr = tensor(test['indptr'], torch.long, device)
     expected = tensor(test[reduce], dtype, device)
 
-    out = getattr(torch_scatter, 'segment_' + reduce + '_csr')(src, indptr)
-    if isinstance(out, tuple):
-        out, arg_out = out
+    fn = getattr(torch_scatter, 'segment_' + reduce + '_csr')
+    jit = torch.jit.script(fn)
+    out1 = fn(src, indptr)
+    out2 = jit(src, indptr)
+    if isinstance(out1, tuple):
+        out1, arg_out1 = out1
+        out2, arg_out2 = out2
         arg_expected = tensor(test['arg_' + reduce], torch.long, device)
-        assert torch.all(arg_out == arg_expected)
-    assert torch.all(out == expected)
+        assert torch.all(arg_out1 == arg_expected)
+        assert arg_out1.tolist() == arg_out2.tolist()
+    assert torch.all(out1 == expected)
+    assert out1.tolist() == out2.tolist()
 
-    out = getattr(torch_scatter, 'segment_' + reduce + '_coo')(src, index)
-    if isinstance(out, tuple):
-        out, arg_out = out
+    fn = getattr(torch_scatter, 'segment_' + reduce + '_coo')
+    jit = torch.jit.script(fn)
+    out1 = fn(src, index)
+    out2 = jit(src, index)
+    if isinstance(out1, tuple):
+        out1, arg_out1 = out1
+        out2, arg_out2 = out2
         arg_expected = tensor(test['arg_' + reduce], torch.long, device)
-        assert torch.all(arg_out == arg_expected)
-    assert torch.all(out == expected)
+        assert torch.all(arg_out1 == arg_expected)
+        assert arg_out1.tolist() == arg_out2.tolist()
+    assert torch.all(out1 == expected)
+    assert out1.tolist() == out2.tolist()
 
 
 @pytest.mark.parametrize('test,reduce,device',

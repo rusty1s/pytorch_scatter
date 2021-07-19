@@ -22,6 +22,9 @@ def test_softmax():
 
     out.backward(torch.randn_like(out))
 
+    jit = torch.jit.script(scatter_softmax)
+    assert jit(src, index).tolist() == out.tolist()
+
 
 def test_log_softmax():
     src = torch.tensor([0.2, 0, 0.2, -2.1, 3.2, 7, -1, float('-inf')])
@@ -42,3 +45,6 @@ def test_log_softmax():
     assert torch.allclose(out, expected)
 
     out.backward(torch.randn_like(out))
+
+    jit = torch.jit.script(scatter_log_softmax)
+    assert jit(src, index).tolist() == out.tolist()

@@ -1,7 +1,9 @@
 [pypi-image]: https://badge.fury.io/py/torch-scatter.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-scatter
-[build-image]: https://travis-ci.org/rusty1s/pytorch_scatter.svg?branch=master
-[build-url]: https://travis-ci.org/rusty1s/pytorch_scatter
+[testing-image]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/testing.yml/badge.svg
+[testing-url]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/testing.yml
+[linting-image]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/linting.yml/badge.svg
+[linting-url]: https://github.com/rusty1s/pytorch_scatter/actions/workflows/linting.yml
 [docs-image]: https://readthedocs.org/projects/pytorch-scatter/badge/?version=latest
 [docs-url]: https://pytorch-scatter.readthedocs.io/en/latest/?badge=latest
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_scatter/branch/master/graph/badge.svg
@@ -10,7 +12,8 @@
 # PyTorch Scatter
 
 [![PyPI Version][pypi-image]][pypi-url]
-[![Build Status][build-image]][build-url]
+[![Testing Status][testing-image]][testing-url]
+[![Linting Status][linting-image]][linting-url]
 [![Docs Status][docs-image]][docs-url]
 [![Code Coverage][coverage-image]][coverage-url]
 
@@ -38,41 +41,52 @@ All included operations are broadcastable, work on varying data types, are imple
 
 ## Installation
 
+### Anaconda
+
+**Update:** You can now install `pytorch-scatter` via [Anaconda](https://anaconda.org/rusty1s/pytorch-scatter) for all major OS/PyTorch/CUDA combinations 🤗
+Given that you have [`pytorch >= 1.8.0` installed](https://pytorch.org/get-started/locally/), simply run
+
+```
+conda install pytorch-scatter -c rusty1s
+```
+
 ### Binaries
 
-We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
+We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
 
-#### PyTorch 1.5.0
+#### PyTorch 1.9.0
 
-To install the binaries for PyTorch 1.5.0, simply run
-
-```
-pip install torch-scatter==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.5.0.html
-```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101` or `cu102` depending on your PyTorch installation.
-
-|             | `cpu` | `cu92` | `cu101` | `cu102` |
-|-------------|-------|--------|---------|---------|
-| **Linux**   | ✅    | ✅     | ✅      | ✅      |
-| **Windows** | ✅    | ❌     | ✅      | ✅      |
-| **macOS**   | ✅    |        |         |         |
-
-#### PyTorch 1.4.0
-
-To install the binaries for PyTorch 1.4.0, simply run
+To install the binaries for PyTorch 1.9.0, simply run
 
 ```
-pip install torch-scatter==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.4.0.html
+pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.9.0+${CUDA}.html
 ```
 
-where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu100` or `cu101` depending on your PyTorch installation.
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` depending on your PyTorch installation.
 
-|             | `cpu` | `cu92` | `cu100` | `cu101` |
-|-------------|-------|--------|---------|---------|
-| **Linux**   | ✅    | ✅     | ✅      | ✅      |
-| **Windows** | ✅    | ❌     | ❌      | ✅      |
-| **macOS**   | ✅    |        |         |         |
+|             | `cpu` | `cu102` | `cu111` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
+
+#### PyTorch 1.8.0/1.8.1
+
+To install the binaries for PyTorch 1.8.0 and 1.8.1, simply run
+
+```
+pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu101`, `cu102`, or `cu111` depending on your PyTorch installation.
+
+|             | `cpu` | `cu101` | `cu102` | `cu111` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    | ❌      | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
+
+**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0 and PyTorch 1.7.0/1.7.1 (following the same procedure).
 
 ### From source
 
@@ -95,7 +109,7 @@ Then run:
 pip install torch-scatter
 ```
 
-When running in a docker container without nvidia driver, PyTorch needs to evaluate the compute capabilities and may fail.
+When running in a docker container without NVIDIA driver, PyTorch needs to evaluate the compute capabilities and may fail.
 In this case, ensure that the compute capabilities are set via `TORCH_CUDA_ARCH_LIST`, *e.g.*:
 
 ```

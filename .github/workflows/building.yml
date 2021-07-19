@@ -1,0 +1,81 @@
+name: Building Wheels
+
+on: [workflow_dispatch]
+
+jobs:
+
+  wheel:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-16.04, macos-10.15, windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        torch-version: [1.8.0, 1.9.0]
+        cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        exclude:
+          - torch-version: 1.9.0
+            cuda-version: 'cu101'
+          - os: macos-10.15
+            cuda-version: 'cu101'
+          - os: macos-10.15
+            cuda-version: 'cu102'
+          - os: macos-10.15
+            cuda-version: 'cu111'
+          - os: windows-latest
+            cuda-version: 'cu101'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Update pip
+        run: |
+          pip install --upgrade pip
+
+      - name: Install CUDA ${{ matrix.cuda-version }}
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+
+      - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
+        run: |
+          pip install numpy typing-extensions dataclasses
+          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
+          python -c "import torch; print('PyTorch:', torch.__version__)"
+          python -c "import torch; print('CUDA:', torch.version.cuda)"
+
+      - name: Install main package for CPU
+        if: ${{ matrix.cuda-version == 'cpu' }}
+        run: |
+          FORCE_ONLY_CPU=1 pip install -e .
+        shell:
+          bash
+
+      - name: Install main package for GPU
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+          FORCE_CUDA=1 pip install -e .
+        shell:
+          bash
+
+      - name: Build wheel
+        run: |
+          pip install wheel
+          python setup.py bdist_wheel --dist-dir=dist
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload wheel
+        run: |
+          aws s3 sync dist s3://pytorch-geometric.com/whl/torch-${{ matrix.torch-version }}+${{ matrix.cuda-version }} --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers

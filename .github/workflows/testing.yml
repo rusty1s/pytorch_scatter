@@ -1,0 +1,49 @@
+name: Testing
+
+on: [push, pull_request]
+
+jobs:
+
+  pytest:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, windows-latest]
+        python-version: [3.6]
+        torch-version: [1.8.0, 1.9.0]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Update pip
+        run: |
+          pip install --upgrade pip
+
+      - name: Install PyTorch ${{ matrix.torch-version }}
+        run: |
+          pip install torch==${{ matrix.torch-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
+      - name: Install main package
+        run: |
+          pip install -e .[test]
+
+      - name: Run test-suite
+        run: |
+          python setup.py test
+
+      - name: Generate coverage report
+        if: success()
+        run: |
+          pip install coverage
+          coverage xml
+
+      - name: Upload coverage report to codecov
+        uses: codecov/codecov-action@v1
+        if: success()
+        with:
+          file: coverage.xml

@@ -5,7 +5,6 @@ from torch_scatter import scatter_sum
 from torch_scatter.utils import broadcast
 
 
-@torch.jit.script
 def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None,
@@ -26,7 +25,7 @@ def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     index = broadcast(index, src, dim)
     tmp = scatter_sum(src, index, dim, dim_size=dim_size)
-    count = broadcast(count, tmp, dim).clamp_(1)
+    count = broadcast(count, tmp, dim).clamp(1)
     mean = tmp.div(count)
 
     var = (src - mean.gather(dim, index))
@@ -35,6 +34,6 @@ def scatter_std(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     if unbiased:
         count = count.sub(1).clamp_(1)
-    out = out.div(count).sqrt()
+    out = out.div(count + 1e-6).sqrt()
 
     return out

@@ -36,8 +36,11 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
       sizes[dim] = dim_size.value();
     else if (index.numel() == 0)
       sizes[dim] = 0;
-    else
-      sizes[dim] = 1 + *index.max().data_ptr<int64_t>();
+    else {
+      auto tmp = index.select(dim, index.size(dim) - 1);
+      tmp = tmp.numel() > 1 ? tmp.max() : tmp;
+      sizes[dim] = 1 + *tmp.data_ptr<int64_t>();
+    }
     out = torch::empty(sizes, src.options());
   }
 

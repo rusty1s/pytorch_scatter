@@ -250,12 +250,10 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   } else {
     auto sizes = src.sizes().vec();
     if (src.numel() > 0) {
-      auto d_size = indptr.flatten()[-1].data_ptr<int64_t>();
-      auto h_size = (int64_t *)malloc(sizeof(int64_t));
-      cudaMemcpy(h_size, d_size, sizeof(int64_t), cudaMemcpyDeviceToHost);
-      sizes[dim] = *h_size;
-    } else
+      sizes[dim] = indptr.flatten()[-1].cpu().data_ptr<int64_t>()[0];
+    } else {
       sizes[dim] = 0;
+    }
     out = torch::empty(sizes, src.options());
   }
 

@@ -3,21 +3,18 @@ from typing import Optional, Tuple
 import torch
 
 
-@torch.jit.script
 def segment_sum_coo(src: torch.Tensor, index: torch.Tensor,
                     out: Optional[torch.Tensor] = None,
                     dim_size: Optional[int] = None) -> torch.Tensor:
     return torch.ops.torch_scatter.segment_sum_coo(src, index, out, dim_size)
 
 
-@torch.jit.script
 def segment_add_coo(src: torch.Tensor, index: torch.Tensor,
                     out: Optional[torch.Tensor] = None,
                     dim_size: Optional[int] = None) -> torch.Tensor:
     return torch.ops.torch_scatter.segment_sum_coo(src, index, out, dim_size)
 
 
-@torch.jit.script
 def segment_mean_coo(src: torch.Tensor, index: torch.Tensor,
                      out: Optional[torch.Tensor] = None,
                      dim_size: Optional[int] = None) -> torch.Tensor:
@@ -135,7 +132,6 @@ def segment_coo(src: torch.Tensor, index: torch.Tensor,
         raise ValueError
 
 
-@torch.jit.script
 def gather_coo(src: torch.Tensor, index: torch.Tensor,
                out: Optional[torch.Tensor] = None) -> torch.Tensor:
     return torch.ops.torch_scatter.gather_coo(src, index, out)

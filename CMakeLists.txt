@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.0)
 project(torchscatter)
 set(CMAKE_CXX_STANDARD 14)
-set(TORCHSCATTER_VERSION 2.0.4)
+set(TORCHSCATTER_VERSION 2.0.7)
 
 option(WITH_CUDA "Enable CUDA support" OFF)
 
 if(WITH_CUDA)
   enable_language(CUDA)
   add_definitions(-D__CUDA_NO_HALF_OPERATORS__)
+  add_definitions(-DWITH_CUDA)
+  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -arch=sm_35 --expt-relaxed-constexpr")
 endif()
 
 find_package(Python3 COMPONENTS Development)
@@ -65,4 +67,9 @@ if(WITH_CUDA)
     csrc/cuda/segment_coo_cuda.h
     csrc/cuda/segment_csr_cuda.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/cuda)
+endif()
+
+if(WITH_CUDA)
+  set_property(TARGET torch_cuda PROPERTY INTERFACE_COMPILE_OPTIONS "")
+  set_property(TARGET torch_cpu PROPERTY INTERFACE_COMPILE_OPTIONS "")
 endif()

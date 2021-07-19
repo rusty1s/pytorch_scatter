@@ -9,7 +9,11 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__scatter(void) { return NULL; }
+#ifdef WITH_CUDA
+PyMODINIT_FUNC PyInit__scatter_cuda(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__scatter_cpu(void) { return NULL; }
+#endif
 #endif
 
 torch::Tensor broadcast(torch::Tensor src, torch::Tensor other, int64_t dim) {
@@ -66,6 +70,38 @@ public:
     auto dim = ctx->saved_data["dim"].toInt();
     auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
     auto grad_in = torch::gather(grad_out, dim, index, false);
+    return {grad_in, Variable(), Variable(), Variable(), Variable()};
+  }
+};
+
+class ScatterMul : public torch::autograd::Function<ScatterMul> {
+public:
+  static variable_list forward(AutogradContext *ctx, Variable src,
+                               Variable index, int64_t dim,
+                               torch::optional<Variable> optional_out,
+                               torch::optional<int64_t> dim_size) {
+    dim = dim < 0 ? src.dim() + dim : dim;
+    ctx->saved_data["dim"] = dim;
+    ctx->saved_data["src_shape"] = src.sizes();
+    index = broadcast(index, src, dim);
+    auto result = scatter_fw(src, index, dim, optional_out, dim_size, "mul");
+    auto out = std::get<0>(result);
+    ctx->save_for_backward({src, index, out});
+    if (optional_out.has_value())
+      ctx->mark_dirty({optional_out.value()});
+    return {out};
+  }
+
+  static variable_list backward(AutogradContext *ctx, variable_list grad_outs) {
+    auto grad_out = grad_outs[0];
+    auto saved = ctx->get_saved_variables();
+    auto src = saved[0];
+    auto index = saved[1];
+    auto out = saved[2];
+    auto dim = ctx->saved_data["dim"].toInt();
+    auto src_shape = list2vec(ctx->saved_data["src_shape"].toIntList());
+    auto grad_in = torch::gather(grad_out * out, dim, index, false).div_(src);
+    grad_in.masked_fill_(grad_in.isnan(), 0);
     return {grad_in, Variable(), Variable(), Variable(), Variable()};
   }
 };
@@ -196,6 +232,12 @@ torch::Tensor scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
   return ScatterSum::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
+torch::Tensor scatter_mul(torch::Tensor src, torch::Tensor index, int64_t dim,
+                          torch::optional<torch::Tensor> optional_out,
+                          torch::optional<int64_t> dim_size) {
+  return ScatterMul::apply(src, index, dim, optional_out, dim_size)[0];
+}
+
 torch::Tensor scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
                            torch::optional<torch::Tensor> optional_out,
                            torch::optional<int64_t> dim_size) {
@@ -220,6 +262,7 @@ scatter_max(torch::Tensor src, torch::Tensor index, int64_t dim,
 
 static auto registry = torch::RegisterOperators()
                            .op("torch_scatter::scatter_sum", &scatter_sum)
+                           .op("torch_scatter::scatter_mul", &scatter_mul)
                            .op("torch_scatter::scatter_mean", &scatter_mean)
                            .op("torch_scatter::scatter_min", &scatter_min)
                            .op("torch_scatter::scatter_max", &scatter_max);
