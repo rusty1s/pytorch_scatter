@@ -47,28 +47,26 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     ones = torch.ones(index.size(), dtype=src.dtype, device=src.device)
     count = scatter_sum(ones, index, index_dim, None, dim_size)
-    count.clamp_(1)
+    count[count < 1] = 1
     count = broadcast(count, out, dim)
-    if torch.is_floating_point(out):
-        out.true_divide_(count)
-    else:
-        out.floor_divide_(count)
+    rounding_mode = None if torch.is_floating_point(out) else 'floor'
+    out.div_(count, rounding_mode=rounding_mode)
     return out
 
 
 @torch.jit.script
-def scatter_min(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-                out: Optional[torch.Tensor] = None,
-                dim_size: Optional[int] = None
-                ) -> Tuple[torch.Tensor, torch.Tensor]:
+def scatter_min(
+        src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+        out: Optional[torch.Tensor] = None,
+        dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.scatter_min(src, index, dim, out, dim_size)
 
 
 @torch.jit.script
-def scatter_max(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-                out: Optional[torch.Tensor] = None,
-                dim_size: Optional[int] = None
-                ) -> Tuple[torch.Tensor, torch.Tensor]:
+def scatter_max(
+        src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+        out: Optional[torch.Tensor] = None,
+        dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.scatter_max(src, index, dim, out, dim_size)
 
 

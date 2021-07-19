@@ -91,13 +91,13 @@ public:
                         old_index.dim() <= dim ? old_index.dim() - 1 : dim,
                         torch::nullopt, out.size(dim), "sum");
     auto count = std::get<0>(result);
-    count.clamp_(1);
+    count.clamp_(1); // TODO
     count = broadcast(count, out, dim);
 
     if (out.is_floating_point())
-    	out.true_divide_(count);
+      out.true_divide_(count);
     else
-	out.floor_divide_(count);
+      out.floor_divide_(count);
 
     ctx->save_for_backward({index, count});
     if (optional_out.has_value())
