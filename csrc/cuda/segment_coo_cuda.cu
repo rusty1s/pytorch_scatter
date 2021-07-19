@@ -221,9 +221,6 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
-    // if (std::is_same<scalar_t, at::Half>::value)
-    //   scalar_t = typename __half;
-
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
