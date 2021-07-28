@@ -26,10 +26,6 @@ segment_csr_kernel(const scalar_t *src_data,
   int row_idx = thread_idx / TB;
   int lane_idx = thread_idx & (TB - 1);
 
-  using cuda_scalar_t =
-      typename std::conditional<std::is_same<scalar_t, at::Half>::value, __half,
-                                scalar_t>::type;
-
   if (row_idx < N) {
     int offset = IndexPtrToOffset<int64_t>::get(row_idx, indptr_info);
     int64_t row_start = __ldg(indptr_info.data + offset);
@@ -52,8 +48,7 @@ segment_csr_kernel(const scalar_t *src_data,
       if (REDUCE == MIN || REDUCE == MAX)
         arg_tmp = __shfl_down_sync(FULL_MASK, arg, i);
       Reducer<scalar_t, REDUCE>::update(
-          &val, __shfl_down_sync(FULL_MASK, (cuda_scalar_t)val, i), &arg,
-          arg_tmp);
+          &val, __shfl_down_sync(FULL_MASK, val, i), &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {

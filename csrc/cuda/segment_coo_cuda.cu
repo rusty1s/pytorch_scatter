@@ -3,7 +3,6 @@
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
-#include <type_traits>
 
 #include "reducer.cuh"
 #include "utils.cuh"
@@ -26,10 +25,6 @@ segment_coo_kernel(const scalar_t *src_data,
   int lane_idx = row_idx & (32 - 1);
   int D = index_info.sizes[index_info.dims - 1];
 
-  using cuda_scalar_t =
-      typename std::conditional<std::is_same<scalar_t, at::Half>::value, __half,
-                                scalar_t>::type;
-
   if (row_idx < E) {
     int offset = at::cuda::detail::IndexToOffset<int64_t, int, -1>::get(
         row_idx, index_info);
@@ -41,7 +36,7 @@ segment_coo_kernel(const scalar_t *src_data,
 #pragma unroll
     for (int i = 1; i < 32; i *= 2) {
       // Parallel reduction inside a single warp.
-      tmp = __shfl_up_sync(FULL_MASK, (cuda_scalar_t)val, i);
+      tmp = __shfl_up_sync(FULL_MASK, val, i);
       next_idx = __shfl_up_sync(FULL_MASK, idx, i);
       if (lane_idx >= i && row_idx / D == (row_idx - i) / D) {
         assert(idx >= next_idx);
