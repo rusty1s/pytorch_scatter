@@ -45,7 +45,6 @@ jobs:
       - name: Install Conda packages
         run: |
           conda install conda-build conda-verify --yes
-          conda config --set channel_priority strict
         shell:
           bash -l {0}
 
