@@ -17,7 +17,7 @@ jobs:
         # torch-version: [1.8.0, 1.9.0]
         torch-version: [1.8.0]
         # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
-        cuda-version: ['cu101', 'cu102', 'cu111']
+        cuda-version: ['cpu']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
