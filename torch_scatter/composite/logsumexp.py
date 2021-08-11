@@ -32,7 +32,7 @@ def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     recentered_score.masked_fill_(torch.isnan(recentered_score), float('-inf'))
 
     if out is not None:
-        out = out.sub(max_per_src_element).exp()
+        out = out.sub_(max_value_per_index).exp_()
 
     sum_per_index = scatter_sum(recentered_score.exp_(), index, dim, out,
                                 dim_size)
