@@ -48,7 +48,7 @@ def get_extensions():
             define_macros += [('WITH_CUDA', None)]
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
-            nvcc_flags += ['-arch=sm_35', '--expt-relaxed-constexpr', '-O2']
+            nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
             extra_compile_args['nvcc'] = nvcc_flags
 
         name = main.split(os.sep)[-1][:-4]
