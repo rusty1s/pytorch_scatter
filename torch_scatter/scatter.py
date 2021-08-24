@@ -99,7 +99,7 @@ def scatter(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     and :attr:`dim` = `i`, then :attr:`out` must be an :math:`n`-dimensional
     tensor with size :math:`(x_0, ..., x_{i-1}, y, x_{i+1}, ..., x_{n-1})`.
     Moreover, the values of :attr:`index` must be between :math:`0` and
-    :math:`y - 1` in ascending order.
+    :math:`y - 1`, although no specific ordering of indices is required.
     The :attr:`index` tensor supports broadcasting in case its dimensions do
     not match with :attr:`src`.
 
