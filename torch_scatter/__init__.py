@@ -14,10 +14,10 @@ for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
     spec = cuda_spec or cpu_spec
     if spec is not None:
         torch.ops.load_library(spec.origin)
-    elif os.getenv('BUILD_DOCS', '0') != '1':
+    elif os.getenv('BUILD_DOCS', '0') != '1':  # pragma: no cover
         raise ImportError(f"Could not find module '{library}_cpu' in "
                           f"{osp.dirname(__file__)}")
-    else:
+    else:  # pragma: no cover
         from .placeholder import cuda_version_placeholder
         torch.ops.torch_scatter.cuda_version = cuda_version_placeholder
 
