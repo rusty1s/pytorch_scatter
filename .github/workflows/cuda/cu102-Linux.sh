@@ -1,8 +1,7 @@
 #!/bin/bash
 
-OS=ubuntu1604
+OS=ubuntu1804
 
-# Ubuntu-18.04
 wget -nv https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin
 sudo mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600
 wget -nv https://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda-repo-${OS}-10-2-local-10.2.89-440.33.01_1.0-1_amd64.deb
