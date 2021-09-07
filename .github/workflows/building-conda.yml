@@ -54,7 +54,7 @@ jobs:
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_CUDA=0 ./conda/pytorch-scatter/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_CUDA=0 TORCH_CUDA_ARCH_LIST=0 ./conda/pytorch-scatter/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash -l {0}
 
@@ -62,15 +62,24 @@ jobs:
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          FORCE_CUDA=1 ./conda/pytorch-scatter/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          ./conda/pytorch-scatter/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash -l {0}
 
-      - name: Publish Conda package
+      - name: Publish Conda package on organization channel
         run: |
           conda install anaconda-client --yes
           anaconda upload --force --label main $HOME/conda-bld/*/*.tar.bz2
         env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          ANACONDA_API_TOKEN: ${{ secrets.PYG_ANACONDA_TOKEN }}
+        shell:
+          bash -l {0}
+
+      - name: Publish Conda package on personal channel
+        run: |
+          conda install anaconda-client --yes
+          anaconda upload --force --label main $HOME/conda-bld/*/*.tar.bz2
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.RUSTY1S_ANACONDA_TOKEN }}
         shell:
           bash -l {0}
