@@ -50,6 +50,8 @@ def get_extensions():
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
             extra_compile_args['nvcc'] = nvcc_flags
+            if sys.platform == 'win32':
+                extra_compile_args['nvcc'].append('/Zm1000')
 
         name = main.split(os.sep)[-1][:-4]
         sources = [main]
