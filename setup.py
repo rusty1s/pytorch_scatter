@@ -33,9 +33,6 @@ def get_extensions():
         extra_compile_args = {'cxx': ['-O2']}
         extra_link_args = ['-s']
 
-        if sys.platform == 'win32':
-            extra_compile_args['cxx'].append('/Zm500')
-
         info = parallel_info()
         if ('backend: OpenMP' in info and 'OpenMP not found' not in info
                 and sys.platform != 'darwin'):
