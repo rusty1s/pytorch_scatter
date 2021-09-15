@@ -1,15 +1,15 @@
 name: "Close stale issues and PRs"
 
-on: [workflow_dispatch]
-  # schedule:
-  #   # Every day at 00:00
-  #   - cron: "0 0 * * *"
+on:
+  schedule:
+    # Every day at 00:00
+    - cron: "0 0 * * *"
 
 jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v2.0.0
+      - uses: actions/stale@v4.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-issue-message: 'This issue had no activity for **6 months**. It will be closed in **2 weeks** unless there is some new activity.'
