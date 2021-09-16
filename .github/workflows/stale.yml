@@ -15,7 +15,7 @@ jobs:
         with:
           stale-issue-message: 'This issue had no activity for **6 months**. It will be closed in **2 weeks** unless there is some new activity. Is this issue already resolved?'
           stale-issue-label: 'stale'
-          exempt-issue-labels: 'bug,enhancement,Priority P0,Priority P1,Priority P2'
+          exempt-issue-labels: 'bug,enhancement,good first issue'
           stale-pr-message: 'This pull request had no activity for **6 months**. It will be closed in **2 weeks** unless there is some new activity.'
           stale-pr-label: 'stale'
           days-before-stale: 180
