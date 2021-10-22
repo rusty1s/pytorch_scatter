@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch
 
 from torch_scatter import scatter_sum, scatter_max
