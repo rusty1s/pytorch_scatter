@@ -4,7 +4,7 @@ import os.path as osp
 
 import torch
 
-__version__ = '2.0.8'
+__version__ = '2.0.9'
 
 for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
     cuda_spec = importlib.machinery.PathFinder().find_spec(
