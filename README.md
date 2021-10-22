@@ -54,9 +54,25 @@ conda install pytorch-scatter -c pyg
 
 We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
-#### PyTorch 1.9.0
+#### PyTorch 1.10.0
 
-To install the binaries for PyTorch 1.9.0, simply run
+To install the binaries for PyTorch 1.10.0, simply run
+
+```
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu113` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
+
+#### PyTorch 1.9.0/1.9.1
+
+To install the binaries for PyTorch 1.9.0 and 1.9.1, simply run
 
 ```
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.9.0+${CUDA}.html
@@ -70,23 +86,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 | **Windows** | ✅    | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |
 
-#### PyTorch 1.8.0/1.8.1
-
-To install the binaries for PyTorch 1.8.0 and 1.8.1, simply run
-
-```
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.8.0+${CUDA}.html
-```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu101`, `cu102`, or `cu111` depending on your PyTorch installation.
-
-|             | `cpu` | `cu101` | `cu102` | `cu111` |
-|-------------|-------|---------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      | ✅      |
-| **Windows** | ✅    | ❌      | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |         |
-
-**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0 and PyTorch 1.7.0/1.7.1 (following the same procedure).
+**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1 and PyTorch 1.8.0/1.8.1 (following the same procedure).
 
 ### From source
 
