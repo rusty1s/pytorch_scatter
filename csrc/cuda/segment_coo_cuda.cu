@@ -274,7 +274,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
         if (out.is_floating_point())
           out.true_divide_(count);
         else
-          out.floor_divide_(count);
+          out.div_(count, "floor");
       }
     });
   });

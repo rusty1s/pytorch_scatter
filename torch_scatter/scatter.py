@@ -38,7 +38,6 @@ def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
-
     out = scatter_sum(src, index, dim, out, dim_size)
     dim_size = out.size(dim)
 
@@ -55,7 +54,7 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     if out.is_floating_point():
         out.true_divide_(count)
     else:
-        out.floor_divide_(count)
+        out.div_(count, rounding_mode='floor')
     return out
 
 
