@@ -51,8 +51,6 @@ def get_extensions():
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
-            if not os.name == 'nt':  # Not on Windows:
-                nvcc_flags += ['-Wno-sign-compare']
             extra_compile_args['nvcc'] = nvcc_flags
 
         name = main.split(os.sep)[-1][:-4]
