@@ -1,0 +1,39 @@
+name: Testing with Automated Installation
+
+on: [push, pull_request]
+
+jobs:
+  preinstalled:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.6"]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install main package
+        run: |
+          pip install .[test]
+
+      - name: Run test-suite
+        run: |
+          pytest
+
+      - name: Generate coverage report
+        if: success()
+        run: |
+          pip install coverage
+          coverage xml
+
+      - name: Upload coverage report to codecov
+        uses: codecov/codecov-action@v1
+        if: success()
+        with:
+          file: coverage.xml
