@@ -20,6 +20,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install PyTorch ${{ matrix.torch-version }}
+        run: |
+          pip install torch==${{ matrix.torch-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
       - name: Install main package
         run: |
           pip install -e .[test]
