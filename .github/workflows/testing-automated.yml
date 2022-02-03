@@ -1,15 +1,15 @@
-name: Testing with Automated Installation
+name: Testing w/ Automated Installation
 
 on: [push, pull_request]
 
 jobs:
-  preinstalled:
+  pytest:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.6"]
+        python-version: ["3.6", "39"]
 
     steps:
       - uses: actions/checkout@v2
