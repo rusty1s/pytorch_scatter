@@ -18,19 +18,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install main package
+      - name: Install dependencies
         run: |
-          pip install .[test]
+          pip install tox
 
       - name: Run test-suite
         run: |
-          pytest
-
-      - name: Generate coverage report
-        if: success()
-        run: |
-          pip install coverage
-          coverage xml
+          tox -e py
 
       - name: Upload coverage report to codecov
         uses: codecov/codecov-action@v1
