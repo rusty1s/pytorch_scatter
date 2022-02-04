@@ -26,7 +26,9 @@ jobs:
 
       - name: Install main package
         run: |
-          pip install .[test]
+          # the -e/--editable flag is required otherwise the following error is raised:
+          # ImportError: Could not find module '_version_cpu' in /home/runner/work/pytorch_scatter/pytorch_scatter/torch_scatter
+          pip install -e .[test]
 
       - name: Run test-suite
         run: |
