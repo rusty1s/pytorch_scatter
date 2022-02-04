@@ -35,7 +35,6 @@ jobs:
       - name: Generate coverage report
         if: success()
         run: |
-          pip install coverage
           coverage xml
 
       - name: Upload coverage report to codecov
