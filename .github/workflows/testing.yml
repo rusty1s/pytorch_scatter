@@ -30,7 +30,7 @@ jobs:
 
       - name: Run test-suite
         run: |
-          coverage run -p -m pytest
+          pytest --capture=no --cov
 
       - name: Generate coverage report
         if: success()
