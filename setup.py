@@ -86,7 +86,7 @@ def get_extensions():
 
 install_requires = []
 setup_requires = []
-tests_require = ['pytest', 'pytest-runner', 'pytest-cov']
+tests_require = ['pytest', 'pytest-runner', 'pytest-cov', 'coverage']
 
 setup(
     name='torch_scatter',
