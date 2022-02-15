@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <mutex>
 
-const int N_MUTEXES = 256;
-const int B_GRAIN_SIZE = 512;
-const int E_GRAIN_SIZE = 512;
+const int N_MUTEXES = 128;
+const int B_GRAIN_SIZE = 32;
+const int E_GRAIN_SIZE = 16;
 std::array<std::mutex, N_MUTEXES> mutexes;
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
