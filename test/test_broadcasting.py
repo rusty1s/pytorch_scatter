@@ -4,7 +4,7 @@ import pytest
 import torch
 from torch_scatter import scatter
 
-from .utils import reductions, devices
+from .utils import devices, reductions
 
 
 @pytest.mark.parametrize('reduce,device', product(reductions, devices))

@@ -1,8 +1,17 @@
+#include "ATen/ATen.h"
+#include "ATen/Parallel.h"
+
 #include "scatter_cpu.h"
 
 #include "index_info.h"
 #include "reducer.h"
 #include "utils.h"
+
+#include <stdio.h>
+#include <mutex>
+
+const int N_MUTEXES = 20;
+std::array<std::mutex, N_MUTEXES> mutexes;
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
 scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
@@ -56,27 +65,54 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
   auto K = src.numel() / (B * E);
   auto N = out.size(dim);
 
+  // one mutex per K * N / N_MUTEXES indices
+  //  - mutex i owns [i * gap, i + gap]
+  //  - index j gets mutex (j / gap)
+  int gap = std::max((long)ceil((K * N) / (float)N_MUTEXES), 1L);
   auto index_info = getTensorInfo<int64_t>(index);
   AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
-    int64_t i, idx;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (!optional_out.has_value())
         out.fill_(Reducer<scalar_t, REDUCE>::init());
 
-      for (auto b = 0; b < B; b++) {
-        for (auto e = 0; e < E; e++) {
-          for (auto k = 0; k < K; k++) {
-            i = b * E * K + e * K + k;
-            idx = index_info.data[IndexToOffset<int64_t>::get(i, index_info)];
-            Reducer<scalar_t, REDUCE>::update(
-                out_data + b * N * K + idx * K + k, src_data[i],
-                arg_out_data + b * N * K + idx * K + k, e);
-          }
+      /* 
+      Design notes
+      ------------
+      - If one only parallelizes over the batch dimension (e.g. dimensions
+        before `dim`), no mutexes are required as each thread will write to a 
+        unique value in `out`).
+      - If one parallelizes over any other dimension, mutexes are required to
+        ensure non-corrupted writes.
+      */
+
+      // batch dimension(s) [parallel]
+      at::parallel_for(0, B, 5, [&](int64_t begin, int64_t end) {
+        for (int b = begin; b < end; b++) {
+
+          // scatter dimension [parallel]
+          at::parallel_for(0, E, 5, [&](int64_t begin_2, int64_t end_2) { 
+            for(auto e = begin_2; e < end_2; e++) {
+              
+              // all other dimensions [serial]
+              for(int k = 0; k < K; k++) {
+                int64_t i = b * E * K + e * K + k;
+                int64_t idx = index_info.data[IndexToOffset<int64_t>::get(i, index_info)];
+
+                int out_idx = b * N * K + idx * K + k;
+                int mtx_idx = (idx * K + k) / gap;
+                mutexes[mtx_idx].lock();
+                Reducer<scalar_t, REDUCE>::update(
+                    out_data + out_idx, src_data[i],
+                    arg_out_data + out_idx, e);
+                mutexes[mtx_idx].unlock();
+              }
+            }
+          });
         }
-      }
+      });
 
       if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
         out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
