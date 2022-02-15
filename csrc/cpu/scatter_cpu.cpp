@@ -10,7 +10,9 @@
 #include <stdio.h>
 #include <mutex>
 
-const int N_MUTEXES = 20;
+const int N_MUTEXES = 256;
+const int B_GRAIN_SIZE = 512;
+const int E_GRAIN_SIZE = 512;
 std::array<std::mutex, N_MUTEXES> mutexes;
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
@@ -89,11 +91,11 @@ scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,
       */
 
       // batch dimension(s) [parallel]
-      at::parallel_for(0, B, 5, [&](int64_t begin, int64_t end) {
+      at::parallel_for(0, B, B_GRAIN_SIZE, [&](int64_t begin, int64_t end) {
         for (int b = begin; b < end; b++) {
 
           // scatter dimension [parallel]
-          at::parallel_for(0, E, 5, [&](int64_t begin_2, int64_t end_2) { 
+          at::parallel_for(0, E, E_GRAIN_SIZE, [&](int64_t begin_2, int64_t end_2) { 
             for(auto e = begin_2; e < end_2; e++) {
               
               // all other dimensions [serial]
