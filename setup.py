@@ -1,15 +1,15 @@
-import os
-import sys
 import glob
+import os
 import os.path as osp
-from itertools import product
-from setuptools import setup, find_packages
 import platform
+import sys
+from itertools import product
 
 import torch
+from setuptools import find_packages, setup
 from torch.__config__ import parallel_info
-from torch.utils.cpp_extension import BuildExtension
-from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
+from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
+                                       CUDAExtension)
 
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
@@ -97,7 +97,7 @@ setup(
     description='PyTorch Extension Library of Optimized Scatter Operations',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
     license='MIT',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
