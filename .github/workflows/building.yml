@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04]
         # os: [ubuntu-18.04, macos-10.15, windows-latest]
-        python-version: [3.7, 3.8, 3.9, 3.10]
+        python-version: [3.7, 3.8, 3.9, '3.10']
         torch-version: [1.11.0]
         # torch-version: [1.10.0, 1.11.0]
         cuda-version: ['cpu', 'cu102', 'cu111', 'cu113']
