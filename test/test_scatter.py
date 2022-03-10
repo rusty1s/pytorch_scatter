@@ -2,10 +2,10 @@ from itertools import product
 
 import pytest
 import torch
-from torch.autograd import gradcheck
 import torch_scatter
+from torch.autograd import gradcheck
 
-from .utils import reductions, tensor, dtypes, devices
+from .utils import devices, dtypes, reductions, tensor
 
 reductions = reductions + ['mul']
 
@@ -13,7 +13,7 @@ tests = [
     {
         'src': [1, 3, 2, 4, 5, 6],
         'index': [0, 1, 0, 1, 1, 3],
-        'dim': 0,
+        'dim': -1,
         'sum': [3, 12, 0, 6],
         'add': [3, 12, 0, 6],
         'mul': [2, 60, 1, 6],
