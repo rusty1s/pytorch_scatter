@@ -141,7 +141,7 @@ tensor([[5, 5, 3, 4, 0, 1]
 ## Running tests
 
 ```
-python setup.py test
+pytest
 ```
 
 ## C++ API

@@ -1,15 +1,18 @@
-import os
-import sys
 import glob
+import os
 import os.path as osp
-from itertools import product
-from setuptools import setup, find_packages
 import platform
+import sys
+from itertools import product
 
 import torch
+from setuptools import find_packages, setup
 from torch.__config__ import parallel_info
-from torch.utils.cpp_extension import BuildExtension
-from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
+from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
+                                       CUDAExtension)
+
+__version__ = '2.0.9'
+URL = 'https://github.com/rusty1s/pytorch_scatter'
 
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
@@ -85,27 +88,31 @@ def get_extensions():
 
 
 install_requires = []
-setup_requires = []
-tests_require = ['pytest', 'pytest-runner', 'pytest-cov']
+
+test_require = [
+    'pytest',
+    'pytest-cov',
+]
 
 setup(
     name='torch_scatter',
-    version='2.0.9',
+    version=__version__,
+    description='PyTorch Extension Library of Optimized Scatter Operations',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
-    url='https://github.com/rusty1s/pytorch_scatter',
-    description='PyTorch Extension Library of Optimized Scatter Operations',
+    url=URL,
+    download_url=f'{URL}/archive/{__version__}.tar.gz',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
-    license='MIT',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=install_requires,
-    setup_requires=setup_requires,
-    tests_require=tests_require,
-    extras_require={'test': tests_require},
+    extras_require={
+        'test': test_require,
+    },
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
         'build_ext':
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
+    include_package_data=True,
 )
