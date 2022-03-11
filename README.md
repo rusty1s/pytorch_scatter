@@ -88,7 +88,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` dependin
 
 **Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1, PyTorch 1.8.0/1.8.1 and PyTorch 1.9.0 (following the same procedure).
 For older versions, you might need to explicitly specify the latest supported version number in order to prevent a manual installation from source.
-You can look it up [here](https://data.pyg.org/whl).
+You can look up the latest supported version number [here](https://data.pyg.org/whl).
 
 ### From source
 
