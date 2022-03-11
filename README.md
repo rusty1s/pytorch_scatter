@@ -78,13 +78,13 @@ To install the binaries for PyTorch 1.10.0, PyTorch 1.10.1 and PyTorch 1.10.2, s
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
 ```
 
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu111`, or `cu113` depending on your PyTorch installation.
 
-|             | `cpu` | `cu102` | `cu113` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
+|             | `cpu` | `cu102` | `cu111` | `cu113` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
 
 **Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1, PyTorch 1.8.0/1.8.1 and PyTorch 1.9.0 (following the same procedure).
 For older versions, you might need to explicitly specify the latest supported version number in order to prevent a manual installation from source.
