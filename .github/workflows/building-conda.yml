@@ -10,10 +10,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-10.15, windows-2019]
+        os: [windows-2019]
+        # os: [ubuntu-18.04, macos-10.15, windows-2019]
         python-version: ['3.7', '3.8', '3.9', '3.10']
         torch-version: [1.10.0, 1.11.0]
-        cuda-version: ['cpu', 'cu102', 'cu113', 'cu115']
+        cuda-version: ['cu115']
+        # cuda-version: ['cpu', 'cu102', 'cu113', 'cu115']
         exclude:
           - torch-version: 1.10.0
             cuda-version: 'cu115'
@@ -22,9 +24,6 @@ jobs:
           - os: windows-2019
             torch-version: 1.11.0
             cuda-version: 'cu102'
-          - os: windows-2019
-            torch-version: 1.11.0
-            cuda-version: 'cu115'
           - os: macos-10.15
             cuda-version: 'cu102'
           - os: macos-10.15
@@ -46,7 +45,7 @@ jobs:
 
       - name: Install Conda packages
         run: |
-          conda install conda-build conda-verify --yes
+          conda install conda-build --yes
         shell:
           bash -l {0}
 
