@@ -17,6 +17,9 @@ jobs:
         exclude:
           - torch-version: 1.10.0
             cuda-version: 'cu115'
+          # There is a weird `glibc=2.27` bug going on for this combination:
+          - os: ubuntu-18.04
+            python-version: '3.10'
           - torch-version: 1.10.0
             python-version: '3.10'
           - os: windows-2019
