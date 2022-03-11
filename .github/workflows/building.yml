@@ -28,6 +28,10 @@ jobs:
             cuda-version: 'cu113'
           - os: macos-10.15
             cuda-version: 'cu115'
+          # There is a weird bug going on for this combination:
+          - os: windows-2019
+            python-version: '3.7'
+            cuda-version: 'cu115'
 
     steps:
       - uses: actions/checkout@v2
