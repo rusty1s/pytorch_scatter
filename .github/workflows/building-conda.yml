@@ -32,6 +32,8 @@ jobs:
           # There is a weird `glibc=2.27` bug going on for this combination:
           - os: ubuntu-18.04
             python-version: '3.10'
+          - os: ubuntu-18.04
+            cuda-version: 'cu115'
 
     steps:
       - uses: actions/checkout@v2
