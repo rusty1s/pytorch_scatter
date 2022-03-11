@@ -54,9 +54,25 @@ conda install pytorch-scatter -c pyg
 
 We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
-#### PyTorch 1.10.0
+#### PyTorch 1.11
 
-To install the binaries for PyTorch 1.10.0, simply run
+To install the binaries for PyTorch 1.11.0, simply run
+
+```
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu113`, or `cu115` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu113` | `cu115` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    |         | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
+
+#### PyTorch 1.10
+
+To install the binaries for PyTorch 1.10.0, PyTorch 1.10.1 and PyTorch 1.10.2, simply run
 
 ```
 pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
@@ -70,23 +86,9 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` dependin
 | **Windows** | ✅    | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |
 
-#### PyTorch 1.9.0/1.9.1
-
-To install the binaries for PyTorch 1.9.0 and 1.9.1, simply run
-
-```
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.9.0+${CUDA}.html
-```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` depending on your PyTorch installation.
-
-|             | `cpu` | `cu102` | `cu111` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
-
-**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1 and PyTorch 1.8.0/1.8.1 (following the same procedure).
+**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1, PyTorch 1.8.0/1.8.1 and PyTorch 1.9.0 (following the same procedure).
+For older versions, you might need to explicitly specify the latest supported version number in order to prevent a manual installation from source.
+You can look it up [here](https://data.pyg.org/whl).
 
 ### From source
 
