@@ -16,7 +16,7 @@ jobs:
         cuda-version: ['cpu', 'cu102', 'cu113', 'cu115']
         exclude:
           - torch-version: 1.10.0
-            cuda-version: 'cuda115'
+            cuda-version: 'cu115'
           - torch-version: 1.10.0
             python-version: '3.10'
           - os: windows-2019
