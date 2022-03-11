@@ -89,7 +89,7 @@ def get_extensions():
 
 install_requires = []
 
-test_require = [
+test_requires = [
     'pytest',
     'pytest-cov',
 ]
@@ -106,7 +106,7 @@ setup(
     python_requires='>=3.7',
     install_requires=install_requires,
     extras_require={
-        'test': test_require,
+        'test': test_requires,
     },
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
