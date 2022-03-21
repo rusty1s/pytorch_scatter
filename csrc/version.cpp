@@ -13,13 +13,15 @@ PyMODINIT_FUNC PyInit__version_cpu(void) { return NULL; }
 #endif
 #endif
 
-int64_t cuda_version() {
+namespace scatter {
+int64_t cuda_version() noexcept {
 #ifdef WITH_CUDA
   return CUDA_VERSION;
 #else
   return -1;
 #endif
 }
+} // namespace scatter
 
-static auto registry =
-    torch::RegisterOperators().op("torch_scatter::cuda_version", &cuda_version);
+static auto registry = torch::RegisterOperators().op(
+    "torch_scatter::cuda_version", &scatter::cuda_version);
