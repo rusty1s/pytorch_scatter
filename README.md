@@ -149,12 +149,13 @@ pytest
 ## C++ API
 
 `torch-scatter` also offers a C++ API that contains C++ equivalent of python models.
+For this, we need to add `TorchLib` to the `-DCMAKE_PREFIX_PATH` (*e.g.*, it may exists in `{CONDA}/lib/python{X.X}/site-packages/torch` if installed via `conda`):
 
 ```
 mkdir build
 cd build
-# Add -DWITH_CUDA=on support for the CUDA if needed
-cmake ..
+# Add -DWITH_CUDA=on support for CUDA support
+cmake -DCMAKE_PREFIX_PATH="..." ..
 make
 make install
 ```
