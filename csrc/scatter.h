@@ -2,7 +2,23 @@
 
 #include <torch/extension.h>
 
-int64_t cuda_version();
+#if (defined __cpp_inline_variables) || __cplusplus >= 201703L
+#define SCATTER_INLINE_VARIABLE inline
+#else
+#ifdef _MSC_VER
+#define SCATTER_INLINE_VARIABLE __declspec(selectany)
+#else
+#define SCATTER_INLINE_VARIABLE __attribute__((weak))
+#endif
+#endif
+
+namespace scatter {
+int64_t cuda_version() noexcept;
+
+namespace detail {
+SCATTER_INLINE_VARIABLE int64_t _cuda_version = cuda_version();
+} // namespace detail
+} // namespace scatter
 
 torch::Tensor scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
                           torch::optional<torch::Tensor> optional_out,
