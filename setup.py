@@ -24,6 +24,7 @@ if os.getenv('FORCE_ONLY_CPU', '0') == '1':
     suffices = ['cpu']
 
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
+WITH_SYMBOLS = os.getenv('WITH_SYMBOLS', '0') == '1'
 
 
 def get_extensions():
@@ -41,7 +42,7 @@ def get_extensions():
         extra_compile_args = {'cxx': ['-O2']}
         if not os.name == 'nt':  # Not on Windows:
             extra_compile_args['cxx'] += ['-Wno-sign-compare']
-        extra_link_args = ['-s']
+        extra_link_args = [] if WITH_SYMBOLS else ['-s']
 
         info = parallel_info()
         if ('backend: OpenMP' in info and 'OpenMP not found' not in info
