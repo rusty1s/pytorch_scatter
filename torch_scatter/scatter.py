@@ -26,7 +26,14 @@ def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.scatter_mul(src, index, dim, out, dim_size)
+    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
+    index = broadcast(index, src, dim)
+    include = True
+    if out is None:
+        # use include=True so indices not scattered to are filled with 1s
+        # as per torch_scatter
+        out = _create_out(src, index, dim, dim_size, is_mul=True)
+    return out.scatter_reduce_(dim, index, src, 'prod', include_self=include)
 
 
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,

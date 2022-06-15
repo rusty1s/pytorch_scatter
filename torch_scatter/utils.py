@@ -16,7 +16,8 @@ def broadcast(src: torch.Tensor, other: torch.Tensor, dim: int):
 
 
 def _create_out(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-                dim_size: Optional[int] = None) -> torch.Tensor:
+                dim_size: Optional[int] = None,
+                is_mul: bool = False) -> torch.Tensor:
     size = list(src.size())
     if dim_size is not None:
         size[dim] = dim_size
@@ -31,5 +32,8 @@ def _create_out(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     # incorrect
     # Observation: using torch.empty will fill empty places with garbage
     # FIXME: need to use torch.ones for mul
-    out = torch.zeros(size, dtype=src.dtype, device=src.device)
+    if is_mul:
+        out = torch.ones(size, dtype=src.dtype, device=src.device)
+    else:
+        out = torch.zeros(size, dtype=src.dtype, device=src.device)
     return out
