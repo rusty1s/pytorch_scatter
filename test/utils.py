@@ -2,7 +2,9 @@ import torch
 
 reductions = ['sum', 'add', 'mean', 'min', 'max']
 
-dtypes = [torch.half, torch.float, torch.double, torch.int, torch.long]
+# remove torch.int/long from dtypes as support for int for scatter/segment
+# in core is incomplete
+dtypes = [torch.half, torch.float, torch.double]
 grad_dtypes = [torch.float, torch.double]
 
 devices = [torch.device('cpu')]
