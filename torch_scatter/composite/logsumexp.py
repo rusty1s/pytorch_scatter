@@ -37,4 +37,10 @@ def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     sum_per_index = scatter_sum(recentered_score.exp_(), index, dim, out,
                                 dim_size)
 
-    return sum_per_index.add_(eps).log_().add_(max_value_per_index)
+    # can't do in place updates on sum_per_index or CompositeImplicitAutograd
+    # will break
+    # RuntimeError: one of the variables needed for gradient computation has
+    # been modified by an inplace operation: [torch.FloatTensor [7]], which is
+    # output 0 of ScatterReduceBackward0, is at version 4; expected version 1
+    # instead.
+    return sum_per_index.add(eps).log().add(max_value_per_index)

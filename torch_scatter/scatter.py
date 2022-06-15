@@ -2,25 +2,19 @@ from typing import Optional, Tuple
 
 import torch
 
-from .utils import broadcast
+from .utils import broadcast, _create_out
 
 
 def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
+    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
     index = broadcast(index, src, dim)
+    include = True
     if out is None:
-        size = list(src.size())
-        if dim_size is not None:
-            size[dim] = dim_size
-        elif index.numel() == 0:
-            size[dim] = 0
-        else:
-            size[dim] = int(index.max()) + 1
-        out = torch.zeros(size, dtype=src.dtype, device=src.device)
-        return out.scatter_add_(dim, index, src)
-    else:
-        return out.scatter_add_(dim, index, src)
+        out = _create_out(src, index, dim, dim_size)
+        include = False
+    return out.scatter_reduce_(dim, index, src, 'sum', include_self=include)
 
 
 def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
@@ -38,38 +32,77 @@ def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
-    out = scatter_sum(src, index, dim, out, dim_size)
-    dim_size = out.size(dim)
+    # out = scatter_sum(src, index, dim, out, dim_size)
+    # dim_size = out.size(dim)
 
-    index_dim = dim
-    if index_dim < 0:
-        index_dim = index_dim + src.dim()
-    if index.dim() <= index_dim:
-        index_dim = index.dim() - 1
+    # index_dim = dim
+    # if index_dim < 0:
+    #     index_dim = index_dim + src.dim()
+    # if index.dim() <= index_dim:
+    #     index_dim = index.dim() - 1
 
-    ones = torch.ones(index.size(), dtype=src.dtype, device=src.device)
-    count = scatter_sum(ones, index, index_dim, None, dim_size)
-    count[count < 1] = 1
-    count = broadcast(count, out, dim)
-    if out.is_floating_point():
-        out.true_divide_(count)
-    else:
-        out.div_(count, rounding_mode='floor')
-    return out
+    # ones = torch.ones(index.size(), dtype=src.dtype, device=src.device)
+    # count = scatter_sum(ones, index, index_dim, None, dim_size)
+    # count[count < 1] = 1
+    # count = broadcast(count, out, dim)
+    # if out.is_floating_point():
+    #     out.true_divide_(count)
+    # else:
+    #     out.div_(count, rounding_mode='floor')
+    # return out
+    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
+    index = broadcast(index, src, dim)
+    include = True
+    if out is None:
+        out = _create_out(src, index, dim, dim_size)
+        include = False
+    return out.scatter_reduce_(dim, index, src, 'mean', include_self=include)
 
 
+# def scatter_min(
+#         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+#         out: Optional[torch.Tensor] = None,
+#         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+#     return torch.ops.torch_scatter.scatter_min(src, index, dim, out,
+#                                                dim_size)
+
+
+# def scatter_max(
+#         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+#         out: Optional[torch.Tensor] = None,
+#         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
+#     return torch.ops.torch_scatter.scatter_max(src, index, dim, out,
+#                                                dim_size)
+
+
+# unlike torch_scatter, torch.scatter_reduce does not provide argmin and argmax
+# yet, only amin and amax are provided
+# these corresponding to min and max which are the options exposed by
+# pytorch_scatter's documentation
 def scatter_min(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-    return torch.ops.torch_scatter.scatter_min(src, index, dim, out, dim_size)
+    index = broadcast(index, src, dim)
+    include = True
+    if out is None:
+        out = _create_out(src, index, dim, dim_size)
+        include = False
+    out.scatter_reduce_(dim, index, src, 'amin', include_self=include)
+    return out, torch.empty(())
 
 
 def scatter_max(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-    return torch.ops.torch_scatter.scatter_max(src, index, dim, out, dim_size)
+    index = broadcast(index, src, dim)
+    include = True
+    if out is None:
+        out = _create_out(src, index, dim, dim_size)
+        include = False
+    out.scatter_reduce_(dim, index, src, 'amax', include_self=include)
+    return out, torch.empty(())
 
 
 def scatter(src: torch.Tensor, index: torch.Tensor, dim: int = -1,

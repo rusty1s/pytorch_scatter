@@ -46,6 +46,13 @@ def scatter_log_softmax(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
     sum_per_index = scatter_sum(
         recentered_scores.exp(), index, dim, dim_size=dim_size)
-    normalizing_constants = sum_per_index.add_(eps).log_().gather(dim, index)
+
+    # can't do in place updates on sum_per_index or CompositeImplicitAutograd
+    # will break
+    # RuntimeError: one of the variables needed for gradient computation
+    # has been modified by an inplace operation:[torch.FloatTensor [5]],
+    # which is output 0 of ScatterReduceBackward0, is at version 3;
+    # expected version 1 instead.
+    normalizing_constants = sum_per_index.add(eps).log().gather(dim, index)
 
     return recentered_scores.sub_(normalizing_constants)
