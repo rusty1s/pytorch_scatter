@@ -27,11 +27,11 @@ def _create_out(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         size[dim] = int(index.max()) + 1
     # FIXME: think about whether to fill this with reduction init and use
     # include_self=False or to use torch.empty and include_self=True
-    # the former will likely be faster
+    # the former will likely be faster since we scatter reduction inits
+    # when include_self=True
     # Observation: doing the former for mean will add one to counts which is
     # incorrect
     # Observation: using torch.empty will fill empty places with garbage
-    # FIXME: need to use torch.ones for mul
     if is_mul:
         out = torch.ones(size, dtype=src.dtype, device=src.device)
     else:
