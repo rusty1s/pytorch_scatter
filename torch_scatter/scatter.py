@@ -48,22 +48,6 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     return out.scatter_reduce_(dim, index, src, 'mean', include_self=include)
 
 
-# def scatter_min(
-#         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-#         out: Optional[torch.Tensor] = None,
-#         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-#     return torch.ops.torch_scatter.scatter_min(src, index, dim, out,
-#                                                dim_size)
-
-
-# def scatter_max(
-#         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-#         out: Optional[torch.Tensor] = None,
-#         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-#     return torch.ops.torch_scatter.scatter_max(src, index, dim, out,
-#                                                dim_size)
-
-
 # unlike torch_scatter, torch.scatter_reduce does not provide argmin and argmax
 # yet, only amin and amax are provided
 # these corresponding to min and max which are the options exposed by
