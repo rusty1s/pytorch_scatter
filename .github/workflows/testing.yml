@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7]
-        torch-version: [1.10.0, 1.11.0]
+        torch-version: [1.13.0.dev20220613+cu113]
 
     steps:
       - uses: actions/checkout@v2
@@ -27,7 +27,7 @@ jobs:
 
       - name: Install PyTorch ${{ matrix.torch-version }}
         run: |
-          pip install torch==${{ matrix.torch-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+          pip install torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/nightly/cu113/torch_nightly.html
 
       - name: Install main package
         run: |
