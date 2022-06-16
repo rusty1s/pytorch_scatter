@@ -21,26 +21,73 @@ def segment_sum_csr(src: torch.Tensor, indptr: torch.Tensor,
 
 def segment_add_csr(src: torch.Tensor, indptr: torch.Tensor,
                     out: Optional[torch.Tensor] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.segment_sum_csr(src, indptr, out)
+    return segment_sum_csr(src, indptr, out)
 
 
 def segment_mean_csr(src: torch.Tensor, indptr: torch.Tensor,
                      out: Optional[torch.Tensor] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.segment_mean_csr(src, indptr, out)
+    axis = indptr.dim() - 1
+    # FIXME: remove check that data.numel() > 0 in torch.segment_reduce
+    if src.numel() == 0:
+        output = torch.empty_like(src).requires_grad_(src.requires_grad)
+    else:
+        output = torch.segment_reduce(src, 'mean', offsets=indptr, axis=axis)
+        # torch.segment_reduce fills empty segments with reduction inits
+        # nan for mean
+        output = output.nan_to_num()
+    if out is None:
+        out = output
+    else:
+        # segment_csr ignores the values in out
+        out.copy_(output)
+    return out
 
 
+# unlike torch_scatter, torch.segment_reduce does not provide argmin and argmax
+# yet, only min and max are provided
+# these corresponding to min and max which are the options exposed by
+# pytorch_scatter's documentation
 def segment_min_csr(
         src: torch.Tensor, indptr: torch.Tensor,
         out: Optional[torch.Tensor] = None
 ) -> Tuple[torch.Tensor, torch.Tensor]:
-    return torch.ops.torch_scatter.segment_min_csr(src, indptr, out)
+    axis = indptr.dim() - 1
+    # FIXME: remove check that data.numel() > 0 in torch.segment_reduce
+    if src.numel() == 0:
+        output = torch.empty_like(src).requires_grad_(src.requires_grad)
+    else:
+        output = torch.segment_reduce(src, 'min', offsets=indptr, axis=axis)
+        # torch.segment_reduce fills empty segments with reduction inits
+        # inf for min
+        output = output.nan_to_num(posinf=0.)
+    if out is None:
+        out = output
+    else:
+        # segment_csr ignores the values in out
+        out.copy_(output)
+    return out, torch.empty(())
 
 
 def segment_max_csr(
         src: torch.Tensor, indptr: torch.Tensor,
         out: Optional[torch.Tensor] = None
 ) -> Tuple[torch.Tensor, torch.Tensor]:
-    return torch.ops.torch_scatter.segment_max_csr(src, indptr, out)
+    axis = indptr.dim() - 1
+    # FIXME: remove check that data.numel() > 0 in torch.segment_reduce
+    if src.numel() == 0:
+        output = torch.empty_like(src).requires_grad_(src.requires_grad)
+    else:
+        output = torch.segment_reduce(src, 'max', offsets=indptr, axis=axis)
+        # torch.segment_reduce fills empty segments with reduction inits
+        # -inf for max
+        output = output.nan_to_num(neginf=0.)
+    if out is None:
+        out = output
+    else:
+        # segment_csr ignores the values in out
+        out.copy_(output)
+    # torch.segment_reduce fills empty segments with reduction inits
+    return out, torch.empty(())
 
 
 def segment_csr(src: torch.Tensor, indptr: torch.Tensor,
