@@ -5,7 +5,18 @@ import torch
 
 def segment_sum_csr(src: torch.Tensor, indptr: torch.Tensor,
                     out: Optional[torch.Tensor] = None) -> torch.Tensor:
-    return torch.ops.torch_scatter.segment_sum_csr(src, indptr, out)
+    axis = indptr.dim() - 1
+    # FIXME: remove check that data.numel() > 0 in torch.segment_reduce
+    if src.numel() == 0:
+        output = torch.empty_like(src).requires_grad_(src.requires_grad)
+    else:
+        output = torch.segment_reduce(src, 'sum', offsets=indptr, axis=axis)
+    if out is None:
+        out = output
+    else:
+        # segment_csr ignores the values in out
+        out.copy_(output)
+    return out
 
 
 def segment_add_csr(src: torch.Tensor, indptr: torch.Tensor,
