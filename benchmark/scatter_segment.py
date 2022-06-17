@@ -45,36 +45,17 @@ def correctness(dataset):
             x = torch.randn((row.size(0), size), device=args.device)
             x = x.squeeze(-1) if size == 1 else x
 
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='add')
-            out2 = segment_coo(x, row, dim_size=dim_size, reduce='add')
-            out3 = segment_csr(x, rowptr, reduce='add')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='mean')
-            out2 = segment_coo(x, row, dim_size=dim_size, reduce='mean')
-            out3 = segment_csr(x, rowptr, reduce='mean')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='min')
-            out2 = segment_coo(x, row, reduce='min')
-            out3 = segment_csr(x, rowptr, reduce='min')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='max')
-            out2 = segment_coo(x, row, reduce='max')
-            out3 = segment_csr(x, rowptr, reduce='max')
+            out1 = scatter(
+                    x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
+            out2 = segment_coo(x, row, dim_size=dim_size, reduce=args.reduce)
+            out3 = segment_csr(x, rowptr, reduce=args.reduce)
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
 
         except RuntimeError as e:
             if 'out of memory' not in str(e):
+                print("x\n", x, "\nrow\n", row)
                 raise RuntimeError(e)
             torch.cuda.empty_cache()
 
