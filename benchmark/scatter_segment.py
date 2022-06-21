@@ -56,7 +56,6 @@ def correctness(dataset):
 
         except RuntimeError as e:
             if 'out of memory' not in str(e):
-                print("x\n", x, "\nrow\n", row)
                 raise RuntimeError(e)
             torch.cuda.empty_cache()
 
