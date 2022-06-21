@@ -45,6 +45,7 @@ def correctness(dataset):
             x = torch.randn((row.size(0), size), device=args.device)
             x = x.squeeze(-1) if size == 1 else x
 
+            # run correctness checks for provided reduce option only
             out1 = scatter(
                     x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
             out2 = segment_coo(x, row, dim_size=dim_size, reduce=args.reduce)

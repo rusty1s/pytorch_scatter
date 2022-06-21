@@ -7,9 +7,6 @@
 #include "reducer.cuh"
 #include "utils.cuh"
 
-#include <stdio.h>
-#include <limits>
-
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
@@ -24,8 +21,7 @@ scatter_kernel(const scalar_t *src_data,
 
   // changing thread_idx from int32 to int64 so that this logic can handle
   // numel larger than 2^31 - 1
-
-  // FIXME: why is the cast on the RHS necessary???
+  // FIXME: why is the cast on the RHS necessary?
   // without it the max thread_idx I was getting was 429467296 iirc which is
   // exactly what fits 32 bits, are blockDim.x etc all ints?
   // but online I've never seen code that casts on the RHS
@@ -37,7 +33,7 @@ scatter_kernel(const scalar_t *src_data,
   if (thread_idx < numel) {
     int64_t offset = at::cuda::detail::IndexToOffset<int64_t, int64_t, -1>::get(
         thread_idx, index_info);
-    int64_t idx = index_info.data[offset]; 
+    int64_t idx = index_info.data[offset];
 
     Reducer<scalar_t, REDUCE>::atomic_write(out_data + b * N * K + idx * K + k,
                                             src_data[thread_idx]);
@@ -51,7 +47,7 @@ scatter_arg_kernel(const scalar_t *src_data,
                    const scalar_t *out_data, int64_t *arg_out_data, int64_t E,
                    int64_t K, int64_t N, int64_t numel) {
 
-  const int64_t thread_idx = (int64_t) (blockIdx.x * blockDim.x + threadIdx.x);
+  const int64_t thread_idx = (int64_t) blockIdx.x * (int64_t) blockDim.x + (int64_t) threadIdx.x;
 
   auto b = thread_idx / (E * K);
   auto e = (thread_idx / K) % E;
