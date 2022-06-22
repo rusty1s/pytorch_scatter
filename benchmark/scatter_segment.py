@@ -24,9 +24,9 @@ def download(dataset):
     url = 'https://sparse.tamu.edu/mat/{}/{}.mat'
     for group, name in itertools.chain(long_rows, short_rows):
         if not osp.exists(f'{name}.mat'):
-            print(f'Downloading {group}/{name}:', end='  ')
+            print(f'Downloading {group}/{name}:', end='  \n')
             wget.download(url.format(group, name))
-            print('', end='  ')
+            print('', end='  \n')
 
 
 def bold(text, flag=True):
@@ -176,9 +176,9 @@ def timing(dataset):
     original_stdout = sys.stdout
     with open(args.filename, 'a+') as f:
         sys.stdout = f
-        print(f'**{name}** (avg row length: {avg_row_len:.2f}):', end='  ')
+        print(f'**{name}** (avg row length: {avg_row_len:.2f}):', end='  \n')
         print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]),
-              end='  ')
+              end='  \n')
         print('\t'.join(['**SCA1_ROW**'] +
                         [f'**{t:.5f}**' if f else f'{t:.5f}'
                          for t, f in zip(t1, winner[0])]))
@@ -225,7 +225,7 @@ if __name__ == '__main__':
     with open(args.filename, 'a+') as f:
         sys.stdout = f
         print(f"{args.reduce.capitalize()}, backward={args.with_backward}",
-              end='  ')
+              end='  \n')
         print()
         sys.stdout = original_stdout
     for dataset in itertools.chain(short_rows, long_rows):
@@ -234,5 +234,5 @@ if __name__ == '__main__':
         timing(dataset)
     with open(args.filename, 'a+') as f:
         sys.stdout = f
-        print("=" * 80, end='  ')
+        print("=" * 80, end='  \n')
         sys.stdout = original_stdout
