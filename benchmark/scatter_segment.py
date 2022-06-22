@@ -252,4 +252,3 @@ if __name__ == '__main__':
 
     np_filename = args.filename.rstrip('.md') + '.npy'
     np.save(np_filename, all_timings)
-
