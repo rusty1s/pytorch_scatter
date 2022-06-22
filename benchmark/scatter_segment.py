@@ -177,32 +177,34 @@ def timing(dataset):
     with open(args.filename, 'a+') as f:
         sys.stdout = f
         print(f'**{name}** (avg row length: {avg_row_len:.2f}):', end='  \n')
-        print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]),
+        print('\t'.join(['|           |'] + [f'{size:>5}|' for size in sizes]),
               end='  \n')
-        print('\t'.join(['**SCA1_ROW**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t1, winner[0])]))
-        print('\t'.join(['**SCA1_COL**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t2, winner[1])]))
-        print('\t'.join(['**SCA2_ROW**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t3, winner[2])]))
-        print('\t'.join(['**SCA2_COL**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t4, winner[3])]))
-        # print('\t'.join(['**SEG_COO **'] +
-        #                 [f'**{t:.5f}**' if f else f'{t:.5f}'
+        print('----'.join(['|-----------|'] + ['-------|' for _ in sizes]),
+              end='  \n')
+        print('\t'.join(['|**SCA1_ROW**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t1, winner[0])]), end='  \n')
+        print('\t'.join(['|**SCA1_COL**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t2, winner[1])]), end='  \n')
+        print('\t'.join(['|**SCA2_ROW**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t3, winner[2])]), end='  \n')
+        print('\t'.join(['|**SCA2_COL**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t4, winner[3])]), end='  \n')
+        # print('\t'.join(['|**SEG_COO **|'] +
+        #                 [f'**{t:.5f}**|' if f else f'{t:.5f}|'
         #                 for t, f in zip(t5, winner[4])]))
-        print('\t'.join(['**SEG_CSR**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t6, winner[4])]))
-        print('\t'.join(['**DENSE1**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t7, winner[5])]))
-        print('\t'.join(['**DENSE2**'] +
-                        [f'**{t:.5f}**' if f else f'{t:.5f}'
-                         for t, f in zip(t8, winner[6])]))
+        print('\t'.join(['|**SEG_CSR**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t6, winner[4])]), end='  \n')
+        print('\t'.join(['|**DENSE1**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t7, winner[5])]), end='  \n')
+        print('\t'.join(['|**DENSE2**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t8, winner[6])]), end='  \n')
         print()
         sys.stdout = original_stdout
 
