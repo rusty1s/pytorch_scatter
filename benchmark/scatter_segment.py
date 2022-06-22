@@ -1,4 +1,5 @@
 import time
+import sys
 import os.path as osp
 import itertools
 
@@ -96,15 +97,17 @@ def timing(dataset):
     dim_size = rowptr.size(0) - 1
     avg_row_len = row.size(0) / dim_size
 
+    # Assuming that sca1 is meant to test out kwarg with reduce rather than
+    # out.scatter_add
     def sca1_row(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row_tmp = row.view(-1, 1).expand_as(x) if x.dim() > 1 else row
-        return out.scatter_add_(0, row_tmp, x)
+        return scatter(x, row_tmp, dim=0, out=out, reduce=args.reduce)
 
     def sca1_col(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row2_tmp = row2.view(-1, 1).expand_as(x) if x.dim() > 1 else row2
-        return out.scatter_add_(0, row2_tmp, x)
+        return scatter(x, row2_tmp, dim=0, out=out, reduce=args.reduce)
 
     def sca2_row(x):
         return scatter(x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
@@ -170,25 +173,29 @@ def timing(dataset):
     winner = winner.tolist()
 
     name = f'{group}/{name}'
-    print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
-    print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]))
-    print('\t'.join([bold('SCA1_ROW')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
-    print('\t'.join([bold('SCA1_COL')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t2, winner[1])]))
-    print('\t'.join([bold('SCA2_ROW')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
-    print('\t'.join([bold('SCA2_COL')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
-    # print('\t'.join([bold('SEG_COO ')] +
-    #                 [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
-    print('\t'.join([bold('SEG_CSR ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[4])]))
-    print('\t'.join([bold('DENSE1  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[5])]))
-    print('\t'.join([bold('DENSE2  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[6])]))
-    print()
+    original_stdout = sys.stdout
+    with open(args.filename, 'a+') as f:
+        sys.stdout = f
+        print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
+        print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]))
+        print('\t'.join([bold('SCA1_ROW')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
+        print('\t'.join([bold('SCA1_COL')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t2, winner[1])]))
+        print('\t'.join([bold('SCA2_ROW')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
+        print('\t'.join([bold('SCA2_COL')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
+        # print('\t'.join([bold('SEG_COO ')] +
+        #                 [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
+        print('\t'.join([bold('SEG_CSR ')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[4])]))
+        print('\t'.join([bold('DENSE1  ')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[5])]))
+        print('\t'.join([bold('DENSE2  ')] +
+                        [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[6])]))
+        print()
+        sys.stdout = original_stdout
 
 
 if __name__ == '__main__':
@@ -197,14 +204,25 @@ if __name__ == '__main__':
                         choices=['sum', 'mean', 'min', 'max'])
     parser.add_argument('--with_backward', action='store_true')
     parser.add_argument('--device', type=str, default='cuda')
+    parser.add_argument('--filename', type=str, required=True)
     args = parser.parse_args()
     iters = 1 if args.device == 'cpu' else 20
     sizes = [1, 16, 32, 64, 128, 256, 512]
     sizes = sizes[:3] if args.device == 'cpu' else sizes
+    original_stdout = sys.stdout
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
+    with open(args.filename, 'a+') as f:
+        sys.stdout = f
+        print(f"Benchmarking {args.reduce}, backward={args.with_backward}")
+        print()
+        sys.stdout = original_stdout
     for dataset in itertools.chain(short_rows, long_rows):
         download(dataset)
         correctness(dataset)
         timing(dataset)
+    with open(args.filename, 'a+') as f:
+        sys.stdout = f
+        print("=" * 80)
+        sys.stdout = original_stdout
