@@ -7,6 +7,7 @@ import argparse
 import wget
 import torch
 from scipy.io import loadmat
+import numpy as np
 
 from torch_scatter import scatter, segment_coo, segment_csr
 
@@ -167,7 +168,6 @@ def timing(dataset):
             for t in (t7, t8):
                 t.append(float('inf'))
 
-
     ts = torch.tensor([t1, t2, t3, t4, t6, t7, t8])
     winner = torch.zeros_like(ts, dtype=torch.bool)
     winner[ts.argmin(dim=0), torch.arange(len(sizes))] = 1
@@ -209,6 +209,15 @@ def timing(dataset):
         print()
         sys.stdout = original_stdout
 
+    key_prepend = f'{name}_{reduce}_{with_backward}'
+    row_list = [('SCA1_ROW', t1), ('SCA1_COL', t2), ('SCA2_ROW', t3),
+                ('SCA2_COL', t4), ('SEG_CSR', t6), ('DENSE1', t7),
+                ('DENSE2', t8)]
+
+    for row_name, result in row_list:
+        keyname = key_prepend + row_name
+        all_timings[keyname] = np.array(result)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -220,10 +229,12 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--filename', type=str, required=True)
     args = parser.parse_args()
+    assert args.filename.endswith('.md'), "filename must be a .md file"
     iters = 1 if args.device == 'cpu' else 20
     sizes = [1, 16, 32, 64, 128, 256, 512]
     sizes = sizes[:3] if args.device == 'cpu' else sizes
     original_stdout = sys.stdout
+    all_timings = dict()
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
@@ -231,10 +242,14 @@ if __name__ == '__main__':
     for reduce, with_backward in itertools.product(reductions, with_backwards):
         with open(args.filename, 'a+') as f:
             sys.stdout = f
-            print(f"##{reduce}, backward={with_backward}", end='  \n')
+            print(f"## {reduce}, backward={with_backward}", end='  \n')
             print()
             sys.stdout = original_stdout
         for dataset in itertools.chain(short_rows, long_rows):
             download(dataset)
             correctness(dataset)
             timing(dataset)
+
+    np_filename = args.filename.rstrip('.md') + '.npy'
+    np.save(np_filename, all_timings)
+
