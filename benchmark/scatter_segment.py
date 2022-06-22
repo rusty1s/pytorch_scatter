@@ -176,24 +176,32 @@ def timing(dataset):
     original_stdout = sys.stdout
     with open(args.filename, 'a+') as f:
         sys.stdout = f
-        print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
+        print(f'**{name}** (avg row length: {avg_row_len:.2f}):')
         print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]))
-        print('\t'.join([bold('SCA1_ROW')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
-        print('\t'.join([bold('SCA1_COL')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t2, winner[1])]))
-        print('\t'.join([bold('SCA2_ROW')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
-        print('\t'.join([bold('SCA2_COL')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
-        # print('\t'.join([bold('SEG_COO ')] +
-        #                 [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
-        print('\t'.join([bold('SEG_CSR ')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[4])]))
-        print('\t'.join([bold('DENSE1  ')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[5])]))
-        print('\t'.join([bold('DENSE2  ')] +
-                        [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[6])]))
+        print('\t'.join(['**SCA1_ROW**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t1, winner[0])]))
+        print('\t'.join(['**SCA1_COL**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t2, winner[1])]))
+        print('\t'.join(['**SCA2_ROW**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t3, winner[2])]))
+        print('\t'.join(['**SCA2_COL**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t4, winner[3])]))
+        # print('\t'.join(['**SEG_COO **'] +
+        #                 [f'**{t:.5f}**' if f else f'{t:.5f}'
+        #                 for t, f in zip(t5, winner[4])]))
+        print('\t'.join(['**SEG_CSR**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t6, winner[4])]))
+        print('\t'.join(['**DENSE1**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t7, winner[5])]))
+        print('\t'.join(['**DENSE2**'] +
+                        [f'**{t:.5f}**' if f else f'{t:.5f}'
+                         for t, f in zip(t8, winner[6])]))
         print()
         sys.stdout = original_stdout
 
@@ -215,7 +223,7 @@ if __name__ == '__main__':
         torch.randn(100, 100, device=args.device).sum()
     with open(args.filename, 'a+') as f:
         sys.stdout = f
-        print(f"Benchmarking {args.reduce}, backward={args.with_backward}")
+        print(f"{args.reduce}, backward={args.with_backward}")
         print()
         sys.stdout = original_stdout
     for dataset in itertools.chain(short_rows, long_rows):
