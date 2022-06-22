@@ -225,7 +225,7 @@ if __name__ == '__main__':
     #                     choices=['sum', 'mean', 'min', 'max'])
     # parser.add_argument('--with_backward', action='store_true')
     reductions = ['sum', 'mean', 'min', 'max']
-    with_backwards = [True, False]
+    with_backwards = [False, True]
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--filename', type=str, required=True)
     args = parser.parse_args()
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
 
-    for reduce, with_backward in itertools.product(reductions, with_backwards):
+    for with_backward, reduce in itertools.product(with_backwards, reductions):
         with open(args.filename, 'a+') as f:
             sys.stdout = f
             print(f"## {reduce}, backward={with_backward}", end='  \n')
