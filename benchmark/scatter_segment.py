@@ -1,4 +1,5 @@
 import time
+import sys
 import os.path as osp
 import itertools
 
@@ -6,6 +7,7 @@ import argparse
 import wget
 import torch
 from scipy.io import loadmat
+import numpy as np
 
 from torch_scatter import scatter, segment_coo, segment_csr
 
@@ -23,9 +25,9 @@ def download(dataset):
     url = 'https://sparse.tamu.edu/mat/{}/{}.mat'
     for group, name in itertools.chain(long_rows, short_rows):
         if not osp.exists(f'{name}.mat'):
-            print(f'Downloading {group}/{name}:')
+            print(f'Downloading {group}/{name}:', end='  \n')
             wget.download(url.format(group, name))
-            print('')
+            print('', end='  \n')
 
 
 def bold(text, flag=True):
@@ -45,30 +47,11 @@ def correctness(dataset):
             x = torch.randn((row.size(0), size), device=args.device)
             x = x.squeeze(-1) if size == 1 else x
 
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='add')
-            out2 = segment_coo(x, row, dim_size=dim_size, reduce='add')
-            out3 = segment_csr(x, rowptr, reduce='add')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='mean')
-            out2 = segment_coo(x, row, dim_size=dim_size, reduce='mean')
-            out3 = segment_csr(x, rowptr, reduce='mean')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='min')
-            out2 = segment_coo(x, row, reduce='min')
-            out3 = segment_csr(x, rowptr, reduce='min')
-
-            assert torch.allclose(out1, out2, atol=1e-4)
-            assert torch.allclose(out1, out3, atol=1e-4)
-
-            out1 = scatter(x, row, dim=0, dim_size=dim_size, reduce='max')
-            out2 = segment_coo(x, row, reduce='max')
-            out3 = segment_csr(x, rowptr, reduce='max')
+            # run correctness checks for provided reduce option only
+            out1 = scatter(
+                    x, row, dim=0, dim_size=dim_size, reduce=reduce)
+            out2 = segment_coo(x, row, dim_size=dim_size, reduce=reduce)
+            out3 = segment_csr(x, rowptr, reduce=reduce)
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
@@ -85,7 +68,7 @@ def time_func(func, x):
             torch.cuda.synchronize()
         t = time.perf_counter()
 
-        if not args.with_backward:
+        if not with_backward:
             with torch.no_grad():
                 for _ in range(iters):
                     func(x)
@@ -115,35 +98,37 @@ def timing(dataset):
     dim_size = rowptr.size(0) - 1
     avg_row_len = row.size(0) / dim_size
 
+    # Assuming that sca1 is meant to test out kwarg with reduce rather than
+    # out.scatter_add
     def sca1_row(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row_tmp = row.view(-1, 1).expand_as(x) if x.dim() > 1 else row
-        return out.scatter_add_(0, row_tmp, x)
+        return scatter(x, row_tmp, dim=0, out=out, reduce=reduce)
 
     def sca1_col(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row2_tmp = row2.view(-1, 1).expand_as(x) if x.dim() > 1 else row2
-        return out.scatter_add_(0, row2_tmp, x)
+        return scatter(x, row2_tmp, dim=0, out=out, reduce=reduce)
 
     def sca2_row(x):
-        return scatter(x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
+        return scatter(x, row, dim=0, dim_size=dim_size, reduce=reduce)
 
     def sca2_col(x):
-        return scatter(x, row2, dim=0, dim_size=dim_size, reduce=args.reduce)
+        return scatter(x, row2, dim=0, dim_size=dim_size, reduce=reduce)
 
-    def seg_coo(x):
-        return segment_coo(x, row, reduce=args.reduce)
+    # def seg_coo(x):
+    #     return segment_coo(x, row, reduce=reduce)
 
     def seg_csr(x):
-        return segment_csr(x, rowptr, reduce=args.reduce)
+        return segment_csr(x, rowptr, reduce=reduce)
 
     def dense1(x):
-        return getattr(torch, args.reduce)(x, dim=-2)
+        return getattr(torch, reduce)(x, dim=-2)
 
     def dense2(x):
-        return getattr(torch, args.reduce)(x, dim=-1)
+        return getattr(torch, reduce)(x, dim=-1)
 
-    t1, t2, t3, t4, t5, t6, t7, t8 = [], [], [], [], [], [], [], []
+    t1, t2, t3, t4, t6, t7, t8 = [], [], [], [], [], [], []
 
     for size in sizes:
         try:
@@ -154,7 +139,7 @@ def timing(dataset):
             t2 += [time_func(sca1_col, x)]
             t3 += [time_func(sca2_row, x)]
             t4 += [time_func(sca2_col, x)]
-            t5 += [time_func(seg_coo, x)]
+            # t5 += [time_func(seg_coo, x)]
             t6 += [time_func(seg_csr, x)]
 
             del x
@@ -163,7 +148,7 @@ def timing(dataset):
             if 'out of memory' not in str(e):
                 raise RuntimeError(e)
             torch.cuda.empty_cache()
-            for t in (t1, t2, t3, t4, t5, t6):
+            for t in (t1, t2, t3, t4, t6):
                 t.append(float('inf'))
 
         try:
@@ -183,47 +168,87 @@ def timing(dataset):
             for t in (t7, t8):
                 t.append(float('inf'))
 
-    ts = torch.tensor([t1, t2, t3, t4, t5, t6, t7, t8])
+    ts = torch.tensor([t1, t2, t3, t4, t6, t7, t8])
     winner = torch.zeros_like(ts, dtype=torch.bool)
     winner[ts.argmin(dim=0), torch.arange(len(sizes))] = 1
     winner = winner.tolist()
 
     name = f'{group}/{name}'
-    print(f'{bold(name)} (avg row length: {avg_row_len:.2f}):')
-    print('\t'.join(['        '] + [f'{size:>5}' for size in sizes]))
-    print('\t'.join([bold('SCA1_ROW')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t1, winner[0])]))
-    print('\t'.join([bold('SCA1_COL')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t2, winner[1])]))
-    print('\t'.join([bold('SCA2_ROW')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
-    print('\t'.join([bold('SCA2_COL')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
-    print('\t'.join([bold('SEG_COO ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
-    print('\t'.join([bold('SEG_CSR ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[5])]))
-    print('\t'.join([bold('DENSE1  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[6])]))
-    print('\t'.join([bold('DENSE2  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[7])]))
-    print()
+    original_stdout = sys.stdout
+    with open(args.filename, 'a+') as f:
+        sys.stdout = f
+        print(f'**{name}** (avg row length: {avg_row_len:.2f}):', end='  \n')
+        print('\t'.join(['|       |'] + [f'{size:>5}|' for size in sizes]),
+              end='  \n')
+        print('----'.join(['|------|'] + ['-------|' for _ in sizes]),
+              end='  \n')
+        print('\t'.join(['|**SCA1_ROW**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t1, winner[0])]), end='  \n')
+        print('\t'.join(['|**SCA1_COL**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t2, winner[1])]), end='  \n')
+        print('\t'.join(['|**SCA2_ROW**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t3, winner[2])]), end='  \n')
+        print('\t'.join(['|**SCA2_COL**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t4, winner[3])]), end='  \n')
+        # print('\t'.join(['|**SEG_COO **|'] +
+        #                 [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+        #                 for t, f in zip(t5, winner[4])]))
+        print('\t'.join(['|**SEG_CSR**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t6, winner[4])]), end='  \n')
+        print('\t'.join(['|**DENSE1**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t7, winner[5])]), end='  \n')
+        print('\t'.join(['|**DENSE2**|'] +
+                        [f'**{t:.5f}**|' if f else f'{t:.5f}|'
+                         for t, f in zip(t8, winner[6])]), end='  \n')
+        print()
+        sys.stdout = original_stdout
+
+    key_prepend = f'{name}_{reduce}_{with_backward}'
+    row_list = [('SCA1_ROW', t1), ('SCA1_COL', t2), ('SCA2_ROW', t3),
+                ('SCA2_COL', t4), ('SEG_CSR', t6), ('DENSE1', t7),
+                ('DENSE2', t8)]
+
+    for row_name, result in row_list:
+        keyname = key_prepend + row_name
+        all_timings[keyname] = np.array(result)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--reduce', type=str, required=True,
-                        choices=['sum', 'mean', 'min', 'max'])
-    parser.add_argument('--with_backward', action='store_true')
+    # parser.add_argument('--reduce', type=str, required=True,
+    #                     choices=['sum', 'mean', 'min', 'max'])
+    # parser.add_argument('--with_backward', action='store_true')
+    reductions = ['sum', 'mean', 'min', 'max']
+    with_backwards = [False, True]
     parser.add_argument('--device', type=str, default='cuda')
+    parser.add_argument('--filename', type=str, required=True)
     args = parser.parse_args()
+    assert args.filename.endswith('.md'), "filename must be a .md file"
     iters = 1 if args.device == 'cpu' else 20
     sizes = [1, 16, 32, 64, 128, 256, 512]
     sizes = sizes[:3] if args.device == 'cpu' else sizes
+    original_stdout = sys.stdout
+    all_timings = dict()
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
-    for dataset in itertools.chain(short_rows, long_rows):
-        download(dataset)
-        correctness(dataset)
-        timing(dataset)
+
+    for with_backward, reduce in itertools.product(with_backwards, reductions):
+        with open(args.filename, 'a+') as f:
+            sys.stdout = f
+            print(f"## {reduce}, backward={with_backward}", end='  \n')
+            print()
+            sys.stdout = original_stdout
+        for dataset in itertools.chain(short_rows, long_rows):
+            download(dataset)
+            correctness(dataset)
+            timing(dataset)
+
+    np_filename = args.filename.rstrip('.md') + '.npy'
+    np.save(np_filename, all_timings)

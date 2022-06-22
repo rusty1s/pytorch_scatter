@@ -12,8 +12,8 @@ def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     index = broadcast(index, src, dim)
     include = True
     if out is None:
+        # we can use `include_self = True` here
         out = _create_out(src, index, dim, dim_size)
-        include = False
     return out.scatter_reduce_(dim, index, src, 'sum', include_self=include)
 
 
@@ -44,6 +44,7 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     include = True
     if out is None:
         out = _create_out(src, index, dim, dim_size)
+        # include must be false to avoid adding 1 to the denominator
         include = False
     return out.scatter_reduce_(dim, index, src, 'mean', include_self=include)
 
@@ -60,6 +61,9 @@ def scatter_min(
     include = True
     if out is None:
         out = _create_out(src, index, dim, dim_size)
+        # include_self must be False here because we can't pass an out tensor
+        # of reduction inits, otherwise non scattered positions will be
+        # filled with inits
         include = False
     out.scatter_reduce_(dim, index, src, 'amin', include_self=include)
     return out, torch.empty(())
