@@ -112,8 +112,8 @@ def timing(dataset):
     def sca2_col(x):
         return scatter(x, row2, dim=0, dim_size=dim_size, reduce=args.reduce)
 
-    def seg_coo(x):
-        return segment_coo(x, row, reduce=args.reduce)
+    # def seg_coo(x):
+    #     return segment_coo(x, row, reduce=args.reduce)
 
     def seg_csr(x):
         return segment_csr(x, rowptr, reduce=args.reduce)
@@ -124,7 +124,7 @@ def timing(dataset):
     def dense2(x):
         return getattr(torch, args.reduce)(x, dim=-1)
 
-    t1, t2, t3, t4, t5, t6, t7, t8 = [], [], [], [], [], [], [], []
+    t1, t2, t3, t4, t6, t7, t8 = [], [], [], [], [], [], []
 
     for size in sizes:
         try:
@@ -135,7 +135,7 @@ def timing(dataset):
             t2 += [time_func(sca1_col, x)]
             t3 += [time_func(sca2_row, x)]
             t4 += [time_func(sca2_col, x)]
-            t5 += [time_func(seg_coo, x)]
+            # t5 += [time_func(seg_coo, x)]
             t6 += [time_func(seg_csr, x)]
 
             del x
@@ -144,7 +144,7 @@ def timing(dataset):
             if 'out of memory' not in str(e):
                 raise RuntimeError(e)
             torch.cuda.empty_cache()
-            for t in (t1, t2, t3, t4, t5, t6):
+            for t in (t1, t2, t3, t4, t6):
                 t.append(float('inf'))
 
         try:
@@ -164,7 +164,7 @@ def timing(dataset):
             for t in (t7, t8):
                 t.append(float('inf'))
 
-    ts = torch.tensor([t1, t2, t3, t4, t5, t6, t7, t8])
+    ts = torch.tensor([t1, t2, t3, t4, t6, t7, t8])
     winner = torch.zeros_like(ts, dtype=torch.bool)
     winner[ts.argmin(dim=0), torch.arange(len(sizes))] = 1
     winner = winner.tolist()
@@ -180,14 +180,14 @@ def timing(dataset):
                     [bold(f'{t:.5f}', f) for t, f in zip(t3, winner[2])]))
     print('\t'.join([bold('SCA2_COL')] +
                     [bold(f'{t:.5f}', f) for t, f in zip(t4, winner[3])]))
-    print('\t'.join([bold('SEG_COO ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
+    # print('\t'.join([bold('SEG_COO ')] +
+    #                 [bold(f'{t:.5f}', f) for t, f in zip(t5, winner[4])]))
     print('\t'.join([bold('SEG_CSR ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[5])]))
+                    [bold(f'{t:.5f}', f) for t, f in zip(t6, winner[4])]))
     print('\t'.join([bold('DENSE1  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[6])]))
+                    [bold(f'{t:.5f}', f) for t, f in zip(t7, winner[5])]))
     print('\t'.join([bold('DENSE2  ')] +
-                    [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[7])]))
+                    [bold(f'{t:.5f}', f) for t, f in zip(t8, winner[6])]))
     print()
 
 
