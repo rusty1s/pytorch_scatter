@@ -48,9 +48,9 @@ def correctness(dataset):
 
             # run correctness checks for provided reduce option only
             out1 = scatter(
-                    x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
-            out2 = segment_coo(x, row, dim_size=dim_size, reduce=args.reduce)
-            out3 = segment_csr(x, rowptr, reduce=args.reduce)
+                    x, row, dim=0, dim_size=dim_size, reduce=reduce)
+            out2 = segment_coo(x, row, dim_size=dim_size, reduce=reduce)
+            out3 = segment_csr(x, rowptr, reduce=reduce)
 
             assert torch.allclose(out1, out2, atol=1e-4)
             assert torch.allclose(out1, out3, atol=1e-4)
@@ -67,7 +67,7 @@ def time_func(func, x):
             torch.cuda.synchronize()
         t = time.perf_counter()
 
-        if not args.with_backward:
+        if not with_backward:
             with torch.no_grad():
                 for _ in range(iters):
                     func(x)
@@ -102,30 +102,30 @@ def timing(dataset):
     def sca1_row(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row_tmp = row.view(-1, 1).expand_as(x) if x.dim() > 1 else row
-        return scatter(x, row_tmp, dim=0, out=out, reduce=args.reduce)
+        return scatter(x, row_tmp, dim=0, out=out, reduce=reduce)
 
     def sca1_col(x):
         out = x.new_zeros(dim_size, *x.size()[1:])
         row2_tmp = row2.view(-1, 1).expand_as(x) if x.dim() > 1 else row2
-        return scatter(x, row2_tmp, dim=0, out=out, reduce=args.reduce)
+        return scatter(x, row2_tmp, dim=0, out=out, reduce=reduce)
 
     def sca2_row(x):
-        return scatter(x, row, dim=0, dim_size=dim_size, reduce=args.reduce)
+        return scatter(x, row, dim=0, dim_size=dim_size, reduce=reduce)
 
     def sca2_col(x):
-        return scatter(x, row2, dim=0, dim_size=dim_size, reduce=args.reduce)
+        return scatter(x, row2, dim=0, dim_size=dim_size, reduce=reduce)
 
     # def seg_coo(x):
-    #     return segment_coo(x, row, reduce=args.reduce)
+    #     return segment_coo(x, row, reduce=reduce)
 
     def seg_csr(x):
-        return segment_csr(x, rowptr, reduce=args.reduce)
+        return segment_csr(x, rowptr, reduce=reduce)
 
     def dense1(x):
-        return getattr(torch, args.reduce)(x, dim=-2)
+        return getattr(torch, reduce)(x, dim=-2)
 
     def dense2(x):
-        return getattr(torch, args.reduce)(x, dim=-1)
+        return getattr(torch, reduce)(x, dim=-1)
 
     t1, t2, t3, t4, t6, t7, t8 = [], [], [], [], [], [], []
 
@@ -167,6 +167,7 @@ def timing(dataset):
             for t in (t7, t8):
                 t.append(float('inf'))
 
+
     ts = torch.tensor([t1, t2, t3, t4, t6, t7, t8])
     winner = torch.zeros_like(ts, dtype=torch.bool)
     winner[ts.argmin(dim=0), torch.arange(len(sizes))] = 1
@@ -177,9 +178,9 @@ def timing(dataset):
     with open(args.filename, 'a+') as f:
         sys.stdout = f
         print(f'**{name}** (avg row length: {avg_row_len:.2f}):', end='  \n')
-        print('\t'.join(['|           |'] + [f'{size:>5}|' for size in sizes]),
+        print('\t'.join(['|       |'] + [f'{size:>5}|' for size in sizes]),
               end='  \n')
-        print('----'.join(['|-----------|'] + ['-------|' for _ in sizes]),
+        print('----'.join(['|------|'] + ['-------|' for _ in sizes]),
               end='  \n')
         print('\t'.join(['|**SCA1_ROW**|'] +
                         [f'**{t:.5f}**|' if f else f'{t:.5f}|'
@@ -211,9 +212,11 @@ def timing(dataset):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--reduce', type=str, required=True,
-                        choices=['sum', 'mean', 'min', 'max'])
-    parser.add_argument('--with_backward', action='store_true')
+    # parser.add_argument('--reduce', type=str, required=True,
+    #                     choices=['sum', 'mean', 'min', 'max'])
+    # parser.add_argument('--with_backward', action='store_true')
+    reductions = ['sum', 'mean', 'min', 'max']
+    with_backwards = [True, False]
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--filename', type=str, required=True)
     args = parser.parse_args()
@@ -224,17 +227,14 @@ if __name__ == '__main__':
 
     for _ in range(10):  # Warmup.
         torch.randn(100, 100, device=args.device).sum()
-    with open(args.filename, 'a+') as f:
-        sys.stdout = f
-        print(f"{args.reduce.capitalize()}, backward={args.with_backward}",
-              end='  \n')
-        print()
-        sys.stdout = original_stdout
-    for dataset in itertools.chain(short_rows, long_rows):
-        download(dataset)
-        correctness(dataset)
-        timing(dataset)
-    with open(args.filename, 'a+') as f:
-        sys.stdout = f
-        print("=" * 80, end='  \n')
-        sys.stdout = original_stdout
+
+    for reduce, with_backward in itertools.product(reductions, with_backwards):
+        with open(args.filename, 'a+') as f:
+            sys.stdout = f
+            print(f"##{reduce}, backward={with_backward}", end='  \n')
+            print()
+            sys.stdout = original_stdout
+        for dataset in itertools.chain(short_rows, long_rows):
+            download(dataset)
+            correctness(dataset)
+            timing(dataset)
