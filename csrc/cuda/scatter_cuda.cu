@@ -13,7 +13,8 @@
 template <typename scalar_t, ReductionType REDUCE>
 __global__ void
 scatter_kernel(const scalar_t *src_data,
-               // similarly make IndexType int64 to allow indexing with int64s
+               // similarly make IndexType int64 to allow indexing
+               // of index with int64s
                const at::cuda::detail::TensorInfo<int64_t, int64_t> index_info,
                scalar_t *out_data,
                // make all the constants int64
@@ -118,7 +119,7 @@ scatter_cuda(torch::Tensor src, torch::Tensor index, int64_t dim,
   auto K = src.numel() / (B * E);
   auto N = out.size(dim);
 
-  // make IndexType int64 to allow indexing with int64s
+  // make IndexType int64 to allow indexing of index with int64s
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int64_t>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_ALL_TYPES_AND(at::ScalarType::Half, src.scalar_type(), "_", [&] {
