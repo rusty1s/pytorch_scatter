@@ -8,12 +8,15 @@ from .utils import broadcast, _create_out
 def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
-    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
-    index = broadcast(index, src, dim)
     include = True
     if out is None:
         # we can use `include_self = True` here
         out = _create_out(src, index, dim, dim_size)
+
+    if (index.dim() == 1):
+        return out.index_add_(dim, index, src)
+
+    index = broadcast(index, src, dim)
     return out.scatter_reduce_(dim, index, src, 'sum', include_self=include)
 
 
@@ -26,26 +29,32 @@ def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
-    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
-    index = broadcast(index, src, dim)
     include = True
     if out is None:
         # use include=True so indices not scattered to are filled with 1s
         # as per torch_scatter
         out = _create_out(src, index, dim, dim_size, is_mul=True)
+
+    if (index.dim() == 1):
+        return out.index_reduce_(dim, index, src, 'prod', include_self=include)
+
+    index = broadcast(index, src, dim)
     return out.scatter_reduce_(dim, index, src, 'prod', include_self=include)
 
 
 def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
-    # FIXME: when index.dim() == 1, use index_reduce and don't do the broadcast
-    index = broadcast(index, src, dim)
     include = True
     if out is None:
         out = _create_out(src, index, dim, dim_size)
         # include must be false to avoid adding 1 to the denominator
         include = False
+
+    if (index.dim() == 1):
+        return out.index_reduce_(dim, index, src, 'mean', include_self=include)
+
+    index = broadcast(index, src, dim)
     return out.scatter_reduce_(dim, index, src, 'mean', include_self=include)
 
 
@@ -57,7 +66,6 @@ def scatter_min(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-    index = broadcast(index, src, dim)
     include = True
     if out is None:
         out = _create_out(src, index, dim, dim_size)
@@ -65,7 +73,13 @@ def scatter_min(
         # of reduction inits, otherwise non scattered positions will be
         # filled with inits
         include = False
-    out.scatter_reduce_(dim, index, src, 'amin', include_self=include)
+
+    if (index.dim() == 1):
+        out.index_reduce_(dim, index, src, 'amin', include_self=include)
+    else:
+        index = broadcast(index, src, dim)
+        out.scatter_reduce_(dim, index, src, 'amin', include_self=include)
+
     return out, torch.empty(())
 
 
@@ -73,12 +87,17 @@ def scatter_max(
         src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-    index = broadcast(index, src, dim)
     include = True
     if out is None:
         out = _create_out(src, index, dim, dim_size)
         include = False
-    out.scatter_reduce_(dim, index, src, 'amax', include_self=include)
+
+    if (index.dim() == 1):
+        out.index_reduce_(dim, index, src, 'amax', include_self=include)
+    else:
+        index = broadcast(index, src, dim)
+        out.scatter_reduce_(dim, index, src, 'amax', include_self=include)
+
     return out, torch.empty(())
 
 
