@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7]
-        torch-version: [1.10.0, 1.11.0]
+        torch-version: [1.11.0, 1.12.0]
 
     steps:
       - uses: actions/checkout@v2
