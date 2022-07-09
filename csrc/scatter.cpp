@@ -1,10 +1,8 @@
 #include <Python.h>
 #include <torch/script.h>
 
-#include "macros.h"
-
-// #include "scatter.h"
 #include "cpu/scatter_cpu.h"
+#include "macros.h"
 #include "utils.h"
 
 #ifdef WITH_CUDA
@@ -229,9 +227,10 @@ public:
   }
 };
 
-SCATTER_API torch::Tensor scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
-                          torch::optional<torch::Tensor> optional_out,
-                          torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
+            torch::optional<torch::Tensor> optional_out,
+            torch::optional<int64_t> dim_size) {
   return ScatterSum::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
@@ -241,9 +240,10 @@ torch::Tensor scatter_mul(torch::Tensor src, torch::Tensor index, int64_t dim,
   return ScatterMul::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
-SCATTER_API torch::Tensor scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
-                           torch::optional<torch::Tensor> optional_out,
-                           torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
+             torch::optional<torch::Tensor> optional_out,
+             torch::optional<int64_t> dim_size) {
   return ScatterMean::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
