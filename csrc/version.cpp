@@ -1,6 +1,7 @@
 #include <Python.h>
 #include <torch/script.h>
 #include "scatter.h"
+#include "macros.h"
 
 #ifdef WITH_CUDA
 #include <cuda.h>

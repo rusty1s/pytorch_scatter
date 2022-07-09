@@ -1,6 +1,8 @@
 #include <Python.h>
 #include <torch/script.h>
 
+#include "macros.h"
+
 #include "scatter.h"
 #include "cpu/scatter_cpu.h"
 #include "utils.h"

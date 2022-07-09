@@ -3,7 +3,7 @@
 
 #include "cpu/segment_csr_cpu.h"
 #include "utils.h"
-#include "scatter.h"
+#include "macros.h"
 
 #ifdef WITH_CUDA
 #include "cuda/segment_csr_cuda.h"
