@@ -2,8 +2,8 @@
 #include <torch/script.h>
 
 #include "cpu/segment_csr_cpu.h"
-#include "utils.h"
 #include "macros.h"
+#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/segment_csr_cuda.h"
@@ -193,13 +193,15 @@ public:
   }
 };
 
-SCATTER_API torch::Tensor segment_sum_csr(torch::Tensor src, torch::Tensor indptr,
-                              torch::optional<torch::Tensor> optional_out) {
+SCATTER_API torch::Tensor
+segment_sum_csr(torch::Tensor src, torch::Tensor indptr,
+                torch::optional<torch::Tensor> optional_out) {
   return SegmentSumCSR::apply(src, indptr, optional_out)[0];
 }
 
-SCATTER_API torch::Tensor segment_mean_csr(torch::Tensor src, torch::Tensor indptr,
-                               torch::optional<torch::Tensor> optional_out) {
+SCATTER_API torch::Tensor
+segment_mean_csr(torch::Tensor src, torch::Tensor indptr,
+                 torch::optional<torch::Tensor> optional_out) {
   return SegmentMeanCSR::apply(src, indptr, optional_out)[0];
 }
 
@@ -217,8 +219,9 @@ segment_max_csr(torch::Tensor src, torch::Tensor indptr,
   return std::make_tuple(result[0], result[1]);
 }
 
-SCATTER_API torch::Tensor gather_csr(torch::Tensor src, torch::Tensor indptr,
-                         torch::optional<torch::Tensor> optional_out) {
+SCATTER_API torch::Tensor
+gather_csr(torch::Tensor src, torch::Tensor indptr,
+           torch::optional<torch::Tensor> optional_out) {
   return GatherCSR::apply(src, indptr, optional_out)[0];
 }
 
