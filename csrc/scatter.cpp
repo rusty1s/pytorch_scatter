@@ -3,7 +3,7 @@
 
 #include "macros.h"
 
-#include "scatter.h"
+// #include "scatter.h"
 #include "cpu/scatter_cpu.h"
 #include "utils.h"
 
