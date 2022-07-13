@@ -15,7 +15,7 @@ endif()
 find_package(Python3 COMPONENTS Development)
 find_package(Torch REQUIRED)
 
-file(GLOB HEADERS csrc/scatter.h)
+file(GLOB HEADERS csrc/*.h)
 file(GLOB OPERATOR_SOURCES csrc/cpu/*.h csrc/cpu/*.cpp csrc/*.cpp)
 if(WITH_CUDA)
   file(GLOB OPERATOR_SOURCES ${OPERATOR_SOURCES} csrc/cuda/*.h csrc/cuda/*.cu)
