@@ -1,8 +1,6 @@
 #pragma once
 
-#include <torch/extension.h>
-
-#include "macros.h"
+#include "extensions.h"
 
 namespace scatter {
 SCATTER_API int64_t cuda_version() noexcept;

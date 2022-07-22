@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(TORCHSCATTER_VERSION 2.0.9)
 
 option(WITH_CUDA "Enable CUDA support" OFF)
+option(WITH_PYTHON "Link to Python when building" ON)
 
 if(WITH_CUDA)
   enable_language(CUDA)
@@ -12,7 +13,10 @@ if(WITH_CUDA)
   set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
 endif()
 
-find_package(Python3 COMPONENTS Development)
+if (WITH_PYTHON)
+  add_definitions(-DWITH_PYTHON)
+  find_package(Python3 COMPONENTS Development)
+endif()
 find_package(Torch REQUIRED)
 
 file(GLOB HEADERS csrc/*.h)
@@ -22,7 +26,10 @@ if(WITH_CUDA)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${OPERATOR_SOURCES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${TORCH_LIBRARIES} Python3::Python)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${TORCH_LIBRARIES})
+if (WITH_PYTHON)
+  target_link_libraries(${PROJECT_NAME} PRIVATE Python3::Python)
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_NAME TorchScatter)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
