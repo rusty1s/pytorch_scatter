@@ -1,6 +1,6 @@
 #pragma once
 
-#include <torch/extension.h>
+#include "../extensions.h"
 
 #define CHECK_CUDA(x)                                                          \
   AT_ASSERTM(x.device().is_cuda(), #x " must be CUDA tensor")

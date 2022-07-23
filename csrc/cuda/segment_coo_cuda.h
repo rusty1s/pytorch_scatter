@@ -1,6 +1,6 @@
 #pragma once
 
-#include <torch/extension.h>
+#include "../extensions.h"
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
 segment_coo_cuda(torch::Tensor src, torch::Tensor index,

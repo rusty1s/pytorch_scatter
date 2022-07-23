@@ -1,4 +1,7 @@
+#ifdef WITH_PYTHON
 #include <Python.h>
+#endif
+
 #include <torch/script.h>
 
 #include "cpu/segment_csr_cpu.h"
@@ -10,10 +13,12 @@
 #endif
 
 #ifdef _WIN32
+#ifdef WITH_PYTHON
 #ifdef WITH_CUDA
 PyMODINIT_FUNC PyInit__segment_csr_cuda(void) { return NULL; }
 #else
 PyMODINIT_FUNC PyInit__segment_csr_cpu(void) { return NULL; }
+#endif
 #endif
 #endif
 
