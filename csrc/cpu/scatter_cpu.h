@@ -1,6 +1,6 @@
 #pragma once
 
-#include <torch/extension.h>
+#include "../extensions.h"
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
 scatter_cpu(torch::Tensor src, torch::Tensor index, int64_t dim,

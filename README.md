@@ -54,39 +54,41 @@ conda install pytorch-scatter -c pyg
 
 We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
-#### PyTorch 1.10.0
+#### PyTorch 1.12
 
-To install the binaries for PyTorch 1.10.0, simply run
-
-```
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.10.0+${CUDA}.html
-```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu113` depending on your PyTorch installation.
-
-|             | `cpu` | `cu102` | `cu113` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
-
-#### PyTorch 1.9.0/1.9.1
-
-To install the binaries for PyTorch 1.9.0 and 1.9.1, simply run
+To install the binaries for PyTorch 1.12.0, simply run
 
 ```
-pip install torch-scatter -f https://data.pyg.org/whl/torch-1.9.0+${CUDA}.html
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.12.0+${CUDA}.html
 ```
 
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` depending on your PyTorch installation.
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu113`, or `cu116` depending on your PyTorch installation.
 
-|             | `cpu` | `cu102` | `cu111` |
-|-------------|-------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |
+|             | `cpu` | `cu102` | `cu113` | `cu116` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    |         | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
 
-**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1 and PyTorch 1.8.0/1.8.1 (following the same procedure).
+#### PyTorch 1.11
+
+To install the binaries for PyTorch 1.11.0, simply run
+
+```
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.11.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu113`, or `cu115` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu113` | `cu115` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    |         | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
+
+**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0, PyTorch 1.7.0/1.7.1, PyTorch 1.8.0/1.8.1, PyTorch 1.9.0, and PyTorch 1.10.0/1.10.1/1.10.2 (following the same procedure).
+For older versions, you might need to explicitly specify the latest supported version number in order to prevent a manual installation from source.
+You can look up the latest supported version number [here](https://data.pyg.org/whl).
 
 ### From source
 
@@ -141,18 +143,19 @@ tensor([[5, 5, 3, 4, 0, 1]
 ## Running tests
 
 ```
-python setup.py test
+pytest
 ```
 
 ## C++ API
 
 `torch-scatter` also offers a C++ API that contains C++ equivalent of python models.
+For this, we need to add `TorchLib` to the `-DCMAKE_PREFIX_PATH` (*e.g.*, it may exists in `{CONDA}/lib/python{X.X}/site-packages/torch` if installed via `conda`):
 
 ```
 mkdir build
 cd build
-# Add -DWITH_CUDA=on support for the CUDA if needed
-cmake ..
+# Add -DWITH_CUDA=on support for CUDA support
+cmake -DCMAKE_PREFIX_PATH="..." ..
 make
 make install
 ```

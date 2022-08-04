@@ -1,6 +1,6 @@
 #pragma once
 
-#include <torch/extension.h>
+#include "../extensions.h"
 
 #define MAX_TENSORINFO_DIMS 25
 

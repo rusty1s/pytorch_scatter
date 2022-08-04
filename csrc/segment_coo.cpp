@@ -1,7 +1,11 @@
+#ifdef WITH_PYTHON
 #include <Python.h>
+#endif
+
 #include <torch/script.h>
 
 #include "cpu/segment_coo_cpu.h"
+#include "macros.h"
 #include "utils.h"
 
 #ifdef WITH_CUDA
@@ -9,10 +13,12 @@
 #endif
 
 #ifdef _WIN32
+#ifdef WITH_PYTHON
 #ifdef WITH_CUDA
 PyMODINIT_FUNC PyInit__segment_coo_cuda(void) { return NULL; }
 #else
 PyMODINIT_FUNC PyInit__segment_coo_cpu(void) { return NULL; }
+#endif
 #endif
 #endif
 
@@ -195,19 +201,21 @@ public:
   }
 };
 
-torch::Tensor segment_sum_coo(torch::Tensor src, torch::Tensor index,
-                              torch::optional<torch::Tensor> optional_out,
-                              torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+segment_sum_coo(torch::Tensor src, torch::Tensor index,
+                torch::optional<torch::Tensor> optional_out,
+                torch::optional<int64_t> dim_size) {
   return SegmentSumCOO::apply(src, index, optional_out, dim_size)[0];
 }
 
-torch::Tensor segment_mean_coo(torch::Tensor src, torch::Tensor index,
-                               torch::optional<torch::Tensor> optional_out,
-                               torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+segment_mean_coo(torch::Tensor src, torch::Tensor index,
+                 torch::optional<torch::Tensor> optional_out,
+                 torch::optional<int64_t> dim_size) {
   return SegmentMeanCOO::apply(src, index, optional_out, dim_size)[0];
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
+SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 segment_min_coo(torch::Tensor src, torch::Tensor index,
                 torch::optional<torch::Tensor> optional_out,
                 torch::optional<int64_t> dim_size) {
@@ -215,7 +223,7 @@ segment_min_coo(torch::Tensor src, torch::Tensor index,
   return std::make_tuple(result[0], result[1]);
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
+SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 segment_max_coo(torch::Tensor src, torch::Tensor index,
                 torch::optional<torch::Tensor> optional_out,
                 torch::optional<int64_t> dim_size) {
@@ -223,8 +231,9 @@ segment_max_coo(torch::Tensor src, torch::Tensor index,
   return std::make_tuple(result[0], result[1]);
 }
 
-torch::Tensor gather_coo(torch::Tensor src, torch::Tensor index,
-                         torch::optional<torch::Tensor> optional_out) {
+SCATTER_API torch::Tensor
+gather_coo(torch::Tensor src, torch::Tensor index,
+           torch::optional<torch::Tensor> optional_out) {
   return GatherCOO::apply(src, index, optional_out)[0];
 }
 

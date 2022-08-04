@@ -1,7 +1,11 @@
+#ifdef WITH_PYTHON
 #include <Python.h>
+#endif
+
 #include <torch/script.h>
 
 #include "cpu/scatter_cpu.h"
+#include "macros.h"
 #include "utils.h"
 
 #ifdef WITH_CUDA
@@ -9,10 +13,12 @@
 #endif
 
 #ifdef _WIN32
+#ifdef WITH_PYTHON
 #ifdef WITH_CUDA
 PyMODINIT_FUNC PyInit__scatter_cuda(void) { return NULL; }
 #else
 PyMODINIT_FUNC PyInit__scatter_cpu(void) { return NULL; }
+#endif
 #endif
 #endif
 
@@ -226,9 +232,10 @@ public:
   }
 };
 
-torch::Tensor scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
-                          torch::optional<torch::Tensor> optional_out,
-                          torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
+            torch::optional<torch::Tensor> optional_out,
+            torch::optional<int64_t> dim_size) {
   return ScatterSum::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
@@ -238,13 +245,14 @@ torch::Tensor scatter_mul(torch::Tensor src, torch::Tensor index, int64_t dim,
   return ScatterMul::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
-torch::Tensor scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
-                           torch::optional<torch::Tensor> optional_out,
-                           torch::optional<int64_t> dim_size) {
+SCATTER_API torch::Tensor
+scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
+             torch::optional<torch::Tensor> optional_out,
+             torch::optional<int64_t> dim_size) {
   return ScatterMean::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
+SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 scatter_min(torch::Tensor src, torch::Tensor index, int64_t dim,
             torch::optional<torch::Tensor> optional_out,
             torch::optional<int64_t> dim_size) {
@@ -252,7 +260,7 @@ scatter_min(torch::Tensor src, torch::Tensor index, int64_t dim,
   return std::make_tuple(result[0], result[1]);
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
+SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 scatter_max(torch::Tensor src, torch::Tensor index, int64_t dim,
             torch::optional<torch::Tensor> optional_out,
             torch::optional<int64_t> dim_size) {

@@ -1,6 +1,10 @@
 name: Testing
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
 
@@ -8,10 +12,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.6", "3.9"]
-        torch-version: [1.9.0, 1.10.0]
+        python-version: ["3.7", "3.10"]
+        torch-version: [1.11.0, 1.12.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -32,15 +37,10 @@ jobs:
 
       - name: Run test-suite
         run: |
-          pytest --capture=no --cov
+          pytest --cov --cov-report=xml
 
-      - name: Generate coverage report
-        if: success()
-        run: |
-          coverage xml
-
-      - name: Upload coverage report to codecov
+      - name: Upload coverage
         uses: codecov/codecov-action@v1
         if: success()
         with:
-          file: coverage.xml
+          fail_ci_if_error: false
