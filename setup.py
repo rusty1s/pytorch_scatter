@@ -14,7 +14,9 @@ from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
 __version__ = '2.0.9'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
-WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
+WITH_CUDA = False
+if torch.cuda.is_available():
+    WITH_CUDA = CUDA_HOME is not None or torch.version.hip
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
 if os.getenv('FORCE_CUDA', '0') == '1':
     suffices = ['cuda', 'cpu']
@@ -64,7 +66,10 @@ def get_extensions():
             define_macros += [('WITH_CUDA', None)]
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
-            nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
+            if torch.version.hip:
+                nvcc_flags += ['-O3', '-U__HIP_NO_HALF_OPERATORS__', '-U__HIP_NO_HALF_CONVERSIONS__']
+            else:
+                nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
             extra_compile_args['nvcc'] = nvcc_flags
 
         name = main.split(os.sep)[-1][:-4]
@@ -119,5 +124,5 @@ setup(
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
-    include_package_data=True,
+    include_package_data=False if (torch.cuda.is_available() and torch.version.hip) else True,  # work-around hipify abs paths
 )
