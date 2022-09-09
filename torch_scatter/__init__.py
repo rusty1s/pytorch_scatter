@@ -47,7 +47,7 @@ for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
         torch.ops.torch_scatter.gather_coo = gather_coo_placeholder
 
 cuda_version = torch.ops.torch_scatter.cuda_version()
-if torch.version.cuda is not None and cuda_version != -1:  # pragma: no cover
+if torch.version.hip is None and torch.version.cuda is not None and cuda_version != -1:  # pragma: no cover
     if cuda_version < 10000:
         major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
     else:

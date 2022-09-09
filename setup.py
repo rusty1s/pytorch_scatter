@@ -34,9 +34,12 @@ def get_extensions():
 
     extensions_dir = osp.join('csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
+    # remove generated 'hip' files, in case of rebuilds
+    main_files = [path for path in main_files if 'hip' not in path]
 
     for main, suffix in product(main_files, suffices):
         define_macros = [('WITH_PYTHON', None)]
+        undef_macros = []
 
         if sys.platform == 'win32':
             define_macros += [('torchscatter_EXPORTS', None)]
@@ -67,7 +70,8 @@ def get_extensions():
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             if torch.version.hip:
-                nvcc_flags += ['-O3', '-U__HIP_NO_HALF_OPERATORS__', '-U__HIP_NO_HALF_CONVERSIONS__']
+                nvcc_flags += ['-O3']
+                undef_macros += ['__HIP_NO_HALF_CONVERSIONS__']
             else:
                 nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
             extra_compile_args['nvcc'] = nvcc_flags
@@ -89,6 +93,7 @@ def get_extensions():
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,
+            undef_macros=undef_macros,
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
         )
