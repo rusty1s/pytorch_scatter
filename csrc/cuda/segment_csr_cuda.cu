@@ -46,9 +46,9 @@ segment_csr_kernel(const scalar_t *src_data,
     for (int i = TB / 2; i > 0; i /= 2) {
       // Parallel reduction inside a single warp.
       if (REDUCE == MIN || REDUCE == MAX)
-        arg_tmp = __shfl_down_sync(FULL_MASK, arg, i);
+        arg_tmp = SHFL_DOWN_SYNC(FULL_MASK, arg, i);
       Reducer<scalar_t, REDUCE>::update(
-          &val, __shfl_down_sync(FULL_MASK, val, i), &arg, arg_tmp);
+          &val, SHFL_DOWN_SYNC(FULL_MASK, val, i), &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {
