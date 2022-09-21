@@ -71,6 +71,9 @@ def get_extensions():
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             if torch.version.hip:
                 nvcc_flags += ['-O3']
+                # USE_ROCM was added to later versons of rocm pytorch
+                # define here to support older pytorch versions
+                define_macros += [('USE_ROCM', None)]
                 undef_macros += ['__HIP_NO_HALF_CONVERSIONS__']
             else:
                 nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
