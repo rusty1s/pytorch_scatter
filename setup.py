@@ -112,6 +112,11 @@ test_requires = [
     'pytest-cov',
 ]
 
+# work-around hipify abs paths
+include_package_data = True
+if torch.cuda.is_available() and torch.version.hip:
+    include_package_data = False
+
 setup(
     name='torch_scatter',
     version=__version__,
@@ -132,5 +137,5 @@ setup(
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
-    include_package_data=False if (torch.cuda.is_available() and torch.version.hip) else True,  # work-around hipify abs paths
+    include_package_data=include_package_data,
 )
