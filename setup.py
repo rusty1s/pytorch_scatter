@@ -14,7 +14,9 @@ from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
 __version__ = '2.0.9'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
-WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
+WITH_CUDA = False
+if torch.cuda.is_available():
+    WITH_CUDA = CUDA_HOME is not None or torch.version.hip
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
 if os.getenv('FORCE_CUDA', '0') == '1':
     suffices = ['cuda', 'cpu']
@@ -32,9 +34,12 @@ def get_extensions():
 
     extensions_dir = osp.join('csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
+    # remove generated 'hip' files, in case of rebuilds
+    main_files = [path for path in main_files if 'hip' not in path]
 
     for main, suffix in product(main_files, suffices):
         define_macros = [('WITH_PYTHON', None)]
+        undef_macros = []
 
         if sys.platform == 'win32':
             define_macros += [('torchscatter_EXPORTS', None)]
@@ -64,7 +69,14 @@ def get_extensions():
             define_macros += [('WITH_CUDA', None)]
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
-            nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
+            if torch.version.hip:
+                nvcc_flags += ['-O3']
+                # USE_ROCM was added to later versons of rocm pytorch
+                # define here to support older pytorch versions
+                define_macros += [('USE_ROCM', None)]
+                undef_macros += ['__HIP_NO_HALF_CONVERSIONS__']
+            else:
+                nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
             extra_compile_args['nvcc'] = nvcc_flags
 
         name = main.split(os.sep)[-1][:-4]
@@ -84,6 +96,7 @@ def get_extensions():
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,
+            undef_macros=undef_macros,
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
         )
@@ -98,6 +111,11 @@ test_requires = [
     'pytest',
     'pytest-cov',
 ]
+
+# work-around hipify abs paths
+include_package_data = True
+if torch.cuda.is_available() and torch.version.hip:
+    include_package_data = False
 
 setup(
     name='torch_scatter',
@@ -119,5 +137,5 @@ setup(
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
-    include_package_data=True,
+    include_package_data=include_package_data,
 )
