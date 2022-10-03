@@ -11,7 +11,7 @@ All included operations are broadcastable, work on varying data types, are imple
 
 .. toctree::
    :glob:
-   :maxdepth: 1
+   :maxdepth: 0
    :caption: Package reference
 
    functions/*
