@@ -76,6 +76,10 @@ jobs:
           pip install wheel
           python setup.py bdist_wheel --dist-dir=dist
 
+      - name: Add plus notation to wheel filename
+        run: for filename in *-cp*.whl; do mv "$filename" "$(echo $filename | sed 's/-cp/\+torch-${{ matrix.torch-version }}-${{ matrix.cuda-version }}-cp/')"; done
+        working-directory: dist
+
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
