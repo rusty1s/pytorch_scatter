@@ -1,16 +1,15 @@
 import datetime
-import sphinx_rtd_theme
 import doctest
+
+import sphinx_rtd_theme
 import torch_scatter
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
 ]
 
 source_suffix = '.rst'
