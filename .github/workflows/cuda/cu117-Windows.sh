@@ -1,13 +1,15 @@
 #!/bin/bash
 
+# TODO We currently use CUDA 11.3 to build CUDA 11.5 Windows wheels
+
 # Install NVIDIA drivers, see:
 # https://github.com/pytorch/vision/blob/master/packaging/windows/internal/cuda_install.bat#L99-L102
 curl -k -L "https://drive.google.com/u/0/uc?id=1injUyo3lnarMgWyRcXqKg4UGnN0ysmuq&export=download" --output "/tmp/gpu_driver_dlls.zip"
 7z x "/tmp/gpu_driver_dlls.zip" -o"/c/Windows/System32"
 
-export CUDA_SHORT=11.7
-export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}.1/local_installers
-export CUDA_FILE=cuda_${CUDA_SHORT}.1_516.94_windows.exe
+export CUDA_SHORT=11.3
+export CUDA_URL=https://developer.download.nvidia.com/compute/cuda/${CUDA_SHORT}.0/local_installers
+export CUDA_FILE=cuda_${CUDA_SHORT}.0_465.89_win10.exe
 
 # Install CUDA:
 curl -k -L "${CUDA_URL}/${CUDA_FILE}" --output "${CUDA_FILE}"
