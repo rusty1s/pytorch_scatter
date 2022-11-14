@@ -60,8 +60,8 @@ jobs:
       - name: Set version
         if: ${{ runner.os != 'macOS' }}
         run: |
-          VERSION=`sed -n "s/^__version__ = '\(.*\)'/\1/p" torch_spline_conv/__init__.py`
-          sed -i "s/$VERSION/$VERSION+${{ matrix.cuda-version }}/" torch_spline_conv/__init__.py
+          VERSION=`sed -n "s/^__version__ = '\(.*\)'/\1/p" torch_scatter/__init__.py`
+          sed -i "s/$VERSION/$VERSION+${{ matrix.cuda-version }}/" torch_scatter/__init__.py
         shell:
           bash
 
