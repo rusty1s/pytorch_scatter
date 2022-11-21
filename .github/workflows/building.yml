@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, macos-10.15, windows-2019]
         python-version: ['3.7', '3.8', '3.9', '3.10']
-        torch-version: [1.13.0]  # [1.12.0, 1.13.0]
+        torch-version: [1.12.0, 1.13.0]
         cuda-version: ['cpu', 'cu102', 'cu113', 'cu116', 'cu117']
         exclude:
           - torch-version: 1.12.0
@@ -31,8 +31,6 @@ jobs:
             cuda-version: 'cu117'
           - os: windows-2019
             cuda-version: 'cu102'
-          - os: windows-2019  # Complains about CUDA mismatch.
-            python-version: '3.7'
 
     steps:
       - uses: actions/checkout@v2
@@ -40,6 +38,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip
+        run: |
+          pip install --upgrade setuptools
 
       - name: Free up disk space
         if: ${{ runner.os == 'Linux' }}

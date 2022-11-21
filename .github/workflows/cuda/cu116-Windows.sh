@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TODO We currently use CUDA 11.3 to build CUDA 11.5 Windows wheels
+# TODO We currently use CUDA 11.3 to build CUDA 11.6 Windows wheels
 
 # Install NVIDIA drivers, see:
 # https://github.com/pytorch/vision/blob/master/packaging/windows/internal/cuda_install.bat#L99-L102
