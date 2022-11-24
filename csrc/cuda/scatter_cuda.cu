@@ -7,7 +7,7 @@
 #include "reducer.cuh"
 #include "utils.cuh"
 
-#define THREADS 1024
+#define THREADS 256
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
 template <typename scalar_t, ReductionType REDUCE>
