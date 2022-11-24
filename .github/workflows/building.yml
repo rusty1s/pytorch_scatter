@@ -69,6 +69,7 @@ jobs:
           TORCH_VERSION=`echo "pt${{ matrix.torch-version }}" | sed "s/..$//" | sed "s/\.//g"`
           echo $VERSION
           echo $TORCH_VERSION
+          echo $CUDA_VERSION=`echo ${{ matrix.cuda-version }}`
           echo "$VERSION+$TORCH_VERSION"
           echo "$VERSION$TORCH_VERSION"
           echo "$VERSION$TORCH_VERSION${{ matrix.cuda-version }}"
