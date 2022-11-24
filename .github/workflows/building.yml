@@ -67,10 +67,14 @@ jobs:
         run: |
           VERSION=`sed -n "s/^__version__ = '\(.*\)'/\1/p" torch_scatter/__init__.py`
           TORCH_VERSION=`echo "pt${{ matrix.torch-version }}" | sed "s/..$//" | sed "s/\.//g"`
+          echo $VERSION
           echo $TORCH_VERSION
-          echo "$VERSION/+$TORCH_VERSION${{ matrix.cuda-version }}"
+          echo "$VERSION+$TORCH_VERSION${{ matrix.cuda-version }}"
           sed -i "s/$VERSION/$VERSION+$TORCH_VERSION${{ matrix.cuda-version }}/" setup.py
           sed -i "s/$VERSION/$VERSION+$TORCH_VERSION${{ matrix.cuda-version }}/" torch_scatter/__init__.py
+          VERSION=`sed -n "s/^__version__ = '\(.*\)'/\1/p" torch_scatter/__init__.py`
+          echo "MODIFIED VERSION"
+          echo $VERSION
         shell:
           bash
 
