@@ -3,8 +3,7 @@ from itertools import product
 import pytest
 import torch
 import torch_scatter
-
-from .utils import reductions, tensor, dtypes
+from torch_scatter.testing import dtypes, reductions, tensor
 
 tests = [
     {

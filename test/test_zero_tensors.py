@@ -2,10 +2,9 @@ from itertools import product
 
 import pytest
 import torch
-from torch_scatter import scatter, segment_coo, gather_coo
-from torch_scatter import segment_csr, gather_csr
-
-from .utils import reductions, tensor, grad_dtypes, devices
+from torch_scatter import (gather_coo, gather_csr, scatter, segment_coo,
+                           segment_csr)
+from torch_scatter.testing import devices, grad_dtypes, reductions, tensor
 
 
 @pytest.mark.parametrize('reduce,dtype,device',
