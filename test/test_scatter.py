@@ -4,8 +4,7 @@ import pytest
 import torch
 import torch_scatter
 from torch.autograd import gradcheck
-
-from .utils import devices, dtypes, reductions, tensor
+from torch_scatter.testing import devices, dtypes, reductions, tensor
 
 reductions = reductions + ['mul']
 

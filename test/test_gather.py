@@ -3,9 +3,8 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_scatter import gather_csr, gather_coo
-
-from .utils import tensor, dtypes, devices
+from torch_scatter import gather_coo, gather_csr
+from torch_scatter.testing import devices, dtypes, tensor
 
 tests = [
     {

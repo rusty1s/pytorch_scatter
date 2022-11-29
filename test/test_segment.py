@@ -2,10 +2,9 @@ from itertools import product
 
 import pytest
 import torch
-from torch.autograd import gradcheck
 import torch_scatter
-
-from .utils import reductions, tensor, dtypes, devices
+from torch.autograd import gradcheck
+from torch_scatter.testing import devices, dtypes, reductions, tensor
 
 tests = [
     {
