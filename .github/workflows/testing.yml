@@ -33,11 +33,11 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         run: |
           Torch_DIR=`python -c 'import os; import torch; print(os.path.dirname(torch.__file__))'`
-          cat ${Torch_DIR}/include/ATen/Paralle.h
+          cat ${Torch_DIR}/include/ATen/Parallel.h
           echo "================"
           sed -i '32,38c\
             TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
-          cat ${Torch_DIR}/include/ATen/Paralle.h
+          cat ${Torch_DIR}/include/ATen/Parallel.h
         shell: bash
 
       - name: Install main package
