@@ -32,9 +32,9 @@ jobs:
       - name: Patch PyTorch static constexpr on Windows
         if: ${{ runner.os == 'Windows' }}
         run: |
-          Torch_DIR=`python -c 'import os; import torch;print(os.path.dirname(torch.__file__))'`
+          Torch_DIR=`python -c 'import os; import torch; print(os.path.dirname(torch.__file__))'`
           sed -i '32,38c\
-TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
+            TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
         shell: bash
 
       - name: Install main package
