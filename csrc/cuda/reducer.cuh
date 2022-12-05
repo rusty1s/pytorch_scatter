@@ -16,27 +16,27 @@ const std::map<std::string, ReductionType> reduce2REDUCE = {
   [&] {                                                                        \
     switch (reduce2REDUCE.at(reduce)) {                                        \
     case SUM: {                                                                \
-      const ReductionType REDUCE = SUM;                                        \
+      static constexpr ReductionType REDUCE = SUM;                                        \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case MEAN: {                                                               \
-      const ReductionType REDUCE = MEAN;                                       \
+      static constexpr ReductionType REDUCE = MEAN;                                       \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case MUL: {                                                                \
-      const ReductionType REDUCE = MUL;                                        \
+      static constexpr ReductionType REDUCE = MUL;                                        \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case DIV: {                                                                \
-      const ReductionType REDUCE = DIV;                                        \
+      static constexpr ReductionType REDUCE = DIV;                                        \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case MIN: {                                                                \
-      const ReductionType REDUCE = MIN;                                        \
+      static constexpr ReductionType REDUCE = MIN;                                        \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case MAX: {                                                                \
-      const ReductionType REDUCE = MAX;                                        \
+      static constexpr ReductionType REDUCE = MAX;                                        \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     }                                                                          \
