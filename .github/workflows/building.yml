@@ -59,6 +59,14 @@ jobs:
           python -c "import torch; print('PyTorch:', torch.__version__)"
           python -c "import torch; print('CUDA:', torch.version.cuda)"
 
+      - name: Patch PyTorch static constexpr on Windows
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          Torch_DIR=`python -c 'import os; import torch;print(os.path.dirname(torch.__file__))'`
+          sed -i '32,38c\
+TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
+        shell: bash
+
       - name: Set version
         if: ${{ runner.os != 'macOS' }}
         run: |
