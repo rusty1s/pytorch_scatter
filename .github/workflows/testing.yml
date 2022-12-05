@@ -28,7 +28,9 @@ jobs:
       - name: Install PyTorch ${{ matrix.torch-version }}
         run: |
           pip install torch==${{ matrix.torch-version }} --extra-index-url https://download.pytorch.org/whl/cpu
-
+          sed -i '32,38c\
+TORCH_API void lazy_init_num_threads();' "$(python -c "import os, torch; print(os.path.join(os.path.dirname(torch.__file__), 'include/ATen/Parallel.h'))")"
+          
       - name: Install main package
         run: |
           pip install -e .[test]
