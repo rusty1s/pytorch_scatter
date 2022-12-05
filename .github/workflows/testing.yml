@@ -36,7 +36,7 @@ jobs:
           cat ${Torch_DIR}/include/ATen/Parallel.h
           echo "================"
           sed -i '31,38c\
-            TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
+          TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
           cat ${Torch_DIR}/include/ATen/Parallel.h
         shell: bash
 
