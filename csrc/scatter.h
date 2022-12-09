@@ -16,6 +16,11 @@ scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
             torch::optional<int64_t> dim_size);
 
 SCATTER_API torch::Tensor
+scatter_mul(torch::Tensor src, torch::Tensor index, int64_t dim,
+            torch::optional<torch::Tensor> optional_out,
+            torch::optional<int64_t> dim_size);
+
+SCATTER_API torch::Tensor
 scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
              torch::optional<torch::Tensor> optional_out,
              torch::optional<int64_t> dim_size);
