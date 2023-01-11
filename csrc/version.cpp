@@ -39,4 +39,4 @@ SCATTER_API int64_t cuda_version() noexcept {
 } // namespace scatter
 
 static auto registry = torch::RegisterOperators().op(
-    "torch_scatter::cuda_version", &scatter::cuda_version);
+    "torch_scatter::cuda_version", [] { return scatter::cuda_version(); });
