@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.8
 
       - name: Install dependencies
         run: |
@@ -26,30 +26,3 @@ jobs:
       - name: Run linting
         run: |
           flake8 .
-
-  pyroma:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        torch-version: [1.13.0]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-
-      - name: Install PyTorch ${{ matrix.torch-version }}
-        run: |
-          pip install torch==${{ matrix.torch-version }} --extra-index-url https://download.pytorch.org/whl/cpu
-
-      - name: Install dependencies
-        run: |
-          pip install pyroma
-
-      - name: Check package metadata
-        run: |
-          pyroma --min=10 .

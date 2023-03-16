@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(torchscatter)
 set(CMAKE_CXX_STANDARD 14)
-set(TORCHSCATTER_VERSION 2.1.0)
+set(TORCHSCATTER_VERSION 2.1.1)
 
 option(WITH_CUDA "Enable CUDA support" OFF)
 option(WITH_PYTHON "Link to Python when building" ON)

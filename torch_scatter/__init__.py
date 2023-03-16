@@ -1,10 +1,10 @@
-import os
 import importlib
+import os
 import os.path as osp
 
 import torch
 
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 
 for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
     cuda_spec = importlib.machinery.PathFinder().find_spec(
@@ -28,18 +28,18 @@ for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
         torch.ops.torch_scatter.scatter_min = scatter_arg_placeholder
         torch.ops.torch_scatter.scatter_max = scatter_arg_placeholder
 
-        from .placeholder import segment_csr_placeholder
-        from .placeholder import segment_csr_arg_placeholder
-        from .placeholder import gather_csr_placeholder
+        from .placeholder import (gather_csr_placeholder,
+                                  segment_csr_arg_placeholder,
+                                  segment_csr_placeholder)
         torch.ops.torch_scatter.segment_sum_csr = segment_csr_placeholder
         torch.ops.torch_scatter.segment_mean_csr = segment_csr_placeholder
         torch.ops.torch_scatter.segment_min_csr = segment_csr_arg_placeholder
         torch.ops.torch_scatter.segment_max_csr = segment_csr_arg_placeholder
         torch.ops.torch_scatter.gather_csr = gather_csr_placeholder
 
-        from .placeholder import segment_coo_placeholder
-        from .placeholder import segment_coo_arg_placeholder
-        from .placeholder import gather_coo_placeholder
+        from .placeholder import (gather_coo_placeholder,
+                                  segment_coo_arg_placeholder,
+                                  segment_coo_placeholder)
         torch.ops.torch_scatter.segment_sum_coo = segment_coo_placeholder
         torch.ops.torch_scatter.segment_mean_coo = segment_coo_placeholder
         torch.ops.torch_scatter.segment_min_coo = segment_coo_arg_placeholder

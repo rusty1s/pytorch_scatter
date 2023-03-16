@@ -11,7 +11,7 @@ from torch.__config__ import parallel_info
 from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
                                        CUDAExtension)
 
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
 WITH_CUDA = False
