@@ -1,10 +1,10 @@
-import os
 import importlib
+import os
 import os.path as osp
 
 import torch
 
-__version__ = '2.1.0'
+__version__ = '2.1.1'
 
 for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
     cuda_spec = importlib.machinery.PathFinder().find_spec(
@@ -28,18 +28,18 @@ for library in ['_version', '_scatter', '_segment_csr', '_segment_coo']:
         torch.ops.torch_scatter.scatter_min = scatter_arg_placeholder
         torch.ops.torch_scatter.scatter_max = scatter_arg_placeholder
 
-        from .placeholder import segment_csr_placeholder
-        from .placeholder import segment_csr_arg_placeholder
-        from .placeholder import gather_csr_placeholder
+        from .placeholder import (gather_csr_placeholder,
+                                  segment_csr_arg_placeholder,
+                                  segment_csr_placeholder)
         torch.ops.torch_scatter.segment_sum_csr = segment_csr_placeholder
         torch.ops.torch_scatter.segment_mean_csr = segment_csr_placeholder
         torch.ops.torch_scatter.segment_min_csr = segment_csr_arg_placeholder
         torch.ops.torch_scatter.segment_max_csr = segment_csr_arg_placeholder
         torch.ops.torch_scatter.gather_csr = gather_csr_placeholder
 
-        from .placeholder import segment_coo_placeholder
-        from .placeholder import segment_coo_arg_placeholder
-        from .placeholder import gather_coo_placeholder
+        from .placeholder import (gather_coo_placeholder,
+                                  segment_coo_arg_placeholder,
+                                  segment_coo_placeholder)
         torch.ops.torch_scatter.segment_sum_coo = segment_coo_placeholder
         torch.ops.torch_scatter.segment_mean_coo = segment_coo_placeholder
         torch.ops.torch_scatter.segment_min_coo = segment_coo_arg_placeholder
@@ -64,16 +64,29 @@ if is_not_hip and is_cuda and cuda_version != -1:  # pragma: no cover
             f'{major}.{minor}. Please reinstall the torch_scatter that '
             f'matches your PyTorch install.')
 
-from .scatter import scatter_sum, scatter_add, scatter_mul  # noqa
-from .scatter import scatter_mean, scatter_min, scatter_max, scatter  # noqa
-from .segment_csr import segment_sum_csr, segment_add_csr  # noqa
-from .segment_csr import segment_mean_csr, segment_min_csr  # noqa
-from .segment_csr import segment_max_csr, segment_csr, gather_csr  # noqa
-from .segment_coo import segment_sum_coo, segment_add_coo  # noqa
-from .segment_coo import segment_mean_coo, segment_min_coo  # noqa
-from .segment_coo import segment_max_coo, segment_coo, gather_coo  # noqa
-from .composite import scatter_std, scatter_logsumexp  # noqa
-from .composite import scatter_softmax, scatter_log_softmax  # noqa
+from .composite import scatter_log_softmax  # noqa
+from .composite import scatter_logsumexp  # noqa
+from .composite import scatter_softmax  # noqa
+from .composite import scatter_std  # noqa
+from .scatter import scatter  # noqa
+from .scatter import scatter_add  # noqa
+from .scatter import scatter_max  # noqa
+from .scatter import scatter_mean  # noqa
+from .scatter import scatter_min  # noqa
+from .scatter import scatter_mul  # noqa
+from .scatter import scatter_sum  # noqa
+from .segment_coo import gather_coo  # noqa
+from .segment_coo import segment_add_coo  # noqa
+from .segment_coo import segment_coo  # noqa
+from .segment_coo import segment_max_coo  # noqa
+from .segment_coo import segment_mean_coo  # noqa
+from .segment_coo import segment_min_coo  # noqa
+from .segment_coo import segment_sum_coo  # noqa
+from .segment_csr import segment_csr  # noqa
+from .segment_csr import segment_max_csr  # noqa
+from .segment_csr import segment_min_csr  # noqa
+from .segment_csr import segment_sum_csr  # noqa
+from .segment_csr import gather_csr, segment_add_csr, segment_mean_csr  # noqa
 
 __all__ = [
     'scatter_sum',
