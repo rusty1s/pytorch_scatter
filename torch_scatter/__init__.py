@@ -64,29 +64,16 @@ if is_not_hip and is_cuda and cuda_version != -1:  # pragma: no cover
             f'{major}.{minor}. Please reinstall the torch_scatter that '
             f'matches your PyTorch install.')
 
-from .composite import scatter_log_softmax  # noqa
-from .composite import scatter_logsumexp  # noqa
-from .composite import scatter_softmax  # noqa
-from .composite import scatter_std  # noqa
-from .scatter import scatter  # noqa
-from .scatter import scatter_add  # noqa
-from .scatter import scatter_max  # noqa
-from .scatter import scatter_mean  # noqa
-from .scatter import scatter_min  # noqa
-from .scatter import scatter_mul  # noqa
-from .scatter import scatter_sum  # noqa
-from .segment_coo import gather_coo  # noqa
-from .segment_coo import segment_add_coo  # noqa
-from .segment_coo import segment_coo  # noqa
-from .segment_coo import segment_max_coo  # noqa
-from .segment_coo import segment_mean_coo  # noqa
-from .segment_coo import segment_min_coo  # noqa
-from .segment_coo import segment_sum_coo  # noqa
-from .segment_csr import segment_csr  # noqa
-from .segment_csr import segment_max_csr  # noqa
-from .segment_csr import segment_min_csr  # noqa
-from .segment_csr import segment_sum_csr  # noqa
-from .segment_csr import gather_csr, segment_add_csr, segment_mean_csr  # noqa
+from .scatter import scatter_sum, scatter_add, scatter_mul  # noqa
+from .scatter import scatter_mean, scatter_min, scatter_max, scatter  # noqa
+from .segment_csr import segment_sum_csr, segment_add_csr  # noqa
+from .segment_csr import segment_mean_csr, segment_min_csr  # noqa
+from .segment_csr import segment_max_csr, segment_csr, gather_csr  # noqa
+from .segment_coo import segment_sum_coo, segment_add_coo  # noqa
+from .segment_coo import segment_mean_coo, segment_min_coo  # noqa
+from .segment_coo import segment_max_coo, segment_coo, gather_coo  # noqa
+from .composite import scatter_std, scatter_logsumexp  # noqa
+from .composite import scatter_softmax, scatter_log_softmax  # noqa
 
 __all__ = [
     'scatter_sum',
