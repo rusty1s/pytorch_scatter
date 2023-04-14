@@ -37,4 +37,5 @@ def scatter_logsumexp(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
     sum_per_index = scatter_sum(recentered_score.exp_(), index, dim, out,
                                 dim_size)
 
-    return sum_per_index.add_(eps).log_().add_(max_value_per_index)
+    out = sum_per_index.add_(eps).log_().add_(max_value_per_index)
+    return out.nan_to_num_(neginf=0.0)
