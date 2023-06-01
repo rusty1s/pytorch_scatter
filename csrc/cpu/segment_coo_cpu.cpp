@@ -3,6 +3,7 @@
 #include "index_info.h"
 #include "reducer.h"
 #include "utils.h"
+#include <ATen/OpMathType.h>
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
 segment_coo_cpu(torch::Tensor src, torch::Tensor index,
@@ -70,11 +71,12 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
   auto stride = index_info.strides[index_info.dims - 1];
   std::vector<int64_t> args(K);
   AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "segment_coo_cpu", [&] {
+    using opmath_t = at::opmath_type<scalar_t>;
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
     scalar_t *count_data = nullptr;
 
-    std::vector<scalar_t> vals(K);
+    std::vector<opmath_t> vals(K);
     int64_t idx, next_idx, row_start;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       if (!optional_out.has_value())
@@ -87,19 +89,19 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
         idx = index_info.data[offset];
 
         for (auto k = 0; k < K; k++)
-          vals[k] = out_data[b * N * K + k];
+          vals[k] = static_cast<opmath_t>(out_data[b * N * K + k]);
 
         row_start = 0;
         for (auto e = 0; e < E; e++) {
 
           for (auto k = 0; k < K; k++)
-            Reducer<scalar_t, REDUCE>::update(
-                &vals[k], src_data[b * E * K + e * K + k], &args[k], e);
+            Reducer<opmath_t, REDUCE>::update(
+                &vals[k], static_cast<opmath_t>(src_data[b * E * K + e * K + k]), &args[k], e);
 
           if (e == E - 1) {
             for (auto k = 0; k < K; k++)
               Reducer<scalar_t, REDUCE>::write(
-                  out_data + b * N * K + idx * K + k, vals[k],
+                  out_data + b * N * K + idx * K + k, static_cast<scalar_t>(vals[k]),
                   arg_out_data + b * N * K + idx * K + k, args[k],
                   e + 1 - row_start);
             if (REDUCE == MEAN)
@@ -111,11 +113,11 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
             if (idx != next_idx) {
               for (auto k = 0; k < K; k++) {
                 Reducer<scalar_t, REDUCE>::write(
-                    out_data + b * N * K + idx * K + k, vals[k],
+                    out_data + b * N * K + idx * K + k, static_cast<scalar_t>(vals[k]),
                     arg_out_data + b * N * K + idx * K + k, args[k],
                     e + 1 - row_start);
 
-                vals[k] = out_data[b * N * K + next_idx * K + k];
+                vals[k] = static_cast<opmath_t>(out_data[b * N * K + next_idx * K + k]);
               }
               if (REDUCE == MEAN)
                 count_data[b * N + idx] = (scalar_t)(e + 1 - row_start);
