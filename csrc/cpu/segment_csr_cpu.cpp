@@ -3,6 +3,7 @@
 #include "index_info.h"
 #include "reducer.h"
 #include "utils.h"
+#include <ATen/OpMathType.h>
 
 std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
 segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
@@ -58,10 +59,11 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
   auto stride = indptr_info.strides[indptr_info.dims - 1];
   std::vector<int64_t> args(K);
   AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "segment_csr_cpu", [&] {
+    using opmath_t = at::opmath_type<scalar_t>;
     auto src_data = src.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
-    std::vector<scalar_t> vals(K);
+    std::vector<opmath_t> vals(K);
     int64_t row_start, row_end;
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       for (auto n = 0; n < N; n++) {
@@ -71,15 +73,15 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
 
         offset = (n / (indptr.size(-1) - 1)) * E * K;
         for (auto k = 0; k < K; k++)
-          vals[k] = Reducer<scalar_t, REDUCE>::init();
+          vals[k] = Reducer<opmath_t, REDUCE>::init();
 
         for (auto e = row_start; e < row_end; e++)
           for (auto k = 0; k < K; k++)
-            Reducer<scalar_t, REDUCE>::update(
-                &vals[k], src_data[offset + e * K + k], &args[k], e);
+            Reducer<opmath_t, REDUCE>::update(
+                &vals[k], static_cast<opmath_t>(src_data[offset + e * K + k]), &args[k], e);
 
         for (auto k = 0; k < K; k++)
-          Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, vals[k],
+          Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, static_cast<scalar_t>(vals[k]),
                                            arg_out_data + n * K + k, args[k],
                                            row_end - row_start);
       }
