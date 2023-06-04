@@ -33,7 +33,7 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_NAME TorchScatter)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
-  $<BUILD_INTERFACE:${HEADERS}>
+  "$<BUILD_INTERFACE:${HEADERS}>"
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 include(GNUInstallDirs)
