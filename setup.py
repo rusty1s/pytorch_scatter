@@ -11,7 +11,7 @@ from torch.__config__ import parallel_info
 from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
                                        CUDAExtension)
 
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
 WITH_CUDA = False
@@ -126,7 +126,7 @@ setup(
     url=URL,
     download_url=f'{URL}/archive/{__version__}.tar.gz',
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=install_requires,
     extras_require={
         'test': test_requires,
