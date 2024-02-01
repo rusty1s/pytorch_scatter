@@ -12,20 +12,24 @@ jobs:
       matrix:
         # We have trouble building for Windows - drop for now.
         os: [ubuntu-20.04, macos-11]  # windows-2019
-        python-version: ['3.8', '3.9', '3.10', '3.11']
-        torch-version: [2.0.0, 2.1.0]
-        cuda-version: ['cpu', 'cu117', 'cu118', 'cu121']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        torch-version: [2.2.0]  # [2.1.0, 2.2.0]
+        cuda-version: ['cpu', 'cu118', 'cu121']
         exclude:
-          - torch-version: 2.0.0
-            cuda-version: 'cu121'
+          - python-version: '3.12'  # Python 3.12 not yet supported in `conda-build`.
           - torch-version: 2.1.0
-            cuda-version: 'cu117'
-          - os: macos-11
-            cuda-version: 'cu117'
+            python-version: '3.12'
           - os: macos-11
             cuda-version: 'cu118'
           - os: macos-11
             cuda-version: 'cu121'
+            # Fails with:
+            # * note: 'value' has been explicitly marked unavailable here
+            # * error: 'value' is unavailable: introduced in macOS 10.13
+          - os: macos-11
+            python-version: '3.11'
+          - os: macos-11
+            python-version: '3.12'
 
     steps:
       - uses: actions/checkout@v2
