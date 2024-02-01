@@ -26,7 +26,8 @@ jobs:
             # Fails with:
             # * note: 'value' has been explicitly marked unavailable here
             # * error: 'value' is unavailable: introduced in macOS 10.13
-          - os: macos-11
+          - torch-version: 2.2.0
+            os: macos-11
 
     steps:
       - uses: actions/checkout@v2
