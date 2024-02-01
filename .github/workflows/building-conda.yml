@@ -27,9 +27,6 @@ jobs:
             # * note: 'value' has been explicitly marked unavailable here
             # * error: 'value' is unavailable: introduced in macOS 10.13
           - os: macos-11
-            python-version: '3.11'
-          - os: macos-11
-            python-version: '3.12'
 
     steps:
       - uses: actions/checkout@v2
