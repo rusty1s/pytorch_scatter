@@ -5,15 +5,13 @@ import torch
 from torch_scatter import scatter_logsumexp
 from torch_scatter.testing import float_dtypes, assert_equal
 
+edge_values = [0.0, 1.0, -1e33, 1e33, float("nan"), float("-inf"),
+               float("inf")]
+
 tests = [
     [0.5, -2.1, 3.2],
-    [1e33, 0.5],
-    [-1e33, 0.5],
-    [-1e33],
     [],
-    [float("nan"), 0.5],
-    [float("-inf"), 0.5],
-    [float("inf"), 0.5],
+    *map(list, product(edge_values, edge_values)),
 ]
 
 
@@ -23,6 +21,17 @@ def test_logsumexp(src, dtype):
     index = torch.zeros_like(src, dtype=torch.long)
     out_scatter = scatter_logsumexp(src, index, dim_size=1)
     out_torch = torch.logsumexp(src, dim=0, keepdim=True)
+    assert_equal(out_scatter, out_torch, equal_nan=True)
+
+
+@pytest.mark.parametrize('src,out', product(tests, edge_values))
+def test_logsumexp_inplace(src, out):
+    src = torch.tensor(src)
+    out = torch.tensor([out])
+    out_scatter = out.clone()
+    index = torch.zeros_like(src, dtype=torch.long)
+    scatter_logsumexp(src, index, out=out_scatter)
+    out_torch = torch.logsumexp(torch.cat([out, src]), dim=0, keepdim=True)
     assert_equal(out_scatter, out_torch, equal_nan=True)
 
 
