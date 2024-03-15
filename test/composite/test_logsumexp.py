@@ -35,7 +35,7 @@ def test_logsumexp_inplace(src, out):
     assert_equal(out_scatter, out_torch, equal_nan=True)
 
 
-def test_logsumexp_parallel_jit():
+def test_logsumexp_parallel_backward_jit():
     splits = [len(src) for src in tests]
     srcs = torch.tensor(sum(tests, start=[]))
     index = torch.repeat_interleave(torch.tensor(splits))
@@ -51,3 +51,14 @@ def test_logsumexp_parallel_jit():
 
     jit = torch.jit.script(scatter_logsumexp)
     assert_equal(jit(srcs, index), outputs, equal_nan=True)
+
+
+def test_logsumexp_inplace_dimsize():
+    # if both `out` and `dim_size` are provided, they should match
+    src = torch.zeros(3)
+    index = src.to(torch.long)
+    out = torch.zeros(1)
+
+    scatter_logsumexp(src, index, 0, out, dim_size=1)
+    with pytest.raises(AssertionError):
+        scatter_logsumexp(src, index, 0, out, dim_size=2)
