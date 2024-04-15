@@ -157,7 +157,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= index.dim());
 
@@ -214,70 +214,73 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_", [&] {
-    auto src_data = src.data_ptr<scalar_t>();
-    auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND2(
+      at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_",
+      [&] {
+        auto src_data = src.data_ptr<scalar_t>();
+        auto out_data = out.data_ptr<scalar_t>();
 
-    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
-      if (!optional_out.has_value())
-        out.fill_(Reducer<scalar_t, REDUCE>::init());
+        AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+          if (!optional_out.has_value())
+            out.fill_(Reducer<scalar_t, REDUCE>::init());
 
-      if (K == 1)
-        segment_coo_kernel<scalar_t, REDUCE, true>
-            <<<BLOCKS(1, E), THREADS, 0, stream>>>(src_data, index_info,
-                                                   out_data, E, N);
-      else if (avg_len <= 8)
-        segment_coo_broadcast_kernel<scalar_t, REDUCE, 4>
-            <<<dim3((E_1 * ((E_2 + 3) / 4) + 7) / 8, (K + 31) / 32),
-               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E, K,
-                                         N);
-      else if (avg_len <= 16)
-        segment_coo_broadcast_kernel<scalar_t, REDUCE, 8>
-            <<<dim3((E_1 * ((E_2 + 7) / 8) + 7) / 8, (K + 31) / 32),
-               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E, K,
-                                         N);
-      else if (avg_len <= 32)
-        segment_coo_broadcast_kernel<scalar_t, REDUCE, 16>
-            <<<dim3((E_1 * ((E_2 + 15) / 16) + 7) / 8, (K + 31) / 32),
-               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E, K,
-                                         N);
-      else
-        segment_coo_broadcast_kernel<scalar_t, REDUCE, 32>
-            <<<dim3((E_1 * ((E_2 + 31) / 32) + 7) / 8, (K + 31) / 32),
-               dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E, K,
-                                         N);
+          if (K == 1)
+            segment_coo_kernel<scalar_t, REDUCE, true>
+                <<<BLOCKS(1, E), THREADS, 0, stream>>>(src_data, index_info,
+                                                       out_data, E, N);
+          else if (avg_len <= 8)
+            segment_coo_broadcast_kernel<scalar_t, REDUCE, 4>
+                <<<dim3((E_1 * ((E_2 + 3) / 4) + 7) / 8, (K + 31) / 32),
+                   dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E,
+                                             K, N);
+          else if (avg_len <= 16)
+            segment_coo_broadcast_kernel<scalar_t, REDUCE, 8>
+                <<<dim3((E_1 * ((E_2 + 7) / 8) + 7) / 8, (K + 31) / 32),
+                   dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E,
+                                             K, N);
+          else if (avg_len <= 32)
+            segment_coo_broadcast_kernel<scalar_t, REDUCE, 16>
+                <<<dim3((E_1 * ((E_2 + 15) / 16) + 7) / 8, (K + 31) / 32),
+                   dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E,
+                                             K, N);
+          else
+            segment_coo_broadcast_kernel<scalar_t, REDUCE, 32>
+                <<<dim3((E_1 * ((E_2 + 31) / 32) + 7) / 8, (K + 31) / 32),
+                   dim3(32, 8), 0, stream>>>(src_data, index_info, out_data, E,
+                                             K, N);
 
-      if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
-        out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
+          if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
+            out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(),
+                             (scalar_t)0);
 
-      if (REDUCE == MIN || REDUCE == MAX) {
-        if (K == 1)
-          segment_coo_arg_kernel<scalar_t>
-              <<<BLOCKS(1, E), THREADS, 0, stream>>>(
-                  src_data, index_info, out_data, arg_out_data, E, N);
-        else
-          segment_coo_arg_broadcast_kernel<scalar_t>
-              <<<BLOCKS(1, E * K), THREADS, 0, stream>>>(
-                  src_data, index_info, out_data, arg_out_data, E, K, N);
-      }
+          if (REDUCE == MIN || REDUCE == MAX) {
+            if (K == 1)
+              segment_coo_arg_kernel<scalar_t>
+                  <<<BLOCKS(1, E), THREADS, 0, stream>>>(
+                      src_data, index_info, out_data, arg_out_data, E, N);
+            else
+              segment_coo_arg_broadcast_kernel<scalar_t>
+                  <<<BLOCKS(1, E * K), THREADS, 0, stream>>>(
+                      src_data, index_info, out_data, arg_out_data, E, K, N);
+          }
 
-      if (REDUCE == MEAN) {
-        auto count_data = arg_out.value().data_ptr<scalar_t>();
-        segment_coo_kernel<scalar_t, SUM, false>
-            <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
-                                                   count_data, E, N);
-        arg_out.value().masked_fill_(arg_out.value() < (scalar_t)1,
-                                     (scalar_t)1);
-        auto count = arg_out.value();
-        for (int i = dim + 1; i < out.dim(); i++)
-          count = count.unsqueeze(-1);
-        if (out.is_floating_point())
-          out.true_divide_(count);
-        else
-          out.div_(count, "floor");
-      }
-    });
-  });
+          if (REDUCE == MEAN) {
+            auto count_data = arg_out.value().data_ptr<scalar_t>();
+            segment_coo_kernel<scalar_t, SUM, false>
+                <<<BLOCKS(1, E), THREADS, 0, stream>>>(nullptr, index_info,
+                                                       count_data, E, N);
+            arg_out.value().masked_fill_(arg_out.value() < (scalar_t)1,
+                                         (scalar_t)1);
+            auto count = arg_out.value();
+            for (int i = dim + 1; i < out.dim(); i++)
+              count = count.unsqueeze(-1);
+            if (out.is_floating_point())
+              out.true_divide_(count);
+            else
+              out.div_(count, "floor");
+          }
+        });
+      });
 
   return std::make_tuple(out, arg_out);
 }
@@ -330,7 +333,7 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= index.dim());
 
@@ -365,18 +368,20 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_", [&] {
-    auto src_data = src.data_ptr<scalar_t>();
-    auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND2(
+      at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_",
+      [&] {
+        auto src_data = src.data_ptr<scalar_t>();
+        auto out_data = out.data_ptr<scalar_t>();
 
-    if (K == 1)
-      gather_coo_kernel<scalar_t><<<BLOCKS(1, E), THREADS, 0, stream>>>(
-          src_data, index_info, out_data, E, N);
-    else
-      gather_coo_broadcast_kernel<scalar_t>
-          <<<BLOCKS(1, E * K), THREADS, 0, stream>>>(src_data, index_info,
-                                                     out_data, E, K, N);
-  });
+        if (K == 1)
+          gather_coo_kernel<scalar_t><<<BLOCKS(1, E), THREADS, 0, stream>>>(
+              src_data, index_info, out_data, E, N);
+        else
+          gather_coo_broadcast_kernel<scalar_t>
+              <<<BLOCKS(1, E * K), THREADS, 0, stream>>>(src_data, index_info,
+                                                         out_data, E, K, N);
+      });
 
   return out;
 }

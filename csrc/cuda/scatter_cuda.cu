@@ -63,7 +63,7 @@ scatter_cuda(torch::Tensor src, torch::Tensor index, int64_t dim,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() == index.dim());
   for (auto i = 0; i < index.dim() - 1; i++)
@@ -111,28 +111,31 @@ scatter_cuda(torch::Tensor src, torch::Tensor index, int64_t dim,
 
   auto index_info = at::cuda::detail::getTensorInfo<int64_t, int>(index);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_", [&] {
-    auto src_data = src.data_ptr<scalar_t>();
-    auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND2(
+      at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_",
+      [&] {
+        auto src_data = src.data_ptr<scalar_t>();
+        auto out_data = out.data_ptr<scalar_t>();
 
-    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
-      if (!optional_out.has_value())
-        out.fill_(Reducer<scalar_t, REDUCE>::init());
+        AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+          if (!optional_out.has_value())
+            out.fill_(Reducer<scalar_t, REDUCE>::init());
 
-      scatter_kernel<scalar_t, REDUCE>
-          <<<BLOCKS(src.numel()), THREADS, 0, stream>>>(
-              src_data, index_info, out_data, E, K, N, src.numel());
+          scatter_kernel<scalar_t, REDUCE>
+              <<<BLOCKS(src.numel()), THREADS, 0, stream>>>(
+                  src_data, index_info, out_data, E, K, N, src.numel());
 
-      if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
-        out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
+          if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
+            out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(),
+                             (scalar_t)0);
 
-      if (REDUCE == MIN || REDUCE == MAX)
-        scatter_arg_kernel<scalar_t>
-            <<<BLOCKS(src.numel()), THREADS, 0, stream>>>(
-                src_data, index_info, out_data, arg_out_data, E, K, N,
-                src.numel());
-    });
-  });
+          if (REDUCE == MIN || REDUCE == MAX)
+            scatter_arg_kernel<scalar_t>
+                <<<BLOCKS(src.numel()), THREADS, 0, stream>>>(
+                    src_data, index_info, out_data, arg_out_data, E, K, N,
+                    src.numel());
+        });
+      });
 
   return std::make_tuple(out, arg_out);
 }

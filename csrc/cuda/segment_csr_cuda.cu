@@ -47,8 +47,8 @@ segment_csr_kernel(const scalar_t *src_data,
       // Parallel reduction inside a single warp.
       if (REDUCE == MIN || REDUCE == MAX)
         arg_tmp = SHFL_DOWN_SYNC(FULL_MASK, arg, i);
-      Reducer<scalar_t, REDUCE>::update(
-          &val, SHFL_DOWN_SYNC(FULL_MASK, val, i), &arg, arg_tmp);
+      Reducer<scalar_t, REDUCE>::update(&val, SHFL_DOWN_SYNC(FULL_MASK, val, i),
+                                        &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {
@@ -102,7 +102,7 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   CHECK_CUDA(indptr);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= indptr.dim());
 
@@ -147,22 +147,24 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_", [&] {
-    auto src_data = src.data_ptr<scalar_t>();
-    auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND2(
+      at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_",
+      [&] {
+        auto src_data = src.data_ptr<scalar_t>();
+        auto out_data = out.data_ptr<scalar_t>();
 
-    AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
-      if (K == 1) {
-        segment_csr_kernel<scalar_t, REDUCE, 1>
-            <<<BLOCKS(32, N), THREADS, 0, stream>>>(
-                src_data, indptr_info, out_data, arg_out_data, N, E);
-      } else {
-        segment_csr_broadcast_kernel<scalar_t, REDUCE>
-            <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(
-                src_data, indptr_info, out_data, arg_out_data, N, K, E);
-      }
-    });
-  });
+        AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
+          if (K == 1) {
+            segment_csr_kernel<scalar_t, REDUCE, 1>
+                <<<BLOCKS(32, N), THREADS, 0, stream>>>(
+                    src_data, indptr_info, out_data, arg_out_data, N, E);
+          } else {
+            segment_csr_broadcast_kernel<scalar_t, REDUCE>
+                <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(
+                    src_data, indptr_info, out_data, arg_out_data, N, K, E);
+          }
+        });
+      });
 
   return std::make_tuple(out, arg_out);
 }
@@ -222,7 +224,7 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   CHECK_CUDA(indptr);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= indptr.dim());
 
@@ -264,18 +266,21 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
 
   auto indptr_info = at::cuda::detail::getTensorInfo<int64_t, int>(indptr);
   auto stream = at::cuda::getCurrentCUDAStream();
-  AT_DISPATCH_ALL_TYPES_AND2(at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_", [&] {
-    auto src_data = src.data_ptr<scalar_t>();
-    auto out_data = out.data_ptr<scalar_t>();
+  AT_DISPATCH_ALL_TYPES_AND2(
+      at::ScalarType::Half, at::ScalarType::BFloat16, src.scalar_type(), "_",
+      [&] {
+        auto src_data = src.data_ptr<scalar_t>();
+        auto out_data = out.data_ptr<scalar_t>();
 
-    if (K == 1)
-      gather_csr_kernel<scalar_t, 4><<<BLOCKS(1, 4 * N), THREADS, 0, stream>>>(
-          src_data, indptr_info, out_data, N, E);
-    else
-      gather_csr_broadcast_kernel<scalar_t>
-          <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(src_data, indptr_info,
-                                                     out_data, N, K, E);
-  });
+        if (K == 1)
+          gather_csr_kernel<scalar_t, 4>
+              <<<BLOCKS(1, 4 * N), THREADS, 0, stream>>>(src_data, indptr_info,
+                                                         out_data, N, E);
+        else
+          gather_csr_broadcast_kernel<scalar_t>
+              <<<BLOCKS(1, N * K), THREADS, 0, stream>>>(src_data, indptr_info,
+                                                         out_data, N, K, E);
+      });
 
   return out;
 }
