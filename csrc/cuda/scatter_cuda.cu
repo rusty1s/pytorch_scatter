@@ -63,7 +63,7 @@ scatter_cuda(torch::Tensor src, torch::Tensor index, int64_t dim,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() == index.dim());
   for (auto i = 0; i < index.dim() - 1; i++)

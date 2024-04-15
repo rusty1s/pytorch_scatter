@@ -102,7 +102,7 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   CHECK_CUDA(indptr);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= indptr.dim());
 
@@ -222,7 +222,7 @@ torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
   CHECK_CUDA(indptr);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= indptr.dim());
 

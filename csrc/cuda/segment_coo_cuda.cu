@@ -157,7 +157,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= index.dim());
 
@@ -330,7 +330,7 @@ torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
   CHECK_CUDA(index);
   if (optional_out.has_value())
     CHECK_CUDA(optional_out.value());
-  cudaSetDevice(src.get_device());
+  c10::cuda::MaybeSetDevice(src.get_device());
 
   CHECK_INPUT(src.dim() >= index.dim());
 
