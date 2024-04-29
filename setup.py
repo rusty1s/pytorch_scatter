@@ -61,9 +61,11 @@ def get_extensions():
             print('Compiling without OpenMP...')
 
         # Compile for mac arm64
-        if (sys.platform == 'darwin' and platform.machine() == 'arm64'):
-            extra_compile_args['cxx'] += ['-arch', 'arm64']
-            extra_link_args += ['-arch', 'arm64']
+        if sys.platform == 'darwin':
+            extra_compile_args['cxx'] += ['-D_LIBCPP_DISABLE_AVAILABILITY']
+            if platform.machine == 'arm64':
+                extra_compile_args['cxx'] += ['-arch', 'arm64']
+                extra_link_args += ['-arch', 'arm64']
 
         if suffix == 'cuda':
             define_macros += [('WITH_CUDA', None)]
