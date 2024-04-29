@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.8]
-        torch-version: [2.1.0, 2.2.0]
+        torch-version: [2.2.0, 2.3.0]
 
     steps:
       - uses: actions/checkout@v2
@@ -47,7 +47,7 @@ jobs:
           pytest --cov --cov-report=xml
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         if: success()
         with:
           fail_ci_if_error: false
