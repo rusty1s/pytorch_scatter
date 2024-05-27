@@ -29,3 +29,12 @@ def test_logsumexp():
 
     jit = torch.jit.script(scatter_logsumexp)
     assert jit(inputs, index).tolist() == outputs.tolist()
+
+
+def test_logsumexp_out():
+    src = torch.tensor([-1.0, -50.0])
+    index = torch.tensor([0, 0])
+    out = torch.tensor([-10.0, -10.0])
+
+    scatter_logsumexp(src=src, index=index, out=out)
+    assert out.allclose(torch.tensor([-0.9999, -10.0]), atol=1e-4)
