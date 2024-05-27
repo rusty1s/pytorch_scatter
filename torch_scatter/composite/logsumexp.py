@@ -5,12 +5,14 @@ from torch_scatter import scatter_max, scatter_sum
 from torch_scatter.utils import broadcast
 
 
-def scatter_logsumexp(src: torch.Tensor,
-                      index: torch.Tensor,
-                      dim: int = -1,
-                      out: Optional[torch.Tensor] = None,
-                      dim_size: Optional[int] = None,
-                      eps: float = 1e-12) -> torch.Tensor:
+def scatter_logsumexp(
+    src: torch.Tensor,
+    index: torch.Tensor,
+    dim: int = -1,
+    out: Optional[torch.Tensor] = None,
+    dim_size: Optional[int] = None,
+    eps: float = 1e-12,
+) -> torch.Tensor:
     if not torch.is_floating_point(src):
         raise ValueError('`scatter_logsumexp` can only be computed over '
                          'tensors with floating point data types.')
@@ -48,6 +50,7 @@ def scatter_logsumexp(src: torch.Tensor,
 
     if orig_out is None:
         return out.nan_to_num_(neginf=0.0)
-    else:
-        mask = ~out.isfinite()
-        out[mask] = orig_out[mask]
+
+    mask = ~out.isfinite()
+    out[mask] = orig_out[mask]
+    return out
