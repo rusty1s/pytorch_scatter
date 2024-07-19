@@ -9,13 +9,16 @@ from itertools import product
 import torch
 from setuptools import find_packages, setup
 from torch.__config__ import parallel_info
-from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
+from torch.utils.cpp_extension import (BuildExtension, CppExtension,
                                        CUDAExtension)
+
+CUDA_HOME = os.environ.get("CUDA_HOME")
+if not CUDA_HOME:
+    from torch.utils.cpp_extension import CUDA_HOME
 
 __version__ = '2.1.2'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
-CUDA_HOME = os.environ.get("CUDA_HOME", None)
 WITH_CUDA = False
 if torch.cuda.is_available():
     WITH_CUDA = CUDA_HOME is not None or torch.version.hip
@@ -114,7 +117,11 @@ def get_extensions():
 
 
 install_requires = ["torch>=1.8.0"]
-extra_index_url = ["https://download.pytorch.org/whl/cpu"] if suffices == ["cpu"] else [f"https://download.pytorch.org/whl/cu{get_cuda_bare_metal_version(CUDA_HOME)}"]
+extra_index_url = (
+    ["https://download.pytorch.org/whl/cpu"]
+    if suffices == ["cpu"]
+    else [f"https://download.pytorch.org/whl/cu{get_cuda_bare_metal_version(CUDA_HOME)}"]
+)
 
 test_requires = [
     'pytest',
