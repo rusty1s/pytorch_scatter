@@ -2,6 +2,7 @@ import glob
 import os
 import os.path as osp
 import platform
+import subprocess
 import sys
 from itertools import product
 
@@ -14,6 +15,7 @@ from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
 __version__ = '2.1.2'
 URL = 'https://github.com/rusty1s/pytorch_scatter'
 
+CUDA_HOME = os.environ.get("CUDA_HOME", None)
 WITH_CUDA = False
 if torch.cuda.is_available():
     WITH_CUDA = CUDA_HOME is not None or torch.version.hip
@@ -28,6 +30,10 @@ if os.getenv('FORCE_ONLY_CPU', '0') == '1':
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
 WITH_SYMBOLS = os.getenv('WITH_SYMBOLS', '0') == '1'
 
+def get_cuda_bare_metal_version(cuda_home):
+    output = subprocess.check_output([cuda_home + "/bin/nvcc", "-V"], universal_newlines=True).split()
+    release_idx = output.index("release")
+    return output[release_idx+1].split(",")[0].replace('.', '')
 
 def get_extensions():
     extensions = []
@@ -107,7 +113,8 @@ def get_extensions():
     return extensions
 
 
-install_requires = []
+install_requires = ["torch>=1.8.0"]
+extra_index_url = ["https://download.pytorch.org/whl/cpu"] if suffices == ["cpu"] else [f"https://download.pytorch.org/whl/cu{get_cuda_bare_metal_version(CUDA_HOME)}"]
 
 test_requires = [
     'pytest',
@@ -130,6 +137,7 @@ setup(
     keywords=['pytorch', 'scatter', 'segment', 'gather'],
     python_requires='>=3.8',
     install_requires=install_requires,
+    extra_index_url=extra_index_url,
     extras_require={
         'test': test_requires,
     },
