@@ -5,7 +5,9 @@ import torch
 from .utils import broadcast
 
 
-def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+def scatter_sum(src: torch.Tensor,
+                index: torch.Tensor,
+                dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
     index = broadcast(index, src, dim)
@@ -23,19 +25,25 @@ def scatter_sum(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
         return out.scatter_add_(dim, index, src)
 
 
-def scatter_add(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+def scatter_add(src: torch.Tensor,
+                index: torch.Tensor,
+                dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
     return scatter_sum(src, index, dim, out, dim_size)
 
 
-def scatter_mul(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+def scatter_mul(src: torch.Tensor,
+                index: torch.Tensor,
+                dim: int = -1,
                 out: Optional[torch.Tensor] = None,
                 dim_size: Optional[int] = None) -> torch.Tensor:
     return torch.ops.torch_scatter.scatter_mul(src, index, dim, out, dim_size)
 
 
-def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+def scatter_mean(src: torch.Tensor,
+                 index: torch.Tensor,
+                 dim: int = -1,
                  out: Optional[torch.Tensor] = None,
                  dim_size: Optional[int] = None) -> torch.Tensor:
     out = scatter_sum(src, index, dim, out, dim_size)
@@ -59,21 +67,28 @@ def scatter_mean(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
 
 
 def scatter_min(
-        src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+        src: torch.Tensor,
+        index: torch.Tensor,
+        dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.scatter_min(src, index, dim, out, dim_size)
 
 
 def scatter_max(
-        src: torch.Tensor, index: torch.Tensor, dim: int = -1,
+        src: torch.Tensor,
+        index: torch.Tensor,
+        dim: int = -1,
         out: Optional[torch.Tensor] = None,
         dim_size: Optional[int] = None) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ops.torch_scatter.scatter_max(src, index, dim, out, dim_size)
 
 
-def scatter(src: torch.Tensor, index: torch.Tensor, dim: int = -1,
-            out: Optional[torch.Tensor] = None, dim_size: Optional[int] = None,
+def scatter(src: torch.Tensor,
+            index: torch.Tensor,
+            dim: int = -1,
+            out: Optional[torch.Tensor] = None,
+            dim_size: Optional[int] = None,
             reduce: str = "sum") -> torch.Tensor:
     r"""
     |

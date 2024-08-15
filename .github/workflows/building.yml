@@ -12,15 +12,17 @@ jobs:
       matrix:
         os: [ubuntu-20.04, macos-14, windows-2019]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        torch-version: [2.3.0]  # [2.1.0, 2.2.0, 2.3.0]
-        cuda-version: ['cpu', 'cu118', 'cu121']
+        torch-version: [2.4.0]  # [2.3.0, 2.4.0]
+        cuda-version: ['cpu', 'cu118', 'cu121', 'cu124']
         exclude:
-          - torch-version: 2.1.0
-            python-version: '3.12'
+          - torch-version: 2.3.0
+            cuda-version: 'cu124'
           - os: macos-14
             cuda-version: 'cu118'
           - os: macos-14
             cuda-version: 'cu121'
+          - os: macos-14
+            cuda-version: 'cu124'
 
     steps:
       - uses: actions/checkout@v2
