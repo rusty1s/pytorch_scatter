@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.8]
-        torch-version: [2.3.0, 2.4.0]
+        python-version: [3.9]
+        torch-version: [2.4.0, 2.5.0]
 
     steps:
       - uses: actions/checkout@v2
