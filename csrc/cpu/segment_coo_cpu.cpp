@@ -5,10 +5,10 @@
 #include "utils.h"
 #include <ATen/OpMathType.h>
 
-std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+std::tuple<torch::Tensor, std::optional<torch::Tensor>>
 segment_coo_cpu(torch::Tensor src, torch::Tensor index,
-                torch::optional<torch::Tensor> optional_out,
-                torch::optional<int64_t> dim_size, std::string reduce) {
+                std::optional<torch::Tensor> optional_out,
+                std::optional<int64_t> dim_size, std::string reduce) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   if (optional_out.has_value())
@@ -45,7 +45,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
     out = torch::empty(sizes, src.options());
   }
 
-  torch::optional<torch::Tensor> arg_out = torch::nullopt;
+  std::optional<torch::Tensor> arg_out = std::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full_like(out, src.size(dim), index.options());
@@ -141,7 +141,7 @@ segment_coo_cpu(torch::Tensor src, torch::Tensor index,
 }
 
 torch::Tensor gather_coo_cpu(torch::Tensor src, torch::Tensor index,
-                             torch::optional<torch::Tensor> optional_out) {
+                             std::optional<torch::Tensor> optional_out) {
   CHECK_CPU(src);
   CHECK_CPU(index);
   if (optional_out.has_value())
