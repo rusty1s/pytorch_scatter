@@ -5,9 +5,9 @@
 #include "utils.h"
 #include <ATen/OpMathType.h>
 
-std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+std::tuple<torch::Tensor, std::optional<torch::Tensor>>
 segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
-                torch::optional<torch::Tensor> optional_out,
+                std::optional<torch::Tensor> optional_out,
                 std::string reduce) {
   CHECK_CPU(src);
   CHECK_CPU(indptr);
@@ -38,7 +38,7 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
     out = torch::empty(sizes, src.options());
   }
 
-  torch::optional<torch::Tensor> arg_out = torch::nullopt;
+  std::optional<torch::Tensor> arg_out = std::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full(out.sizes(), src.size(dim), indptr.options());
@@ -92,7 +92,7 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
 }
 
 torch::Tensor gather_csr_cpu(torch::Tensor src, torch::Tensor indptr,
-                             torch::optional<torch::Tensor> optional_out) {
+                             std::optional<torch::Tensor> optional_out) {
   CHECK_CPU(src);
   CHECK_CPU(indptr);
   if (optional_out.has_value())

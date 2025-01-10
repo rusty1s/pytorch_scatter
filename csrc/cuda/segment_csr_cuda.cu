@@ -94,9 +94,9 @@ __global__ void segment_csr_broadcast_kernel(
   }
 }
 
-std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+std::tuple<torch::Tensor, std::optional<torch::Tensor>>
 segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
-                 torch::optional<torch::Tensor> optional_out,
+                 std::optional<torch::Tensor> optional_out,
                  std::string reduce) {
   CHECK_CUDA(src);
   CHECK_CUDA(indptr);
@@ -128,7 +128,7 @@ segment_csr_cuda(torch::Tensor src, torch::Tensor indptr,
     out = torch::empty(sizes, src.options());
   }
 
-  torch::optional<torch::Tensor> arg_out = torch::nullopt;
+  std::optional<torch::Tensor> arg_out = std::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full(out.sizes(), src.size(dim), indptr.options());
@@ -217,7 +217,7 @@ __global__ void gather_csr_broadcast_kernel(
 }
 
 torch::Tensor gather_csr_cuda(torch::Tensor src, torch::Tensor indptr,
-                              torch::optional<torch::Tensor> optional_out) {
+                              std::optional<torch::Tensor> optional_out) {
   CHECK_CUDA(src);
   CHECK_CUDA(indptr);
   if (optional_out.has_value())

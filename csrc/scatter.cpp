@@ -32,10 +32,10 @@ torch::Tensor broadcast(torch::Tensor src, torch::Tensor other, int64_t dim) {
   return src;
 }
 
-std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+std::tuple<torch::Tensor, std::optional<torch::Tensor>>
 scatter_fw(torch::Tensor src, torch::Tensor index, int64_t dim,
-           torch::optional<torch::Tensor> optional_out,
-           torch::optional<int64_t> dim_size, std::string reduce) {
+           std::optional<torch::Tensor> optional_out,
+           std::optional<int64_t> dim_size, std::string reduce) {
   if (src.device().is_cuda()) {
 #ifdef WITH_CUDA
     return scatter_cuda(src, index, dim, optional_out, dim_size, reduce);
@@ -55,8 +55,8 @@ class ScatterSum : public torch::autograd::Function<ScatterSum> {
 public:
   static variable_list forward(AutogradContext *ctx, Variable src,
                                Variable index, int64_t dim,
-                               torch::optional<Variable> optional_out,
-                               torch::optional<int64_t> dim_size) {
+                               std::optional<Variable> optional_out,
+                               std::optional<int64_t> dim_size) {
     dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
@@ -84,8 +84,8 @@ class ScatterMul : public torch::autograd::Function<ScatterMul> {
 public:
   static variable_list forward(AutogradContext *ctx, Variable src,
                                Variable index, int64_t dim,
-                               torch::optional<Variable> optional_out,
-                               torch::optional<int64_t> dim_size) {
+                               std::optional<Variable> optional_out,
+                               std::optional<int64_t> dim_size) {
     dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
@@ -116,8 +116,8 @@ class ScatterMean : public torch::autograd::Function<ScatterMean> {
 public:
   static variable_list forward(AutogradContext *ctx, Variable src,
                                Variable index, int64_t dim,
-                               torch::optional<Variable> optional_out,
-                               torch::optional<int64_t> dim_size) {
+                               std::optional<Variable> optional_out,
+                               std::optional<int64_t> dim_size) {
     dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
@@ -131,7 +131,7 @@ public:
     auto ones = torch::ones(old_index.sizes(), src.options());
     result = scatter_fw(ones, old_index,
                         old_index.dim() <= dim ? old_index.dim() - 1 : dim,
-                        torch::nullopt, out.size(dim), "sum");
+                        std::nullopt, out.size(dim), "sum");
     auto count = std::get<0>(result);
     count.masked_fill_(count < 1, 1);
     count = broadcast(count, out, dim);
@@ -164,8 +164,8 @@ class ScatterMin : public torch::autograd::Function<ScatterMin> {
 public:
   static variable_list forward(AutogradContext *ctx, Variable src,
                                Variable index, int64_t dim,
-                               torch::optional<Variable> optional_out,
-                               torch::optional<int64_t> dim_size) {
+                               std::optional<Variable> optional_out,
+                               std::optional<int64_t> dim_size) {
     dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
@@ -200,8 +200,8 @@ class ScatterMax : public torch::autograd::Function<ScatterMax> {
 public:
   static variable_list forward(AutogradContext *ctx, Variable src,
                                Variable index, int64_t dim,
-                               torch::optional<Variable> optional_out,
-                               torch::optional<int64_t> dim_size) {
+                               std::optional<Variable> optional_out,
+                               std::optional<int64_t> dim_size) {
     dim = dim < 0 ? src.dim() + dim : dim;
     ctx->saved_data["dim"] = dim;
     ctx->saved_data["src_shape"] = src.sizes();
@@ -234,37 +234,37 @@ public:
 
 SCATTER_API torch::Tensor
 scatter_sum(torch::Tensor src, torch::Tensor index, int64_t dim,
-            torch::optional<torch::Tensor> optional_out,
-            torch::optional<int64_t> dim_size) {
+            std::optional<torch::Tensor> optional_out,
+            std::optional<int64_t> dim_size) {
   return ScatterSum::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
 SCATTER_API torch::Tensor
 scatter_mul(torch::Tensor src, torch::Tensor index, int64_t dim,
-            torch::optional<torch::Tensor> optional_out,
-            torch::optional<int64_t> dim_size) {
+            std::optional<torch::Tensor> optional_out,
+            std::optional<int64_t> dim_size) {
   return ScatterMul::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
 SCATTER_API torch::Tensor
 scatter_mean(torch::Tensor src, torch::Tensor index, int64_t dim,
-             torch::optional<torch::Tensor> optional_out,
-             torch::optional<int64_t> dim_size) {
+             std::optional<torch::Tensor> optional_out,
+             std::optional<int64_t> dim_size) {
   return ScatterMean::apply(src, index, dim, optional_out, dim_size)[0];
 }
 
 SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 scatter_min(torch::Tensor src, torch::Tensor index, int64_t dim,
-            torch::optional<torch::Tensor> optional_out,
-            torch::optional<int64_t> dim_size) {
+            std::optional<torch::Tensor> optional_out,
+            std::optional<int64_t> dim_size) {
   auto result = ScatterMin::apply(src, index, dim, optional_out, dim_size);
   return std::make_tuple(result[0], result[1]);
 }
 
 SCATTER_API std::tuple<torch::Tensor, torch::Tensor>
 scatter_max(torch::Tensor src, torch::Tensor index, int64_t dim,
-            torch::optional<torch::Tensor> optional_out,
-            torch::optional<int64_t> dim_size) {
+            std::optional<torch::Tensor> optional_out,
+            std::optional<int64_t> dim_size) {
   auto result = ScatterMax::apply(src, index, dim, optional_out, dim_size);
   return std::make_tuple(result[0], result[1]);
 }

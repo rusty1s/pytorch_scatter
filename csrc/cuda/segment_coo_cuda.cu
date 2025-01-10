@@ -149,10 +149,10 @@ __global__ void segment_coo_arg_broadcast_kernel(
   }
 }
 
-std::tuple<torch::Tensor, torch::optional<torch::Tensor>>
+std::tuple<torch::Tensor, std::optional<torch::Tensor>>
 segment_coo_cuda(torch::Tensor src, torch::Tensor index,
-                 torch::optional<torch::Tensor> optional_out,
-                 torch::optional<int64_t> dim_size, std::string reduce) {
+                 std::optional<torch::Tensor> optional_out,
+                 std::optional<int64_t> dim_size, std::string reduce) {
   CHECK_CUDA(src);
   CHECK_CUDA(index);
   if (optional_out.has_value())
@@ -191,7 +191,7 @@ segment_coo_cuda(torch::Tensor src, torch::Tensor index,
     out = torch::zeros(sizes, src.options());
   }
 
-  torch::optional<torch::Tensor> arg_out = torch::nullopt;
+  std::optional<torch::Tensor> arg_out = std::nullopt;
   int64_t *arg_out_data = nullptr;
   if (reduce2REDUCE.at(reduce) == MIN || reduce2REDUCE.at(reduce) == MAX) {
     arg_out = torch::full_like(out, src.size(dim), index.options());
@@ -325,7 +325,7 @@ __global__ void gather_coo_broadcast_kernel(
 }
 
 torch::Tensor gather_coo_cuda(torch::Tensor src, torch::Tensor index,
-                              torch::optional<torch::Tensor> optional_out) {
+                              std::optional<torch::Tensor> optional_out) {
   CHECK_CUDA(src);
   CHECK_CUDA(index);
   if (optional_out.has_value())
