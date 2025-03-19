@@ -54,6 +54,22 @@ conda install pytorch-scatter -c pyg
 
 We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
+#### PyTorch 2.6
+
+To install the binaries for PyTorch 2.6.0, simply run
+
+```
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.6.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu118` or `cu124` depending on your PyTorch installation.
+
+|             | `cpu` | `cu118` | `cu124` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
+
 #### PyTorch 2.5
 
 To install the binaries for PyTorch 2.5.0, simply run
