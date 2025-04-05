@@ -43,7 +43,7 @@ All included operations are broadcastable, work on varying data types, are imple
 
 ### Binaries
 
-We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
+We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
 #### PyTorch 2.6
 
