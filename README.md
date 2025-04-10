@@ -141,7 +141,7 @@ pytest
 ## C++ API
 
 `torch-scatter` also offers a C++ API that contains C++ equivalent of python models.
-For this, we need to add `TorchLib` to the `-DCMAKE_PREFIX_PATH` (run `import torch, print(torch.utils.cmake_prefix_path)` to obtain it).
+For this, we need to add `TorchLib` to the `-DCMAKE_PREFIX_PATH` (run `import torch; print(torch.utils.cmake_prefix_path)` to obtain it).
 
 ```
 mkdir build
