@@ -45,6 +45,23 @@ All included operations are broadcastable, work on varying data types, are imple
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
+#### PyTorch 2.7
+
+To install the binaries for PyTorch 2.7.0, simply run
+
+```
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.7.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu118`, `cu126`, or `cu128` depending on your PyTorch installation.
+
+|             | `cpu` | `cu118` | `cu126` | `cu128` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
+
+
 #### PyTorch 2.6
 
 To install the binaries for PyTorch 2.6.0, simply run
