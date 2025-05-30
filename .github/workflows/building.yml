@@ -10,25 +10,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-14, windows-2019, ubuntu-22.04-arm]
+        os: [ubuntu-22.04, macos-14, windows-2019, ubuntu-22.04-arm]
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-        torch-version: [2.6.0]  # [2.5.0]
-        cuda-version: ['cpu', 'cu118', 'cu121', 'cu124', 'cu126']
+        torch-version: [2.7.0]  # [2.6.0]
+        cuda-version: ['cpu', 'cu118', 'cu124', 'cu126', 'cu128']
         exclude:
-          - torch-version: 2.5.0
-            python-version: '3.13'
-          - torch-version: 2.5.0
-            cuda-version: 'cu126'
           - torch-version: 2.6.0
-            cuda-version: 'cu121'
+            cuda-version: 'cu128'
+          - torch-version: 2.7.0
+            cuda-version: 'cu124'
           - os: macos-14
             cuda-version: 'cu118'
-          - os: macos-14
-            cuda-version: 'cu121'
           - os: macos-14
             cuda-version: 'cu124'
           - os: macos-14
             cuda-version: 'cu126'
+          - os: macos-14
+            cuda-version: 'cu128'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu118'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu124'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu126'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu128'
 
     steps:
       - uses: actions/checkout@v2
@@ -79,7 +85,7 @@ jobs:
       - name: Install main package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_ONLY_CPU=1 python setup.py develop
+          FORCE_ONLY_CPU=1 pip install -e . --no-build-isolation
         shell:
           bash
 
@@ -87,7 +93,7 @@ jobs:
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          python setup.py develop
+          pip install -e . --no-build-isolation
         shell:
           bash
 
