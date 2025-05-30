@@ -50,7 +50,7 @@ We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](htt
 To install the binaries for PyTorch 2.7.0, simply run
 
 ```
-pip install torch-scatter -f https://data.pyg.org/whl/torch-2.6.0+${CUDA}.html
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.7.0+${CUDA}.html
 ```
 
 where `${CUDA}` should be replaced by either `cpu`, `cu118`, `cu126`, or `cu128` depending on your PyTorch installation.
