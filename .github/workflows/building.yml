@@ -83,14 +83,14 @@ jobs:
         shell:
           bash
 
-      - name: Build wheel on CPU
+      - name: Build wheel for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
           FORCE_ONLY_CPU=1 python setup.py bdist_wheel --dist-dir=dist
         shell:
           bash
 
-      - name: Build wheel on GPU
+      - name: Build wheel for GPU
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
