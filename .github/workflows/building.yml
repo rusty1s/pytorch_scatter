@@ -31,6 +31,8 @@ jobs:
             cuda-version: 'cu126'
           - os: macos-14
             cuda-version: 'cu128'
+          - os: macos-14
+            cuda-version: 'cu129'
           - os: ubuntu-22.04-arm
             cuda-version: 'cu118'
           - os: ubuntu-22.04-arm
@@ -39,6 +41,8 @@ jobs:
             cuda-version: 'cu126'
           - os: ubuntu-22.04-arm
             cuda-version: 'cu128'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu129'
 
     steps:
       - uses: actions/checkout@v2
