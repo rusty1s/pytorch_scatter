@@ -10,15 +10,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14, windows-2019, ubuntu-22.04-arm]
+        os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-        torch-version: [2.7.0]  # [2.6.0]
-        cuda-version: ['cpu', 'cu118', 'cu124', 'cu126', 'cu128']
+        torch-version: [2.8.0]
+        cuda-version: ['cpu', 'cu118', 'cu124', 'cu126', 'cu128', 'cu129']
         exclude:
           - torch-version: 2.6.0
             cuda-version: 'cu128'
           - torch-version: 2.7.0
             cuda-version: 'cu124'
+          - torch-version: 2.8.0
+            cuda-version: 'cu124'
+          - torch-version: 2.8.0
+            cuda-version: 'cu118'
           - os: macos-14
             cuda-version: 'cu118'
           - os: macos-14
@@ -27,6 +31,8 @@ jobs:
             cuda-version: 'cu126'
           - os: macos-14
             cuda-version: 'cu128'
+          - os: macos-14
+            cuda-version: 'cu129'
           - os: ubuntu-22.04-arm
             cuda-version: 'cu118'
           - os: ubuntu-22.04-arm
@@ -35,6 +41,8 @@ jobs:
             cuda-version: 'cu126'
           - os: ubuntu-22.04-arm
             cuda-version: 'cu128'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu129'
 
     steps:
       - uses: actions/checkout@v2
