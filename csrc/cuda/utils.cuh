@@ -6,13 +6,20 @@
   AT_ASSERTM(x.device().is_cuda(), #x " must be CUDA tensor")
 #define CHECK_INPUT(x) AT_ASSERTM(x, "Input mismatch")
 
-__device__ __inline__ at::Half __shfl_up_sync(const unsigned mask,
+// On ROCm, __shfl_*_sync requires a 64-bit mask; on CUDA it's 32-bit.
+#ifdef USE_ROCM
+  using warp_mask_t = unsigned long long;
+#else
+  using warp_mask_t = unsigned int;
+#endif
+
+__device__ __inline__ at::Half __shfl_up_sync(const warp_mask_t mask,
                                               const at::Half var,
                                               const unsigned int delta) {
   return __shfl_up_sync(mask, var.operator __half(), delta);
 }
 
-__device__ __inline__ at::Half __shfl_down_sync(const unsigned mask,
+__device__ __inline__ at::Half __shfl_down_sync(const warp_mask_t mask,
                                                 const at::Half var,
                                                 const unsigned int delta) {
   return __shfl_down_sync(mask, var.operator __half(), delta);
