@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
+        # os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
+        os: [windows-2022]
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         torch-version: [2.9.0, 2.10.0]
         cuda-version: ['cpu', 'cu126', 'cu128', 'cu130']
@@ -56,14 +57,6 @@ jobs:
           pip install torch==${{ matrix.torch-version }} --extra-index-url https://download.pytorch.org/whl/${{ matrix.cuda-version }}
           python -c "import torch; print('PyTorch:', torch.__version__)"
           python -c "import torch; print('CUDA:', torch.version.cuda)"
-
-      - name: Patch PyTorch static constexpr on Windows
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          Torch_DIR=`python -c 'import os; import torch; print(os.path.dirname(torch.__file__))'`
-          sed -i '31,38c\
-          TORCH_API void lazy_init_num_threads();' ${Torch_DIR}/include/ATen/Parallel.h
-        shell: bash
 
       - name: Set version
         if: ${{ runner.os != 'macOS' }}
