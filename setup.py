@@ -73,6 +73,8 @@ def get_extensions():
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             nvcc_flags += ['-O3']
             nvcc_flags += ['-DTORCH_INDUCTOR_CPP_WRAPPER']
+            if sys.platform == 'win32':
+                nvcc_flags += ['-Xcompiler', '/permissive-']
             if torch.version.hip:
                 # USE_ROCM was added to later versions of PyTorch.
                 # Define here to support older PyTorch versions as well:
