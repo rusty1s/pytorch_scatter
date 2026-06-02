@@ -12,23 +12,25 @@ jobs:
       matrix:
         os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        torch-version: [2.11.0]
-        cuda-version: ['cpu', 'cu126', 'cu128', 'cu130']
+        torch-version: [2.12.0]
+        cuda-version: ['cpu', 'cu126', 'cu130', 'cu132']
         exclude:
           - os: windows-2022
             cuda-version: 'cu130'
+          - os: windows-2022
+            cuda-version: 'cu132'
           - os: macos-14
             cuda-version: 'cu126'
           - os: macos-14
-            cuda-version: 'cu128'
-          - os: macos-14
             cuda-version: 'cu130'
+          - os: macos-14
+            cuda-version: 'cu132'
           - os: ubuntu-22.04-arm
             cuda-version: 'cu126'
           - os: ubuntu-22.04-arm
-            cuda-version: 'cu128'
-          - os: ubuntu-22.04-arm
             cuda-version: 'cu130'
+          - os: ubuntu-22.04-arm
+            cuda-version: 'cu132'
 
     steps:
       - uses: actions/checkout@v2
