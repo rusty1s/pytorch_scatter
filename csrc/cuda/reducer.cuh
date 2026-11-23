@@ -83,7 +83,8 @@ template <typename scalar_t, ReductionType REDUCE> struct Reducer {
     }
   }
 
-  static inline __host__ __device__ void write(scalar_t *address, scalar_t val,
+  template <typename out_t>
+  static inline __host__ __device__ void write(out_t *address, scalar_t val,
                                                int64_t *arg_address,
                                                int64_t arg, int count) {
     if (REDUCE == SUM || REDUCE == MUL || REDUCE == DIV)

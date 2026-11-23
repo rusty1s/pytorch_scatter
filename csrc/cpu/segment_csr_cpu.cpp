@@ -81,7 +81,7 @@ segment_csr_cpu(torch::Tensor src, torch::Tensor indptr,
                 &vals[k], static_cast<opmath_t>(src_data[offset + e * K + k]), &args[k], e);
 
         for (auto k = 0; k < K; k++)
-          Reducer<scalar_t, REDUCE>::write(out_data + n * K + k, static_cast<scalar_t>(vals[k]),
+          Reducer<opmath_t, REDUCE>::write(out_data + n * K + k, vals[k],
                                            arg_out_data + n * K + k, args[k],
                                            row_end - row_start);
       }

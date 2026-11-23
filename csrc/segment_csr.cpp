@@ -2,6 +2,7 @@
 #include <Python.h>
 #endif
 
+#include <ATen/OpMathType.h>
 #include <torch/script.h>
 
 #include "cpu/segment_csr_cpu.h"
@@ -101,7 +102,8 @@ public:
       gather_csr_fw(grad_out, indptr, grad_in);
       auto indptr1 = indptr.narrow(-1, 0, indptr.size(-1) - 1);
       auto indptr2 = indptr.narrow(-1, 1, indptr.size(-1) - 1);
-      auto count = (indptr2 - indptr1).to(grad_in.options());
+      auto count =
+          (indptr2 - indptr1).to(at::toOpMathType(grad_out.scalar_type()));
       count = gather_csr_fw(count, indptr, std::nullopt);
       for (auto i = 0; i < grad_out.dim() - indptr.dim(); i++)
         count = count.unsqueeze(-1);
