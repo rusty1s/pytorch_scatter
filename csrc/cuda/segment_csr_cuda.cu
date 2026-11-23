@@ -1,8 +1,11 @@
 #include "segment_csr_cuda.h"
 
+#include <ATen/OpMathType.h>
 #include <ATen/cuda/CUDAContext.h>
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
+
+#include <type_traits>
 
 #include "index_info.cuh"
 #include "reducer.cuh"
@@ -11,6 +14,10 @@
 #define THREADS 256
 #define BLOCKS(TB, N) (TB * N + THREADS - 1) / THREADS
 #define FULL_MASK 0xffffffff
+
+template <typename scalar_t, ReductionType REDUCE>
+using csr_acc_t = std::conditional_t<REDUCE == SUM || REDUCE == MEAN,
+                                     at::opmath_type<scalar_t>, scalar_t>;
 
 template <typename scalar_t, ReductionType REDUCE, int TB>
 __global__ void
@@ -32,14 +39,15 @@ segment_csr_kernel(const scalar_t *src_data,
     int64_t row_end = __ldg(indptr_info.data + offset +
                             indptr_info.strides[indptr_info.dims - 1]);
 
-    scalar_t val = Reducer<scalar_t, REDUCE>::init();
+    using acc_t = csr_acc_t<scalar_t, REDUCE>;
+    acc_t val = Reducer<acc_t, REDUCE>::init();
     int64_t arg, arg_tmp;
 
     offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E;
     for (int64_t src_idx = row_start + lane_idx; src_idx < row_end;
          src_idx += TB) {
-      Reducer<scalar_t, REDUCE>::update(&val, src_data[offset + src_idx], &arg,
-                                        src_idx);
+      Reducer<acc_t, REDUCE>::update(&val, src_data[offset + src_idx], &arg,
+                                     src_idx);
     }
 
 #pragma unroll
@@ -47,14 +55,14 @@ segment_csr_kernel(const scalar_t *src_data,
       // Parallel reduction inside a single warp.
       if (REDUCE == MIN || REDUCE == MAX)
         arg_tmp = SHFL_DOWN_SYNC(FULL_MASK, arg, i);
-      Reducer<scalar_t, REDUCE>::update(
+      Reducer<acc_t, REDUCE>::update(
           &val, SHFL_DOWN_SYNC(FULL_MASK, val, i), &arg, arg_tmp);
     }
 
     if (lane_idx == 0) {
-      Reducer<scalar_t, REDUCE>::write(out_data + row_idx, val,
-                                       arg_out_data + row_idx, arg,
-                                       row_end - row_start);
+      Reducer<acc_t, REDUCE>::write(out_data + row_idx, val,
+                                    arg_out_data + row_idx, arg,
+                                    row_end - row_start);
     }
   }
 }
@@ -79,18 +87,19 @@ __global__ void segment_csr_broadcast_kernel(
     int64_t row_end = __ldg(indptr_info.data + offset +
                             indptr_info.strides[indptr_info.dims - 1]);
 
-    scalar_t val = Reducer<scalar_t, REDUCE>::init();
+    using acc_t = csr_acc_t<scalar_t, REDUCE>;
+    acc_t val = Reducer<acc_t, REDUCE>::init();
     int64_t arg;
 
     offset = (row_idx / (indptr_info.sizes[indptr_info.dims - 1] - 1)) * E * K;
     for (int64_t src_idx = row_start; src_idx < row_end; src_idx++) {
-      Reducer<scalar_t, REDUCE>::update(
+      Reducer<acc_t, REDUCE>::update(
           &val, src_data[offset + K * src_idx + lane_idx], &arg, src_idx);
     }
 
-    Reducer<scalar_t, REDUCE>::write(out_data + thread_idx, val,
-                                     arg_out_data + thread_idx, arg,
-                                     row_end - row_start);
+    Reducer<acc_t, REDUCE>::write(out_data + thread_idx, val,
+                                  arg_out_data + thread_idx, arg,
+                                  row_end - row_start);
   }
 }
 

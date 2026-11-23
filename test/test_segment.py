@@ -189,3 +189,31 @@ def test_non_contiguous(test, reduce, dtype, device):
         arg_expected = tensor(test['arg_' + reduce], torch.long, device)
         assert torch.all(arg_out == arg_expected)
     assert torch.all(out == expected)
+
+
+@pytest.mark.parametrize('device', devices)
+@pytest.mark.parametrize('dtype', [torch.float16, torch.bfloat16])
+@pytest.mark.parametrize('features', [1, 3])
+def test_csr_low_precision_sum(device, dtype, features):
+    src = torch.ones((4096, features), dtype=dtype, device=device)
+    indptr = torch.tensor([0, 0, 4096], device=device)
+    out = torch_scatter.segment_sum_csr(src, indptr)
+    expected = torch.stack([src[:0].float().sum(0), src.float().sum(0)])
+    assert torch.equal(out, expected.to(dtype))
+
+
+@pytest.mark.parametrize('device', devices)
+@pytest.mark.parametrize('dtype', [torch.float16, torch.bfloat16])
+@pytest.mark.parametrize('features', [1, 3])
+def test_csr_low_precision_mean(device, dtype, features):
+    lengths = [257, 65536]
+    src = torch.ones((sum(lengths), features), dtype=dtype, device=device,
+                     requires_grad=True)
+    indptr = torch.tensor([0, lengths[0], lengths[0], sum(lengths)],
+                          device=device)
+    out = torch_scatter.segment_mean_csr(src, indptr)
+    assert torch.equal(out, src.new_tensor([1, 0, 1])[:, None].expand_as(out))
+
+    out.sum().backward()
+    for grad, length in zip(src.grad.split(lengths), lengths):
+        assert torch.equal(grad, torch.full_like(grad, 1 / length))
